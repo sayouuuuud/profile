@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Admin: System &amp; Backup Utility</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#10b981", // Emerald 500
+                        "primary-dim": "#059669", // Emerald 600
+                        "accent": "#34d399", // Emerald 400
+                        "danger": "#ef4444", // Red 500
+                        "danger-dim": "#b91c1c", // Red 700
+                        "warning": "#f59e0b", // Amber 500
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#050505", // Deep OLED Black
+                        "surface-dark": "#0a0a0a",
+                        "surface-light": "#121212",
+                        "border-dark": "#1f2937",
+                        "text-dim": "#6b7280",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"],
+                        "mono": ["ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", "monospace"]
+                    },
+                    backgroundImage: {
+                        'grid-pattern': "linear-gradient(to right, #1f2937 1px, transparent 1px), linear-gradient(to bottom, #1f2937 1px, transparent 1px)",
+                    },
+                    animation: {
+                        'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'spin-slow': 'spin 12s linear infinite',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .grid-bg {
+            background-size: 40px 40px;
+            mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
+            -webkit-mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
+        }
+        .glow-text {
+            text-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+        }
+        .glow-text-danger {
+            text-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+        }
+        .glow-box {
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
+        }
+        .glow-box-danger {
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.15);
+        }
+        .scanline {
+            background: linear-gradient(
+                to bottom,
+                transparent 50%,
+                rgba(16, 185, 129, 0.03) 51%
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 50;
+        }
+        .glass-panel {
+            background: rgba(10, 10, 10, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(31, 41, 55, 0.5);
+        }
+        .tech-border::before, .tech-border::after {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-color: #10b981;
+            border-style: solid;
+            transition: all 0.3s ease;
+        }
+        .tech-border-danger::before, .tech-border-danger::after {
+            border-color: #ef4444;
+        }
+        .tech-border::before {
+            top: -1px;
+            left: -1px;
+            border-width: 1px 0 0 1px;
+        }
+        .tech-border::after {
+            bottom: -1px;
+            right: -1px;
+            border-width: 0 1px 1px 0;
+        }
+        @keyframes pulse-border {
+            0%, 100% { border-color: rgba(16, 185, 129, 0.2); box-shadow: 0 0 0 rgba(16, 185, 129, 0); }
+            50% { border-color: rgba(16, 185, 129, 0.5); box-shadow: 0 0 15px rgba(16, 185, 129, 0.1); }
+        }
+        .animate-border-glow {
+            animation: pulse-border 3s ease-in-out infinite;
+        }.terminal-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .terminal-scroll::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+        .terminal-scroll::-webkit-scrollbar-thumb {
+            background: #1f2937;
+            border-radius: 3px;
+        }
+        .terminal-scroll::-webkit-scrollbar-thumb:hover {
+            background: #374151;
+        }
+    </style>
+</head>
+<body class="bg-background-dark font-display text-white min-h-screen flex flex-col relative selection:bg-primary selection:text-black">
+<div class="fixed inset-0 z-0 pointer-events-none opacity-20 grid-bg bg-grid-pattern"></div>
+<div class="fixed inset-0 z-50 pointer-events-none scanline"></div>
+<header class="relative z-50 flex items-center justify-between whitespace-nowrap border-b border-border-dark px-6 md:px-10 py-4 glass-panel sticky top-0">
+<div class="flex items-center gap-4 text-white">
+<div class="size-6 text-danger animate-pulse-fast">
+<span class="material-symbols-outlined">shield</span>
+</div>
+<h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em]">SAYED ELSHAZLY</h2>
+<span class="hidden md:block h-4 w-[1px] bg-border-dark mx-2"></span>
+<span class="hidden md:block text-xs font-mono text-danger bg-danger/10 px-2 py-1 rounded border border-danger/20">ADMIN: ROOT_ACCESS</span>
+</div>
+<div class="flex items-center gap-8">
+<div class="hidden md:flex items-center gap-9">
+<a class="text-text-dim hover:text-white transition-colors text-xs font-mono uppercase tracking-wider" href="#">Dashboard</a>
+<a class="text-white text-xs font-mono uppercase tracking-wider" href="#">System</a>
+<a class="text-text-dim hover:text-white transition-colors text-xs font-mono uppercase tracking-wider" href="#">Logs</a>
+</div>
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded bg-white hover:bg-gray-200 transition-colors text-background-dark text-xs font-bold h-8 px-4 tracking-wider uppercase">
+                Logout
+            </button>
+</div>
+</header>
+<main class="flex-1 relative flex flex-col w-full max-w-7xl mx-auto z-10 pb-20">
+<section class="px-6 md:px-10 pt-16 pb-8 w-full">
+<div class="flex flex-col gap-2 mb-8">
+<div class="flex items-center gap-2 text-danger text-xs font-mono tracking-widest uppercase mb-2">
+<span class="w-2 h-2 bg-danger rounded-full animate-pulse-fast"></span>
+                    System Maintenance &amp; Backup
+                </div>
+<h1 class="text-4xl md:text-5xl font-black leading-none tracking-tight uppercase glow-text-danger max-w-4xl">
+                    Utility Control <span class="text-text-dim block md:inline text-2xl md:text-4xl align-middle opacity-50">//</span> <span class="text-white">Low-Level Operations</span>
+</h1>
+<p class="text-text-dim text-lg mt-4 max-w-2xl font-light">
+                    Direct interface for database snapshots, global cache purging, and real-time server health monitoring. Authorized personnel only.
+                </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full mt-6">
+<div class="glass-panel p-6 rounded-lg border border-border-dark relative group overflow-hidden flex flex-col justify-between h-64">
+<div class="absolute top-0 left-0 w-2 h-2 border-t border-l border-primary/50"></div>
+<div class="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-primary/50"></div>
+<div class="flex justify-between items-start">
+<div>
+<span class="text-[10px] font-mono text-primary uppercase tracking-widest block mb-1">DATA INTEGRITY</span>
+<h3 class="text-xl font-bold text-white flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">database</span>
+                                Database Snapshot
+                            </h3>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-[10px] font-mono text-text-dim uppercase">LAST BACKUP</span>
+<span class="text-xs font-mono text-white">2h 14m ago</span>
+</div>
+</div>
+<div class="flex-1 flex items-center justify-center my-4">
+<div class="w-full bg-surface-dark/50 rounded border border-border-dark p-3">
+<div class="flex justify-between text-xs font-mono mb-2">
+<span class="text-text-dim">TARGET</span>
+<span class="text-white">BACKBLAZE B2 (US-WEST)</span>
+</div>
+<div class="flex justify-between text-xs font-mono mb-2">
+<span class="text-text-dim">SIZE ESTIMATE</span>
+<span class="text-white">1.4 GB</span>
+</div>
+<div class="flex justify-between text-xs font-mono">
+<span class="text-text-dim">ENCRYPTION</span>
+<span class="text-primary">AES-256</span>
+</div>
+</div>
+</div>
+<button class="w-full bg-primary/10 hover:bg-primary/20 border border-primary/50 text-primary font-bold font-mono py-3 px-4 rounded transition-all duration-300 flex items-center justify-center gap-2 group-hover:shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+<span class="material-symbols-outlined text-sm">backup</span>
+                        INITIALIZE_BACKUP
+                    </button>
+</div>
+<div class="glass-panel p-6 rounded-lg border border-border-dark relative group overflow-hidden flex flex-col justify-between h-64">
+<div class="absolute top-0 left-0 w-2 h-2 border-t border-l border-warning/50"></div>
+<div class="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-warning/50"></div>
+<div class="flex justify-between items-start">
+<div>
+<span class="text-[10px] font-mono text-warning uppercase tracking-widest block mb-1">CDN MANAGEMENT</span>
+<h3 class="text-xl font-bold text-white flex items-center gap-2">
+<span class="material-symbols-outlined text-warning">layers_clear</span>
+                                Clear Global Cache
+                            </h3>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-[10px] font-mono text-text-dim uppercase">HIT RATE</span>
+<span class="text-xs font-mono text-white">98.4%</span>
+</div>
+</div>
+<div class="flex-1 flex items-center justify-center my-4">
+<div class="w-full bg-surface-dark/50 rounded border border-border-dark p-3">
+<div class="flex justify-between text-xs font-mono mb-2">
+<span class="text-text-dim">EDGE NETWORK</span>
+<span class="text-white">VERCEL EDGE</span>
+</div>
+<div class="flex justify-between text-xs font-mono mb-2">
+<span class="text-text-dim">MEDIA ASSETS</span>
+<span class="text-white">CLOUDINARY</span>
+</div>
+<div class="flex justify-between text-xs font-mono">
+<span class="text-text-dim">ZONES</span>
+<span class="text-warning">ALL REGIONS</span>
+</div>
+</div>
+</div>
+<button class="w-full bg-warning/10 hover:bg-warning/20 border border-warning/50 text-warning font-bold font-mono py-3 px-4 rounded transition-all duration-300 flex items-center justify-center gap-2 group-hover:shadow-[0_0_15px_rgba(245,158,11,0.3)]">
+<span class="material-symbols-outlined text-sm">delete_forever</span>
+                        PURGE_CACHE
+                    </button>
+</div>
+<div class="glass-panel p-6 rounded-lg border border-border-dark relative group overflow-hidden flex flex-col justify-between h-64">
+<div class="absolute top-0 left-0 w-2 h-2 border-t border-l border-blue-500/50"></div>
+<div class="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-blue-500/50"></div>
+<div class="flex justify-between items-start">
+<div>
+<span class="text-[10px] font-mono text-blue-500 uppercase tracking-widest block mb-1">INFRASTRUCTURE</span>
+<h3 class="text-xl font-bold text-white flex items-center gap-2">
+<span class="material-symbols-outlined text-blue-500">dns</span>
+                                Server Status
+                            </h3>
+</div>
+<span class="text-[10px] font-mono text-primary bg-primary/10 border border-primary/20 px-2 py-1 rounded">HEALTHY</span>
+</div>
+<div class="flex-1 flex flex-col justify-center gap-4 my-2">
+<div>
+<div class="flex justify-between text-[10px] font-mono text-text-dim mb-1">
+<span>CPU LOAD</span>
+<span class="text-blue-400">24%</span>
+</div>
+<div class="w-full bg-border-dark h-1.5 rounded-full overflow-hidden">
+<div class="h-full bg-blue-500 w-[24%] shadow-[0_0_8px_rgba(59,130,246,0.6)]"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-[10px] font-mono text-text-dim mb-1">
+<span>MEMORY ALLOCATION</span>
+<span class="text-purple-400">62%</span>
+</div>
+<div class="w-full bg-border-dark h-1.5 rounded-full overflow-hidden">
+<div class="h-full bg-purple-500 w-[62%] shadow-[0_0_8px_rgba(168,85,247,0.6)]"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-[10px] font-mono text-text-dim mb-1">
+<span>BANDWIDTH I/O</span>
+<span class="text-primary">120 MB/s</span>
+</div>
+<div class="w-full bg-border-dark h-1.5 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[45%] shadow-[0_0_8px_rgba(16,185,129,0.6)]"></div>
+</div>
+</div>
+</div>
+<button class="w-full bg-surface-dark hover:bg-white/5 border border-border-dark text-text-dim hover:text-white font-mono text-xs py-3 px-4 rounded transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">monitoring</span>
+                        VIEW_FULL_METRICS
+                    </button>
+</div>
+</div>
+</section>
+<section class="px-6 md:px-10 pb-12 flex-1 flex flex-col min-h-[400px]">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-sm font-mono text-text-dim uppercase tracking-widest flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">terminal</span>
+                    System Health &amp; Event Log
+                </h3>
+<div class="flex items-center gap-3">
+<span class="flex h-2 w-2 relative">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+</span>
+<span class="text-[10px] font-mono text-primary">LIVE STREAM</span>
+</div>
+</div>
+<div class="bg-black rounded-xl border border-border-dark font-mono text-xs overflow-hidden shadow-2xl relative flex-1 flex flex-col animate-border-glow transition-all duration-300">
+<div class="bg-surface-light/80 backdrop-blur-md px-4 py-3 border-b border-border-dark flex items-center justify-between relative z-20">
+<div class="flex items-center gap-4">
+<div class="flex gap-2">
+<div class="size-3 rounded-full bg-[#ff5f56] border border-[#e0443e]"></div>
+<div class="size-3 rounded-full bg-[#ffbd2e] border border-[#dea123]"></div>
+<div class="size-3 rounded-full bg-[#27c93f] border border-[#1aab29]"></div>
+</div>
+<span class="text-text-dim font-mono text-[10px] md:text-xs">admin@server:~/logs/system.log</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-[10px] text-text-dim">UPTIME: 14D 03H 22M</span>
+</div>
+</div>
+<div class="p-4 md:p-6 text-gray-300 leading-relaxed overflow-y-auto terminal-scroll relative z-20 flex-1 bg-black/60 backdrop-blur-sm font-mono text-xs md:text-sm">
+<div class="space-y-1">
+<div class="flex gap-4 opacity-50">
+<span class="text-text-dim whitespace-nowrap">[2023-10-27 14:02:11]</span>
+<span class="text-blue-400">INFO</span>
+<span>Daily cron job executed: Log rotation complete.</span>
+</div>
+<div class="flex gap-4 opacity-60">
+<span class="text-text-dim whitespace-nowrap">[2023-10-27 14:15:05]</span>
+<span class="text-primary">SUCCESS</span>
+<span>Health check passed for endpoint: /api/status.</span>
+</div>
+<div class="flex gap-4 opacity-70">
+<span class="text-text-dim whitespace-nowrap">[2023-10-27 14:22:48]</span>
+<span class="text-blue-400">INFO</span>
+<span>User session authenticated via OAuth provider.</span>
+</div>
+<div class="flex gap-4">
+<span class="text-text-dim whitespace-nowrap">[2023-10-27 14:45:12]</span>
+<span class="text-warning">WARN</span>
+<span>High memory usage detected on worker node #04 (85%). Auto-scaling trigger imminent.</span>
+</div>
+<div class="flex gap-4 opacity-90">
+<span class="text-text-dim whitespace-nowrap">[2023-10-27 14:45:15]</span>
+<span class="text-blue-400">INFO</span>
+<span>Auto-scaling: Spawning new instance (id: i-0x84f2).</span>
+</div>
+<div class="flex gap-4">
+<span class="text-text-dim whitespace-nowrap">[2023-10-27 14:45:30]</span>
+<span class="text-primary">SUCCESS</span>
+<span>New instance healthy. Load balancing redistribution started.</span>
+</div>
+<div class="flex gap-4 border-l-2 border-primary pl-4 bg-primary/5 py-1 my-1">
+<span class="text-text-dim whitespace-nowrap">[2023-10-27 15:00:00]</span>
+<span class="text-primary font-bold">SYSTEM</span>
+<span class="text-white">Scheduled database snapshot initiated.</span>
+</div>
+<div class="flex gap-4 border-l-2 border-primary pl-4 bg-primary/5 py-1 my-1">
+<span class="text-text-dim whitespace-nowrap">[2023-10-27 15:01:22]</span>
+<span class="text-primary font-bold">SYSTEM</span>
+<span class="text-white">Snapshot upload to Backblaze B2 completed successfully (1.4GB).</span>
+</div>
+<div class="flex gap-4 animate-pulse">
+<span class="text-text-dim whitespace-nowrap">[2023-10-27 15:12:04]</span>
+<span class="text-blue-400">INFO</span>
+<span>Incoming traffic spike detected from region: EU-WEST.</span>
+<span class="inline-block w-2 h-4 bg-primary align-middle ml-1"></span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<footer class="w-full border-t border-border-dark bg-surface-dark py-8">
+<div class="max-w-7xl mx-auto px-6 md:px-10 flex flex-col md:flex-row justify-between items-center text-xs text-text-dim font-mono">
+<div class="flex items-center gap-2">
+<span class="size-2 bg-green-500 rounded-full animate-pulse"></span>
+                SYSTEM STATUS: OPTIMAL
+            </div>
+<div class="mt-4 md:mt-0">
+                © 2024 SAYED ELSHAZLY // ADMIN UTILITY
+            </div>
+</div>
+</footer>
+
+</body></html>

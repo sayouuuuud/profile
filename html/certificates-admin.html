@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Admin: Certification Repository</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#10b981", // Emerald 500
+                        "primary-dim": "#059669", // Emerald 600
+                        "accent": "#34d399", // Emerald 400
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#050505", // Deep OLED Black
+                        "surface-dark": "#0a0a0a",
+                        "surface-light": "#121212",
+                        "border-dark": "#1f2937",
+                        "text-dim": "#6b7280",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"],
+                        "mono": ["ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", "monospace"]
+                    },
+                    backgroundImage: {
+                        'grid-pattern': "linear-gradient(to right, #1f2937 1px, transparent 1px), linear-gradient(to bottom, #1f2937 1px, transparent 1px)",
+                    }
+                },
+            },
+        }
+    </script>
+<style>.grid-bg {
+    background-size: 40px 40px;
+    mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
+    -webkit-mask-image: radial-gradient(circle at center, black 30%, transparent 80%)
+    }
+.glow-text {
+    text-shadow: 0 0 20px rgba(16, 185, 129, 0.4)
+    }
+.glow-box {
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.15)
+    }
+.scanline {
+    background: linear-gradient(to bottom, transparent 50%, rgba(16, 185, 129, 0.03) 51%);
+    background-size: 100% 4px;
+    pointer-events: none;
+    z-index: 50
+    }
+.glass-panel {
+    background: rgba(10, 10, 10, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(31, 41, 55, 0.5)
+    }
+.tech-border::before, .tech-border::after {
+    content: "";
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-color: #10b981;
+    border-style: solid;
+    transition: all 0.3s ease
+    }
+.tech-border::before {
+    top: -1px;
+    left: -1px;
+    border-width: 1px 0 0 1px
+    }
+.tech-border::after {
+    bottom: -1px;
+    right: -1px;
+    border-width: 0 1px 1px 0
+    }
+input[type="text"], input[type="number"], textarea, select, input[type="date"] {
+    background-color: rgba(18, 18, 18, 0.8);
+    border: 1px solid #1f2937;
+    color: white;
+    font-family: "Space Grotesk", sans-serif;
+    transition: all 0.2s
+    }
+input[type="text"]:focus, input[type="number"]:focus, textarea:focus, select:focus, input[type="date"]:focus {
+    border-color: #10b981;
+    box-shadow: 0 0 0 1px #10b981;
+    outline: none
+    }
+.toggle-checkbox:checked {
+    right: 0;
+    border-color: #10b981
+    }
+.toggle-checkbox:checked + .toggle-label {
+    background-color: #10b981
+    }
+.dashed-loader {
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuCCA4zk4nisP--NXUOEPmdW1lcEdLe1p3qyAzV9Z8IOPrptYD8h2r2Hw_Nwbqf5i2QYwPcNiVVKq5lNjbNb9lwRVuAzSOCgbflwUvgIo0b7nCcXiul5EbEFumMxVlkZXHv9h-W6qH2OzA6iY0BDqXruenmIgzdufYlQ5ph3uvTSyAtBieftzL2mnq-T6wwSXcvEncKQ69UkAhSU2qMQKFuolF1k3VAiw4s2tW7PON0rb5jXo-UEDbyW_6cnZQ-V0WgID-0NWvbNYNg)
+    }</style>
+</head>
+<body class="bg-background-dark font-display text-white min-h-screen flex flex-col relative selection:bg-primary selection:text-black">
+<div class="fixed inset-0 z-0 pointer-events-none opacity-20 grid-bg bg-grid-pattern"></div>
+<div class="fixed inset-0 z-50 pointer-events-none scanline"></div>
+<header class="relative z-50 flex items-center justify-between whitespace-nowrap border-b border-border-dark px-6 md:px-10 py-4 glass-panel sticky top-0">
+<div class="flex items-center gap-4 text-white">
+<div class="size-6 text-primary">
+<span class="material-symbols-outlined">verified_user</span>
+</div>
+<h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em]">ADMIN DASHBOARD</h2>
+<span class="hidden md:block h-4 w-[1px] bg-border-dark mx-2"></span>
+<span class="hidden md:block text-xs font-mono text-primary bg-primary/10 px-2 py-1 rounded border border-primary/20">EDITOR: CERTIFICATION_REPO</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex items-center gap-2 text-xs font-mono text-text-dim">
+<span class="size-2 rounded-full bg-yellow-500 animate-pulse"></span>
+                UNSYNCED CHANGES
+            </div>
+<button class="flex items-center justify-center gap-2 bg-primary hover:bg-primary-dim transition-colors text-black text-xs font-bold h-9 px-5 rounded tracking-wider uppercase">
+<span class="material-symbols-outlined text-sm">publish</span>
+                Publish Parchment
+            </button>
+</div>
+</header>
+<main class="flex-1 relative flex flex-col w-full max-w-7xl mx-auto z-10 pb-20 px-6 md:px-10 pt-8">
+<section class="mb-8">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2 text-primary text-xs font-mono tracking-widest uppercase">
+<span class="material-symbols-outlined text-sm">badge</span>
+                    Credential Manager
+                </div>
+<button class="text-[10px] font-mono bg-primary/10 hover:bg-primary/20 border border-primary/30 text-primary px-3 py-1 rounded transition-colors uppercase">
+                    + New Certificate
+                </button>
+</div>
+<div class="glass-panel p-6 rounded-lg border border-border-dark relative overflow-hidden">
+<div class="space-y-4">
+<div class="group flex flex-col md:flex-row gap-4 items-start md:items-center bg-surface-dark/50 p-4 rounded border border-white/5 hover:border-primary/30 transition-all">
+<div class="p-2 bg-surface-light rounded border border-border-dark">
+<span class="material-symbols-outlined text-primary text-2xl">workspace_premium</span>
+</div>
+<div class="flex-1 space-y-1">
+<h3 class="text-sm font-bold text-white">AWS Solutions Architect Professional</h3>
+<p class="text-xs text-text-dim font-mono">ID: #CERT_AWS_SAP_001 • ISSUED: 2023-11-15</p>
+</div>
+<div class="flex items-center gap-6 w-full md:w-auto mt-2 md:mt-0">
+<div class="flex flex-col items-end gap-1">
+<label class="text-[9px] text-text-dim font-mono uppercase">Display Mode</label>
+<div class="flex items-center bg-black/40 rounded-lg p-1 border border-border-dark">
+<button class="px-3 py-1 text-[10px] font-bold rounded bg-primary text-black transition-colors">PARCHMENT</button>
+<button class="px-3 py-1 text-[10px] font-bold rounded text-text-dim hover:text-white transition-colors">SCAN</button>
+</div>
+</div>
+<button class="text-text-dim hover:text-primary transition-colors p-2">
+<span class="material-symbols-outlined">edit</span>
+</button>
+</div>
+</div>
+<div class="group flex flex-col md:flex-row gap-4 items-start md:items-center bg-surface-dark/50 p-4 rounded border border-white/5 hover:border-primary/30 transition-all">
+<div class="p-2 bg-surface-light rounded border border-border-dark">
+<span class="material-symbols-outlined text-text-dim text-2xl">school</span>
+</div>
+<div class="flex-1 space-y-1">
+<h3 class="text-sm font-bold text-white">Advanced Distributed Systems Engineering</h3>
+<p class="text-xs text-text-dim font-mono">ID: #CERT_DS_ENG_092 • ISSUED: 2022-06-20</p>
+</div>
+<div class="flex items-center gap-6 w-full md:w-auto mt-2 md:mt-0">
+<div class="flex flex-col items-end gap-1">
+<label class="text-[9px] text-text-dim font-mono uppercase">Display Mode</label>
+<div class="flex items-center bg-black/40 rounded-lg p-1 border border-border-dark">
+<button class="px-3 py-1 text-[10px] font-bold rounded text-text-dim hover:text-white transition-colors">PARCHMENT</button>
+<button class="px-3 py-1 text-[10px] font-bold rounded bg-primary/20 text-primary border border-primary/30 transition-colors">SCAN</button>
+</div>
+</div>
+<button class="text-text-dim hover:text-primary transition-colors p-2">
+<span class="material-symbols-outlined">edit</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
+<div class="lg:col-span-7 flex flex-col gap-6">
+<div class="flex items-center gap-2 text-primary text-xs font-mono tracking-widest uppercase">
+<span class="material-symbols-outlined text-sm">edit_document</span>
+                    Digital Template Editor
+                </div>
+<div class="glass-panel p-6 rounded-lg border border-border-dark tech-border relative">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+<div class="space-y-2">
+<label class="text-[10px] text-text-dim font-mono uppercase">Issuing Authority / Validated By</label>
+<input class="w-full rounded bg-surface-light border-border-dark text-sm text-white focus:ring-primary focus:border-primary" type="text" value="Amazon Web Services"/>
+</div>
+<div class="space-y-2">
+<label class="text-[10px] text-text-dim font-mono uppercase">Certificate Serial Number</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute right-3 top-2 text-text-dim text-sm">qr_code_2</span>
+<input class="w-full rounded bg-surface-light border-border-dark text-sm font-mono text-primary focus:ring-primary focus:border-primary" type="text" value="AWS-PDO-29384-XJ9"/>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+<div class="space-y-2">
+<label class="text-[10px] text-text-dim font-mono uppercase">Date of Achievement</label>
+<input class="w-full rounded bg-surface-light border-border-dark text-sm text-white focus:ring-primary focus:border-primary" type="date" value="2023-11-15"/>
+</div>
+<div class="space-y-2">
+<label class="text-[10px] text-text-dim font-mono uppercase">Cryptographic Signature Hash</label>
+<input class="w-full rounded bg-surface-light border-border-dark text-xs font-mono text-text-dim focus:ring-primary focus:border-primary" type="text" value="0x7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-[10px] text-text-dim font-mono uppercase">Course / Achievement Title</label>
+<input class="w-full rounded bg-surface-light border-border-dark text-lg font-bold text-white focus:ring-primary focus:border-primary" type="text" value="AWS Solutions Architect Professional"/>
+</div>
+<div class="mt-6 pt-6 border-t border-white/5">
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-2">
+<span class="size-2 bg-emerald-500 rounded-full animate-pulse"></span>
+<span class="text-[10px] font-mono text-emerald-500 uppercase">Template Active</span>
+</div>
+<button class="text-[10px] font-mono text-text-dim hover:text-white underline">Preview Render</button>
+</div>
+</div>
+</div>
+</div>
+<div class="lg:col-span-5 flex flex-col gap-6">
+<div class="flex items-center gap-2 text-primary text-xs font-mono tracking-widest uppercase">
+<span class="material-symbols-outlined text-sm">cloud_upload</span>
+                    Image Uploader
+                </div>
+<div class="glass-panel p-1 rounded-lg border border-border-dark h-full flex flex-col">
+<div class="flex-1 m-2 rounded bg-surface-dark border-2 border-dashed border-border-dark hover:border-primary/50 transition-colors flex flex-col items-center justify-center relative group cursor-pointer dashed-loader">
+<div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="z-10 flex flex-col items-center text-center p-8">
+<div class="size-16 rounded-full bg-surface-light border border-border-dark flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg shadow-black/50">
+<span class="material-symbols-outlined text-3xl text-text-dim group-hover:text-primary transition-colors">add_photo_alternate</span>
+</div>
+<h4 class="text-white font-bold text-sm mb-1">Drop Scanned Parchment Here</h4>
+<p class="text-text-dim text-xs mb-4">Support for PNG, JPG, WEBP (Max 10MB)</p>
+<button class="bg-white/5 hover:bg-white/10 text-white text-xs font-mono py-2 px-4 rounded border border-white/10 transition-colors">
+                                Browse Files
+                            </button>
+</div>
+</div>
+<div class="p-4 border-t border-border-dark">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded bg-surface-light border border-border-dark flex-shrink-0 relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-br from-gray-800 to-black"></div>
+<span class="material-symbols-outlined absolute inset-0 flex items-center justify-center text-xs text-text-dim">image</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-xs text-white truncate font-mono">aws_cert_scan_v2_high_res.png</p>
+<div class="w-full bg-gray-800 h-1 mt-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[100%]"></div>
+</div>
+</div>
+<button class="text-text-dim hover:text-red-500">
+<span class="material-symbols-outlined text-sm">delete</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<section class="mb-12">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2 text-primary text-xs font-mono tracking-widest uppercase">
+<span class="material-symbols-outlined text-sm">handyman</span>
+                    Core Arsenal Config
+                </div>
+<div class="flex gap-2">
+<button class="text-[10px] font-mono bg-surface-dark hover:bg-white/5 border border-border-dark text-text-dim px-3 py-1 rounded transition-colors uppercase">
+                        Reset Defaults
+                    </button>
+<button class="text-[10px] font-mono bg-primary/10 hover:bg-primary/20 border border-primary/30 text-primary px-3 py-1 rounded transition-colors uppercase">
+                        + Add Tool
+                    </button>
+</div>
+</div>
+<div class="glass-panel p-6 rounded-xl border border-border-dark relative overflow-hidden">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<div class="bg-surface-dark border border-white/5 p-4 rounded hover:border-primary/30 transition-colors relative group">
+<div class="flex items-center gap-3 mb-4">
+<div class="size-10 bg-black rounded flex items-center justify-center border border-white/10 group-hover:border-primary/50 transition-colors">
+<span class="material-symbols-outlined text-white">code</span>
+</div>
+<div class="flex-1">
+<label class="text-[8px] text-text-dim font-mono block mb-1">TECHNOLOGY</label>
+<input class="bg-transparent border-none p-0 text-sm font-bold text-white w-full focus:ring-0 placeholder-white/30" type="text" value="Next.js 14"/>
+</div>
+</div>
+<div class="space-y-2">
+<div>
+<label class="text-[9px] text-text-dim font-mono block uppercase">Role Label</label>
+<input class="w-full text-xs py-1 px-2 rounded bg-black/40 border border-border-dark text-text-dim focus:text-white focus:border-primary transition-colors" type="text" value="Frontend Framework"/>
+</div>
+<div class="flex items-center justify-between pt-2">
+<span class="text-[9px] font-mono text-primary">ICON: siNextdotjs</span>
+<button class="text-text-dim hover:text-white">
+<span class="material-symbols-outlined text-sm">settings</span>
+</button>
+</div>
+</div>
+</div>
+<div class="bg-surface-dark border border-white/5 p-4 rounded hover:border-emerald-500/30 transition-colors relative group">
+<div class="flex items-center gap-3 mb-4">
+<div class="size-10 bg-black rounded flex items-center justify-center border border-white/10 group-hover:border-emerald-500/50 transition-colors">
+<span class="material-symbols-outlined text-emerald-500">database</span>
+</div>
+<div class="flex-1">
+<label class="text-[8px] text-text-dim font-mono block mb-1">TECHNOLOGY</label>
+<input class="bg-transparent border-none p-0 text-sm font-bold text-white w-full focus:ring-0 placeholder-white/30" type="text" value="Supabase"/>
+</div>
+</div>
+<div class="space-y-2">
+<div>
+<label class="text-[9px] text-text-dim font-mono block uppercase">Role Label</label>
+<input class="w-full text-xs py-1 px-2 rounded bg-black/40 border border-border-dark text-text-dim focus:text-white focus:border-primary transition-colors" type="text" value="Backend / Auth"/>
+</div>
+<div class="flex items-center justify-between pt-2">
+<span class="text-[9px] font-mono text-primary">ICON: siSupabase</span>
+<button class="text-text-dim hover:text-white">
+<span class="material-symbols-outlined text-sm">settings</span>
+</button>
+</div>
+</div>
+</div>
+<div class="bg-surface-dark border border-white/5 p-4 rounded hover:border-blue-500/30 transition-colors relative group">
+<div class="flex items-center gap-3 mb-4">
+<div class="size-10 bg-black rounded flex items-center justify-center border border-white/10 group-hover:border-blue-500/50 transition-colors">
+<span class="material-symbols-outlined text-blue-400">palette</span>
+</div>
+<div class="flex-1">
+<label class="text-[8px] text-text-dim font-mono block mb-1">TECHNOLOGY</label>
+<input class="bg-transparent border-none p-0 text-sm font-bold text-white w-full focus:ring-0 placeholder-white/30" type="text" value="Tailwind CSS"/>
+</div>
+</div>
+<div class="space-y-2">
+<div>
+<label class="text-[9px] text-text-dim font-mono block uppercase">Role Label</label>
+<input class="w-full text-xs py-1 px-2 rounded bg-black/40 border border-border-dark text-text-dim focus:text-white focus:border-primary transition-colors" type="text" value="Styling Engine"/>
+</div>
+<div class="flex items-center justify-between pt-2">
+<span class="text-[9px] font-mono text-primary">ICON: siTailwindcss</span>
+<button class="text-text-dim hover:text-white">
+<span class="material-symbols-outlined text-sm">settings</span>
+</button>
+</div>
+</div>
+</div>
+<div class="bg-surface-dark border border-white/5 p-4 rounded hover:border-orange-500/30 transition-colors relative group">
+<div class="flex items-center gap-3 mb-4">
+<div class="size-10 bg-black rounded flex items-center justify-center border border-white/10 group-hover:border-orange-500/50 transition-colors">
+<span class="material-symbols-outlined text-orange-400">deployed_code</span>
+</div>
+<div class="flex-1">
+<label class="text-[8px] text-text-dim font-mono block mb-1">TECHNOLOGY</label>
+<input class="bg-transparent border-none p-0 text-sm font-bold text-white w-full focus:ring-0 placeholder-white/30" type="text" value="Vercel"/>
+</div>
+</div>
+<div class="space-y-2">
+<div>
+<label class="text-[9px] text-text-dim font-mono block uppercase">Role Label</label>
+<input class="w-full text-xs py-1 px-2 rounded bg-black/40 border border-border-dark text-text-dim focus:text-white focus:border-primary transition-colors" type="text" value="Edge Network"/>
+</div>
+<div class="flex items-center justify-between pt-2">
+<span class="text-[9px] font-mono text-primary">ICON: siVercel</span>
+<button class="text-text-dim hover:text-white">
+<span class="material-symbols-outlined text-sm">settings</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<footer class="w-full border-t border-border-dark bg-surface-dark py-8">
+<div class="max-w-7xl mx-auto px-6 md:px-10 flex flex-col md:flex-row justify-between items-center text-xs text-text-dim font-mono">
+<div class="flex items-center gap-2">
+<span class="size-2 bg-green-500 rounded-full animate-pulse"></span>
+                ADMIN CONSOLE: ONLINE
+            </div>
+<div class="mt-4 md:mt-0">
+                © 2024 SAYED ELSHAZLY // ADMIN
+            </div>
+</div>
+</footer>
+
+</body></html>

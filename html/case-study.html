@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Case Study: Imam Project Architecture</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#10b981", // Emerald 500
+                        "primary-dim": "#059669", // Emerald 600
+                        "accent": "#34d399", // Emerald 400
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#050505", // Deep OLED Black
+                        "surface-dark": "#0a0a0a",
+                        "surface-light": "#121212",
+                        "border-dark": "#1f2937",
+                        "text-dim": "#6b7280",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"],
+                        "mono": ["ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", "monospace"]
+                    },
+                    backgroundImage: {
+                        'grid-pattern': "linear-gradient(to right, #1f2937 1px, transparent 1px), linear-gradient(to bottom, #1f2937 1px, transparent 1px)",
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .grid-bg {
+            background-size: 40px 40px;
+            mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
+            -webkit-mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
+        }
+
+        .glow-text {
+            text-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .glow-box {
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
+        }
+
+        .connection-line {
+            stroke-dasharray: 10;
+            animation: dash 3s linear infinite;
+        }
+
+        @keyframes dash {
+            to {
+                stroke-dashoffset: -100;
+            }
+        }
+
+        .scanline {
+            background: linear-gradient(to bottom,
+                    transparent 50%,
+                    rgba(16, 185, 129, 0.03) 51%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .glass-panel {
+            background: rgba(10, 10, 10, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(31, 41, 55, 0.5);
+        }
+
+        .tech-border::before,
+        .tech-border::after {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-color: #10b981;
+            border-style: solid;
+            transition: all 0.3s ease;
+        }
+
+        .tech-border::before {
+            top: -1px;
+            left: -1px;
+            border-width: 1px 0 0 1px;
+        }
+
+        .tech-border::after {
+            bottom: -1px;
+            right: -1px;
+            border-width: 0 1px 1px 0;
+        }
+
+        /* Scroll Reveal Utility */
+        .reveal-on-scroll {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: opacity, transform;
+        }
+
+        .reveal-on-scroll.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .delay-100 {
+            transition-delay: 100ms;
+        }
+
+        .delay-200 {
+            transition-delay: 200ms;
+        }
+
+        .delay-300 {
+            transition-delay: 300ms;
+        }
+
+        @keyframes pulse-border {
+
+            0%,
+            100% {
+                border-color: rgba(16, 185, 129, 0.2);
+                box-shadow: 0 0 0 rgba(16, 185, 129, 0);
+            }
+
+            50% {
+                border-color: rgba(16, 185, 129, 0.5);
+                box-shadow: 0 0 15px rgba(16, 185, 129, 0.1);
+            }
+        }
+
+        .animate-border-glow {
+            animation: pulse-border 3s ease-in-out infinite;
+        }
+
+        /* Typewriter Animation */
+        .typewriter {
+            overflow: hidden;
+            /* Ensures the content is not revealed until the animation */
+            border-right: .15em solid #10b981;
+            /* The typwriter cursor */
+            white-space: nowrap;
+            /* Keeps the content on a single line */
+            width: 0;
+            animation:
+                typing 3.5s steps(40, end) forwards,
+                blink-caret .75s step-end infinite;
+            animation-delay: 1s;
+            /* Wait for card to appear */
+        }
+
+        .is-visible .typewriter {
+            width: 100%;
+            /* Trigger by scroll if preferred, or remove is-visible check to auto-run */
+        }
+
+        @keyframes typing {
+            from {
+                width: 0
+            }
+
+            to {
+                width: 100%
+            }
+        }
+
+        @keyframes blink-caret {
+
+            from,
+            to {
+                border-color: transparent
+            }
+
+            50% {
+                border-color: #10b981;
+            }
+        }
+
+        /* Horizontal Progress Bar */
+        .progress-width {
+            width: 0;
+            transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .is-visible .progress-width.w-95 {
+            width: 95%;
+        }
+
+        .is-visible .progress-width.w-100 {
+            width: 100%;
+        }
+
+        .is-visible .progress-width.w-5 {
+            width: 5%;
+        }
+
+        @keyframes progress-load {
+            0% {
+                width: 0%;
+            }
+
+            100% {
+                width: 100%;
+            }
+        }
+
+        .progress-bar-fill {
+            animation: progress-load 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        /* Chart Animations */
+        .animate-circle-fill {
+            stroke-dasharray: 283;
+            stroke-dashoffset: 283;
+            /* Start empty */
+            transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .is-visible .animate-circle-fill {
+            stroke-dashoffset: 70;
+            /* Target fill (75%) */
+        }
+
+        .animate-circle-full {
+            stroke-dasharray: 264;
+            stroke-dashoffset: 264;
+            transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .is-visible .animate-circle-full {
+            stroke-dashoffset: 0;
+            /* Target fill (100%) */
+        }
+
+        .bar-fill {
+            height: 0%;
+            transition: height 1s ease-out;
+        }
+
+        .is-visible .bar-fill.h-30 {
+            height: 30%;
+        }
+
+        .is-visible .bar-fill.h-50 {
+            height: 50%;
+        }
+
+        .is-visible .bar-fill.h-40 {
+            height: 40%;
+        }
+
+        .is-visible .bar-fill.h-70 {
+            height: 70%;
+        }
+
+        .is-visible .bar-fill.h-100 {
+            height: 100%;
+        }
+
+        .is-visible .bar-fill.h-60 {
+            height: 60%;
+        }
+
+        .is-visible .bar-fill.h-45 {
+            height: 45%;
+        }
+
+        .is-visible .bar-fill.h-25 {
+            height: 25%;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-background-dark font-display text-white min-h-screen flex flex-col relative selection:bg-primary selection:text-black">
+    <div class="fixed inset-0 z-0 pointer-events-none opacity-20 grid-bg bg-grid-pattern"></div>
+    <div class="fixed inset-0 z-50 pointer-events-none scanline"></div>
+    <header
+        class="relative z-50 flex items-center justify-between whitespace-nowrap border-b border-border-dark px-6 md:px-10 py-4 glass-panel sticky top-0">
+        <div class="flex items-center gap-4 text-white">
+            <div class="size-6 text-primary animate-pulse">
+                <span class="material-symbols-outlined">hub</span>
+            </div>
+            <h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em]">IMAM PROJECT</h2>
+            <span class="hidden md:block h-4 w-[1px] bg-border-dark mx-2"></span>
+            <span
+                class="hidden md:block text-xs font-mono text-primary bg-primary/10 px-2 py-1 rounded border border-primary/20">PRO_BONO_TPM</span>
+        </div>
+        <div class="flex items-center gap-8">
+            <div class="hidden md:flex items-center gap-9">
+                <a class="text-text-dim hover:text-primary transition-colors text-xs font-mono uppercase tracking-wider"
+                    href="#">Overview</a>
+                <a class="text-white text-xs font-mono uppercase tracking-wider" href="#">Architecture</a>
+                <a class="text-text-dim hover:text-primary transition-colors text-xs font-mono uppercase tracking-wider"
+                    href="#">Outcomes</a>
+            </div>
+            <button
+                class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded bg-white hover:bg-gray-200 transition-colors text-background-dark text-xs font-bold h-8 px-4 tracking-wider uppercase">
+                Exit View
+            </button>
+        </div>
+    </header>
+    <main class="flex-1 relative flex flex-col w-full max-w-7xl mx-auto z-10 pb-20">
+        <section class="px-6 md:px-10 pt-16 pb-12 w-full">
+            <div class="flex flex-col gap-2 mb-8">
+                <div
+                    class="flex items-center gap-2 text-primary text-xs font-mono tracking-widest uppercase mb-2 reveal-on-scroll">
+                    <span class="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
+                    Product Strategy & Technical Architecture
+                </div>
+                <h1
+                    class="text-4xl md:text-6xl font-black leading-none tracking-tight uppercase glow-text max-w-4xl reveal-on-scroll delay-100">
+                    Imam Project <span
+                        class="text-text-dim block md:inline text-2xl md:text-4xl align-middle opacity-50">//</span>
+                    <span class="text-white">Scalable Religious Media</span>
+                </h1>
+                <p class="text-text-dim text-lg mt-4 max-w-2xl font-light reveal-on-scroll delay-200">
+                    Led the end-to-end product development of a scalable religious media streaming platform serving
+                    thousands of users. Defined the technical roadmap and architecture, handling 1,000+ assets with a
+                    focus on high availability and low latency.
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mt-10">
+                <div
+                    class="glass-panel p-6 rounded-lg border border-border-dark relative group overflow-hidden flex flex-col justify-between min-h-[320px] reveal-on-scroll delay-300">
+                    <div class="absolute top-0 left-0 w-2 h-2 border-t border-l border-primary/50"></div>
+                    <div class="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-primary/50"></div>
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <span
+                                class="text-[10px] font-mono text-primary uppercase tracking-widest block mb-1">OPTIMIZATION_STRATEGY</span>
+                            <h3 class="text-2xl font-bold text-white">Zero-Cost Infra</h3>
+                        </div>
+                        <span class="material-symbols-outlined text-primary/20 text-4xl">savings</span>
+                    </div>
+
+                    <div class="flex items-center justify-center flex-1 relative my-4">
+                        <!-- Donut Chart -->
+                        <div class="relative size-40">
+                            <svg class="size-full transform -rotate-90" viewBox="0 0 100 100">
+                                <!-- Background Circle -->
+                                <circle cx="50" cy="50" r="45" fill="none" stroke="#1f2937" stroke-width="6" />
+                                <!-- Progress Circle (75% fill) -->
+                                <circle cx="50" cy="50" r="45" fill="none" stroke="#10b981" stroke-width="6"
+                                    stroke-dasharray="283" stroke-dashoffset="283" stroke-linecap="round"
+                                    class="drop-shadow-[0_0_10px_rgba(16,185,129,0.5)] animate-circle-fill" />
+                            </svg>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                <span class="text-5xl font-black text-white tracking-tighter">0$</span>
+                                <span
+                                    class="text-[10px] font-mono text-text-dim uppercase tracking-widest mt-1">MONTHLY</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="text-xs text-text-dim text-center leading-relaxed font-mono px-2">
+                        Leveraging Free Tiers of Cloudinary, UploadThing, and Vercel to eliminate projected hosting
+                        costs.
+                    </p>
+                </div>
+                <div
+                    class="glass-panel p-6 rounded-lg border border-border-dark relative group overflow-hidden reveal-on-scroll delay-400">
+                    <div class="absolute top-0 left-0 w-2 h-2 border-t border-l border-primary/50"></div>
+                    <div class="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-primary/50"></div>
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <span
+                                class="text-[10px] font-mono text-orange-500 uppercase tracking-widest block mb-1">SYSTEM_CAPACITY</span>
+                            <h3 class="text-xl font-bold text-white">128MB Limit</h3>
+                        </div>
+                        <span
+                            class="text-[10px] font-mono text-orange-500 border border-orange-500/30 px-2 py-1 rounded bg-orange-500/10">BROKEN</span>
+                    </div>
+                    <div class="bg-surface-dark/50 border border-white/5 rounded p-4">
+                        <div class="mb-4">
+                            <div class="flex justify-between text-[10px] font-mono text-text-dim mb-1 uppercase">
+                                <span>Standard CMS</span>
+                                <span>4MB</span>
+                            </div>
+                            <div class="w-full bg-border-dark h-2 rounded-full overflow-hidden reveal-on-scroll">
+                                <div class="h-full bg-slate-600 progress-width w-5"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-[10px] font-mono text-white mb-1 uppercase">
+                                <span>IMAM PROJECT</span>
+                                <span class="text-orange-500 font-bold">128MB</span>
+                            </div>
+                            <div class="w-full bg-border-dark h-2 rounded-full overflow-hidden relative">
+                                <div
+                                    class="h-full bg-orange-500 progress-width w-95 shadow-[0_0_10px_rgba(249,115,22,0.6)] relative z-10">
+                                </div>
+                                <div class="absolute inset-0 bg-orange-500/20 w-[95%] blur-sm"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-xs text-text-dim mt-4 px-1 leading-relaxed font-mono">
+                        Shattered the standard 4MB limit, supporting massive 128MB PDF uploads for religious
+                        manuscripts.
+                    </p>
+                </div>
+                <div
+                    class="glass-panel p-6 rounded-lg border border-border-dark relative group overflow-hidden reveal-on-scroll delay-500">
+                    <div class="absolute top-0 left-0 w-2 h-2 border-t border-l border-primary/50"></div>
+                    <div class="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-primary/50"></div>
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <span
+                                class="text-[10px] font-mono text-primary uppercase tracking-widest block mb-1">TECHNICAL_EXECUTION</span>
+                            <h3 class="text-xl font-bold text-white">Instant Seek</h3>
+                        </div>
+                        <span class="material-symbols-outlined text-primary/30 text-2xl">speed</span>
+                    </div>
+                    <div class="h-24 flex items-end justify-center gap-1.5 mb-4 px-4 reveal-on-scroll">
+                        <div class="w-1.5 bg-emerald-900/40 bar-fill h-30 rounded-sm"></div>
+                        <div class="w-1.5 bg-emerald-800/50 bar-fill h-50 rounded-sm"></div>
+                        <div class="w-1.5 bg-emerald-700/60 bar-fill h-40 rounded-sm"></div>
+                        <div class="w-1.5 bg-emerald-600/70 bar-fill h-70 rounded-sm"></div>
+                        <div class="w-1.5 bg-emerald-500 bar-fill h-100 rounded-sm shadow-[0_0_8px_#10b981]"></div>
+                        <div class="w-1.5 bg-emerald-600/70 bar-fill h-60 rounded-sm"></div>
+                        <div class="w-1.5 bg-emerald-700/60 bar-fill h-45 rounded-sm"></div>
+                        <div class="w-1.5 bg-emerald-800/50 bar-fill h-25 rounded-sm"></div>
+                    </div>
+                    <div class="bg-surface-dark/50 border border-white/5 rounded p-3 flex justify-between items-center">
+                        <span class="text-[10px] font-mono text-text-dim uppercase">LOAD TIME</span>
+                        <div class="flex items-center gap-2 font-mono text-sm">
+                            <span class="text-red-500 line-through opacity-60 text-xs">5.0s</span>
+                            <span class="text-text-dim text-[10px]">→</span>
+                            <span class="text-white font-bold text-base">&lt; 1s</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="px-6 md:px-10 py-8 grid md:grid-cols-2 gap-8">
+            <div class="glass-panel p-8 rounded-lg relative overflow-hidden group reveal-on-scroll">
+                <div class="absolute top-0 right-0 p-4 text-red-500/20 group-hover:text-red-500/40 transition-colors">
+                    <span class="material-symbols-outlined text-6xl">warning</span>
+                </div>
+                <h3 class="text-xl font-bold mb-6 flex items-center gap-3">
+                    <span class="text-red-500">01.</span> CHALLENGES & LIMITS
+                </h3>
+                <ul class="space-y-4">
+                    <li class="flex items-start gap-3">
+                        <span class="material-symbols-outlined text-red-400 mt-1 text-sm">close</span>
+                        <div>
+                            <strong class="block text-red-100">Storage Bottlenecks</strong>
+                            <span class="text-sm text-text-dim">Standard CMS limit of 4MB was insufficient for 128MB+
+                                religious manuscripts.</span>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="material-symbols-outlined text-red-400 mt-1 text-sm">close</span>
+                        <div>
+                            <strong class="block text-red-100">Bandwidth Costs</strong>
+                            <span class="text-sm text-text-dim">Streaming 1,000+ assets would incur massive hosting fees
+                                without optimization.</span>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="material-symbols-outlined text-red-400 mt-1 text-sm">close</span>
+                        <div>
+                            <strong class="block text-red-100">Latency Issues</strong>
+                            <span class="text-sm text-text-dim">Initial load times of 5s+ were unacceptable for user
+                                retention.</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div
+                class="glass-panel p-8 rounded-lg relative overflow-hidden group tech-border reveal-on-scroll delay-200">
+                <div class="absolute top-0 right-0 p-4 text-primary/20 group-hover:text-primary/40 transition-colors">
+                    <span class="material-symbols-outlined text-6xl">architecture</span>
+                </div>
+                <h3 class="text-xl font-bold mb-6 flex items-center gap-3">
+                    <span class="text-primary">02.</span> ARCHITECTURAL SOLUTIONS
+                </h3>
+                <ul class="space-y-4">
+                    <li class="flex items-start gap-3">
+                        <span class="material-symbols-outlined text-primary mt-1 text-sm">check_circle</span>
+                        <div>
+                            <strong class="block text-white">Hybrid Storage Engine</strong>
+                            <span class="text-sm text-text-dim">3-Tier system: UploadThing (Cache), Cloudinary (Opt),
+                                Backblaze B2 (Archive).</span>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="material-symbols-outlined text-primary mt-1 text-sm">check_circle</span>
+                        <div>
+                            <strong class="block text-white">Advanced Streaming</strong>
+                            <span class="text-sm text-text-dim">HLS & Range Requests reduced load time to &lt;1s with
+                                "Seek-Glitch-Free" audio.</span>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="material-symbols-outlined text-primary mt-1 text-sm">check_circle</span>
+                        <div>
+                            <strong class="block text-white">AI Orchestration</strong>
+                            <span class="text-sm text-text-dim">Automated content metadata generation and migration
+                                tasks.</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </section>
+        <section class="px-6 md:px-10 py-12">
+            <div
+                class="border border-border-dark bg-surface-light/50 rounded-xl p-1 relative overflow-hidden min-h-[600px] reveal-on-scroll">
+                <div class="absolute top-6 left-8 z-20">
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-1">INFRASTRUCTURE ARCHITECTURE
+                    </h3>
+                    <p class="text-[10px] text-text-dim font-mono">Hybrid Storage Engine & Serverless Edge</p>
+                </div>
+                <div
+                    class="relative w-full h-[600px] md:h-[650px] flex items-center justify-center bg-background-dark/80 rounded-lg overflow-hidden">
+                    <svg class="absolute inset-0 w-full h-full pointer-events-none z-0 opacity-50"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="gradientLine" x1="0%" x2="100%" y1="0%" y2="0%">
+                                <stop offset="0%" style="stop-color:#10b981;stop-opacity:0"></stop>
+                                <stop offset="50%" style="stop-color:#10b981;stop-opacity:1"></stop>
+                                <stop offset="100%" style="stop-color:#10b981;stop-opacity:0"></stop>
+                            </linearGradient>
+                        </defs>
+                        <!-- Connections -->
+                        <line stroke="#1f2937" stroke-width="1" x1="50%" x2="20%" y1="50%" y2="25%"></line>
+                        <line class="connection-line opacity-60" stroke="url(#gradientLine)" stroke-width="1"
+                            stroke-dasharray="10" x1="50%" x2="20%" y1="50%" y2="25%">
+                            <animate attributeName="stroke-dashoffset" from="100" to="0" dur="2s"
+                                repeatCount="indefinite" />
+                        </line>
+
+                        <line stroke="#1f2937" stroke-width="1" x1="50%" x2="80%" y1="50%" y2="25%"></line>
+                        <line class="connection-line opacity-60" stroke="url(#gradientLine)" stroke-width="1"
+                            stroke-dasharray="10" x1="50%" x2="80%" y1="50%" y2="25%">
+                            <animate attributeName="stroke-dashoffset" from="100" to="0" dur="2s" begin="0.5s"
+                                repeatCount="indefinite" />
+                        </line>
+
+                        <line stroke="#1f2937" stroke-width="1" x1="50%" x2="20%" y1="50%" y2="75%"></line>
+                        <line class="connection-line opacity-60" stroke="url(#gradientLine)" stroke-width="1"
+                            stroke-dasharray="10" x1="50%" x2="20%" y1="50%" y2="75%">
+                            <animate attributeName="stroke-dashoffset" from="100" to="0" dur="2s" begin="1s"
+                                repeatCount="indefinite" />
+                        </line>
+
+                        <line stroke="#1f2937" stroke-width="1" x1="50%" x2="80%" y1="50%" y2="75%"></line>
+                        <line class="connection-line opacity-60" stroke="url(#gradientLine)" stroke-width="1"
+                            stroke-dasharray="10" x1="50%" x2="80%" y1="50%" y2="75%">
+                            <animate attributeName="stroke-dashoffset" from="100" to="0" dur="2s" begin="1.5s"
+                                repeatCount="indefinite" />
+                        </line>
+                    </svg>
+
+                    <!-- Center Node: NEXT.JS -->
+                    <div
+                        class="absolute z-20 flex flex-col items-center justify-center group cursor-pointer transform hover:scale-105 transition-transform duration-300">
+                        <div
+                            class="relative size-32 rounded-full border border-primary/30 bg-background-dark flex items-center justify-center glow-box">
+                            <div class="absolute inset-0 rounded-full border border-primary opacity-20 animate-ping">
+                            </div>
+                            <div
+                                class="absolute inset-2 rounded-full border border-dashed border-primary/50 animate-[spin_10s_linear_infinite]">
+                            </div>
+                            <div class="flex flex-col items-center z-10 text-center">
+                                <!-- Next.js Logo Placeholder (Triangular) -->
+                                <svg class="size-8 text-white mb-2" viewBox="0 0 180 180" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <mask id="mask0_1_2" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0"
+                                        width="180" height="180">
+                                        <circle cx="90" cy="90" r="90" fill="white" />
+                                    </mask>
+                                    <g mask="url(#mask0_1_2)">
+                                        <circle cx="90" cy="90" r="90" fill="black" />
+                                        <path
+                                            d="M149.508 157.52L69.142 54H54V125.97H66.1136V69.3836L139.999 164.845C143.333 162.614 146.509 160.165 149.508 157.52Z"
+                                            fill="white" />
+                                        <rect x="115" y="54" width="12" height="72" fill="white" />
+                                    </g>
+                                </svg>
+                                <div class="text-sm font-bold tracking-widest text-primary">NEXT.JS 16</div>
+                                <div class="text-[9px] font-mono text-text-dim mt-1">APP ROUTER</div>
+                            </div>
+                        </div>
+                        <!-- Response Time Box -->
+                        <div
+                            class="absolute -bottom-12 bg-surface-dark border border-primary/30 px-3 py-1 rounded text-center">
+                            <div class="text-[9px] text-text-dim uppercase font-mono">RESPONSE TIME</div>
+                            <div class="text-xs font-bold text-primary">0.1s (Cached)</div>
+                        </div>
+                    </div>
+
+                    <!-- Node 1: Top Left (Vercel Edge) -->
+                    <div class="absolute top-[10%] left-[5%] md:left-[10%] md:top-[15%] z-10 w-64 hidden md:block">
+                        <div
+                            class="bg-surface-dark border border-border-dark p-4 rounded hover:border-primary/50 transition-colors tech-border group">
+                            <div class="flex items-center gap-4 mb-4">
+                                <div
+                                    class="size-10 bg-white/5 rounded flex items-center justify-center border border-white/10">
+                                    <svg class="size-5 text-white" fill="white" viewBox="0 0 24 24">
+                                        <path d="M24 22.525H0l12-21.05 12 21.05z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-xs font-bold text-white uppercase tracking-wider">VERCEL EDGE</h3>
+                                    <p class="text-[9px] text-primary font-mono lowercase">COMPUTE</p>
+                                </div>
+                            </div>
+                            <div class="space-y-2 text-[10px] font-mono text-gray-500">
+                                <div class="flex justify-between border-b border-white/5 pb-2">
+                                    <span>FUNCTIONS</span>
+                                    <span class="text-gray-300">SERVERLESS</span>
+                                </div>
+                                <div class="flex justify-between pt-1">
+                                    <span>REGION</span>
+                                    <span class="text-gray-300">GLOBAL</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Node 2: Top Right (Supabase) -->
+                    <div class="absolute top-[10%] right-[5%] md:right-[10%] md:top-[15%] z-10 w-64 hidden md:block">
+                        <div
+                            class="bg-surface-dark border border-border-dark p-4 rounded hover:border-primary/50 transition-colors tech-border group">
+                            <div class="flex items-center gap-4 mb-4">
+                                <div
+                                    class="size-10 bg-emerald-900/10 rounded flex items-center justify-center border border-emerald-500/20">
+                                    <span class="material-symbols-outlined text-emerald-500">database</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-xs font-bold text-white uppercase tracking-wider">SUPABASE</h3>
+                                    <p class="text-[9px] text-emerald-500 font-mono">POSTGRES + RLS</p>
+                                </div>
+                            </div>
+                            <div class="space-y-2 text-[10px] font-mono text-gray-500">
+                                <div class="flex justify-between border-b border-white/5 pb-2">
+                                    <span>SECURITY</span>
+                                    <span class="text-emerald-500">100% RLS</span>
+                                </div>
+                                <div class="flex justify-between pt-1">
+                                    <span>MIGRATIONS</span>
+                                    <span class="text-gray-300">15 SCHEMAS</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Node 3: Bottom Left (Cloudinary) -->
+                    <div
+                        class="absolute bottom-[10%] left-[5%] md:left-[10%] md:bottom-[15%] z-10 w-64 hidden md:block">
+                        <div
+                            class="bg-surface-dark border border-border-dark p-4 rounded hover:border-primary/50 transition-colors tech-border group">
+                            <div class="flex items-center gap-4 mb-4">
+                                <div
+                                    class="size-10 bg-indigo-900/10 rounded flex items-center justify-center border border-indigo-500/20">
+                                    <span class="material-symbols-outlined text-indigo-400">graphic_eq</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-xs font-bold text-white uppercase tracking-wider">CLOUDINARY</h3>
+                                    <p class="text-[9px] text-indigo-400 font-mono">STREAMING</p>
+                                </div>
+                            </div>
+                            <div class="space-y-2 text-[10px] font-mono text-gray-500">
+                                <div class="flex justify-between border-b border-white/5 pb-2">
+                                    <span>PROTOCOL</span>
+                                    <span class="text-gray-300">HLS / RANGE</span>
+                                </div>
+                                <div class="flex justify-between pt-1">
+                                    <span>PERF</span>
+                                    <span class="text-gray-300">INSTANT SEEK</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Node 4: Bottom Right (UploadThing) -->
+                    <div
+                        class="absolute bottom-[10%] right-[5%] md:right-[10%] md:bottom-[15%] z-10 w-64 hidden md:block">
+                        <div
+                            class="bg-surface-dark border border-border-dark p-4 rounded hover:border-primary/50 transition-colors tech-border group">
+                            <div class="flex items-center gap-4 mb-4">
+                                <div
+                                    class="size-10 bg-rose-900/10 rounded flex items-center justify-center border border-rose-500/20">
+                                    <span class="material-symbols-outlined text-rose-400">cloud_upload</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-xs font-bold text-white uppercase tracking-wider">UPLOADTHING</h3>
+                                    <p class="text-[9px] text-rose-400 font-mono">LARGE STORAGE</p>
+                                </div>
+                            </div>
+                            <div class="space-y-2 text-[10px] font-mono text-gray-500">
+                                <div class="flex justify-between border-b border-white/5 pb-2">
+                                    <span>PDF LIMIT</span>
+                                    <span class="text-rose-400 font-bold">128MB</span>
+                                </div>
+                                <div class="flex justify-between pt-1">
+                                    <span>TYPE</span>
+                                    <span class="text-gray-300">CACHE LAYER</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mobile View (Simplified Stack) -->
+                    <div class="md:hidden absolute bottom-4 w-full px-4 flex gap-2 overflow-x-auto snap-x">
+                        <div class="snap-center shrink-0 w-[80%] bg-surface-dark border border-border-dark p-3 rounded">
+                            <h3 class="text-xs font-bold text-white">VERCEL EDGE</h3>
+                            <p class="text-[9px] text-primary">COMPUTE</p>
+                        </div>
+                        <div class="snap-center shrink-0 w-[80%] bg-surface-dark border border-border-dark p-3 rounded">
+                            <h3 class="text-xs font-bold text-white">SUPABASE</h3>
+                            <p class="text-[9px] text-emerald-500">DATABASE</p>
+                        </div>
+                        <div class="snap-center shrink-0 w-[80%] bg-surface-dark border border-border-dark p-3 rounded">
+                            <h3 class="text-xs font-bold text-white">CLOUDINARY</h3>
+                            <p class="text-[9px] text-indigo-400">STREAMING</p>
+                        </div>
+                        <div class="snap-center shrink-0 w-[80%] bg-surface-dark border border-border-dark p-3 rounded">
+                            <h3 class="text-xs font-bold text-white">UPLOADTHING</h3>
+                            <p class="text-[9px] text-rose-400">STORAGE</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="px-6 md:px-10 py-8 grid lg:grid-cols-2 gap-8 items-start">
+            <div>
+                <div
+                    class="bg-black rounded-xl border border-border-dark font-mono text-xs overflow-hidden shadow-2xl relative group h-full flex flex-col animate-border-glow transition-all duration-300 reveal-on-scroll">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none z-10">
+                    </div>
+                    <div
+                        class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent opacity-50">
+                    </div>
+                    <div
+                        class="bg-surface-light/80 backdrop-blur-md px-4 py-3 border-b border-border-dark flex items-center justify-between relative z-20">
+                        <div class="flex items-center gap-4">
+                            <div class="flex gap-2">
+                                <div class="size-3 rounded-full bg-[#ff5f56] border border-[#e0443e]"></div>
+                                <div class="size-3 rounded-full bg-[#ffbd2e] border border-[#dea123]"></div>
+                                <div class="size-3 rounded-full bg-[#27c93f] border border-[#1aab29]"></div>
+                            </div>
+                            <div class="reveal-on-scroll">
+                                <span
+                                    class="text-text-dim font-mono text-[10px] md:text-xs inline-block">~/project_root/technical_dna.json</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="size-1.5 rounded-full bg-primary animate-pulse"></span>
+                            <span class="text-[10px] text-primary/70 font-bold tracking-wider">BASH</span>
+                        </div>
+                    </div>
+                    <div
+                        class="p-6 md:p-8 text-gray-300 leading-loose overflow-x-auto relative z-20 flex-1 bg-black/60 backdrop-blur-sm no-scrollbar">
+                        <div
+                            class="absolute left-0 top-0 bottom-0 w-10 border-r border-white/5 bg-white/[0.02] flex flex-col items-end pt-8 pr-3 text-text-dim/30 select-none">
+                            <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span>
+                        </div>
+                        <div class="pl-8">
+                            <pre><span class="text-primary">{</span>
+  <span class="text-blue-400">"project_codename"</span>: <span class="text-emerald-400">"IMAM_PROJECT"</span>,
+  <span class="text-blue-400">"stack_config"</span>: <span class="text-primary">{</span>
+    <span class="text-blue-400">"framework"</span>: <span class="text-emerald-400">"Next.js 16 (App Router)"</span>,
+    <span class="text-blue-400">"database"</span>: <span class="text-emerald-400">"Supabase (PostgreSQL)"</span>,
+    <span class="text-blue-400">"frontend"</span>: <span class="text-emerald-400">"React 19 + Tailwind"</span>,
+    <span class="text-blue-400">"infra"</span>: <span class="text-emerald-400">"Vercel Edge Functions"</span>
+  <span class="text-primary">}</span>,
+  <span class="text-blue-400">"complexity_metrics"</span>: <span class="text-primary">[</span>
+    <span class="text-emerald-400">"29 Custom API Routes"</span>,
+    <span class="text-emerald-400">"118+ React Components"</span>,
+    <span class="text-emerald-400">"15 SQL Schemas"</span>
+  <span class="text-primary">]</span>,
+  <span class="text-blue-400">"security"</span>: <span class="text-emerald-400">"100% RLS Coverage"</span>
+<span class="text-primary">}</span></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div
+                class="h-full flex flex-col bg-surface-dark/40 backdrop-blur-xl border border-border-dark rounded-xl overflow-hidden relative group hover:border-primary/30 transition-all duration-500 reveal-on-scroll delay-200">
+                <div
+                    class="absolute inset-0 bg-[linear-gradient(rgba(31,41,55,0.3)_1px,transparent_1px),linear-gradient(90deg,rgba(31,41,55,0.3)_1px,transparent_1px)] bg-[size:40px_40px] opacity-50">
+                </div>
+                <div class="absolute top-0 w-full h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent">
+                </div>
+                <div
+                    class="relative z-10 flex items-center justify-between px-6 py-4 border-b border-white/5 bg-white/[0.02]">
+                    <div class="flex items-center gap-3">
+                        <div class="size-2 bg-primary rounded-full animate-pulse shadow-[0_0_8px_#10b981]"></div>
+                        <h3 class="text-xs font-mono font-bold tracking-[0.2em] text-white">SYSTEM_INTEGRITY_REPORT</h3>
+                    </div>
+                    <span class="text-[10px] font-mono text-primary/50">V.2.0.4 // LIVE</span>
+                </div>
+                <div
+                    class="relative z-10 flex-1 grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-white/5">
+                    <div class="p-6 flex flex-col justify-between relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-3 opacity-20">
+                            <span class="material-symbols-outlined text-4xl text-primary">security</span>
+                        </div>
+                        <div>
+                            <span class="text-[10px] font-mono text-text-dim uppercase tracking-wider block mb-1">Row
+                                Level Security</span>
+                            <div
+                                class="inline-flex items-center gap-2 px-2 py-1 rounded bg-primary/10 border border-primary/20">
+                                <span class="size-1.5 bg-primary rounded-full animate-pulse"></span>
+                                <span class="text-[10px] font-bold text-primary tracking-wide">ENFORCED</span>
+                            </div>
+                        </div>
+                        <div class="flex items-end gap-4 mt-6">
+                            <div class="relative size-20">
+                                <svg class="size-full -rotate-90" viewBox="0 0 100 100">
+                                    <circle cx="50" cy="50" fill="none" r="42" stroke="#1f2937" stroke-width="8">
+                                    </circle>
+                                    <circle class="drop-shadow-[0_0_10px_rgba(16,185,129,0.5)] animate-circle-full"
+                                        cx="50" cy="50" fill="none" r="42" stroke="#10b981" stroke-dasharray="264"
+                                        stroke-dashoffset="264" stroke-linecap="round" stroke-width="8"></circle>
+                                </svg>
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-primary text-xl">lock</span>
+                                </div>
+                            </div>
+                            <div class="mb-1">
+                                <span
+                                    class="text-5xl font-black text-white glow-text tracking-tighter block leading-[0.8]">100%</span>
+                                <span class="text-[9px] text-text-dim font-mono uppercase">Coverage</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6 flex flex-col justify-between relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-3 opacity-20">
+                            <span class="material-symbols-outlined text-4xl text-indigo-400">hub</span>
+                        </div>
+                        <div>
+                            <span
+                                class="text-[10px] font-mono text-text-dim uppercase tracking-wider block mb-1">Backend
+                                Scale</span>
+                            <div
+                                class="inline-flex items-center gap-2 px-2 py-1 rounded bg-indigo-500/10 border border-indigo-500/20">
+                                <span class="size-1.5 bg-indigo-400 rounded-full animate-pulse"></span>
+                                <span class="text-[10px] font-bold text-indigo-400 tracking-wide">MICRO-SERVICES</span>
+                            </div>
+                        </div>
+                        <div class="mt-4 relative h-20 w-full">
+                            <svg class="w-full h-full overflow-visible" preserveAspectRatio="none">
+                                <defs>
+                                    <linearGradient id="glowGradient" x1="0" x2="0" y1="0" y2="1">
+                                        <stop offset="0%" stop-color="#10b981" stop-opacity="0.2"></stop>
+                                        <stop offset="100%" stop-color="#10b981" stop-opacity="0"></stop>
+                                    </linearGradient>
+                                </defs>
+                                <path class="drop-shadow-[0_0_8px_rgba(16,185,129,0.6)]"
+                                    d="M0,50 Q20,45 40,55 T80,30 T120,45 T160,20 T200,40" fill="none" stroke="#10b981"
+                                    stroke-width="2" vector-effect="non-scaling-stroke"></path>
+                                <path d="M0,50 Q20,45 40,55 T80,30 T120,45 T160,20 T200,40 V80 H0 Z"
+                                    fill="url(#glowGradient)" stroke="none"></path>
+                                <circle class="animate-ping" cx="200" cy="40" fill="#10b981" r="3"></circle>
+                                <circle cx="200" cy="40" fill="#10b981" r="3"></circle>
+                            </svg>
+                            <div
+                                class="absolute bottom-0 right-0 text-right bg-surface-dark/80 px-2 py-1 backdrop-blur-sm rounded border border-white/5">
+                                <span
+                                    class="text-3xl font-black text-white glow-text tracking-tighter leading-none">29</span>
+                                <span class="text-[9px] text-text-dim font-mono uppercase block">Endpoints</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="h-1 w-full bg-black flex gap-px opacity-30">
+                    <div class="h-full w-1/4 bg-primary/20"></div>
+                    <div class="h-full w-1/4 bg-transparent"></div>
+                    <div class="h-full w-1/4 bg-primary/20"></div>
+                    <div class="h-full w-1/4 bg-transparent"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer class="w-full border-t border-border-dark bg-surface-dark py-8">
+        <div
+            class="max-w-7xl mx-auto px-6 md:px-10 flex flex-col md:flex-row justify-between items-center text-xs text-text-dim font-mono">
+            <div class="flex items-center gap-2">
+                <span class="size-2 bg-green-500 rounded-full animate-pulse"></span>
+                SYSTEM STATUS: OPTIMAL
+            </div>
+            <div class="mt-4 md:mt-0">
+                © 2024 SAYED ELSHAZLY // IMAM_PROJECT ARCHITECTURE
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Typewriter Logic for Code Block
+            const codeBlock = document.getElementById('code-block');
+            let isTyping = false;
+
+            const typeWriter = async (element, speed = 10) => {
+                // Store original content nodes
+                const originalNodes = Array.from(element.childNodes).map(node => node.cloneNode(true));
+                element.innerHTML = ''; // Clear content
+                element.classList.remove('invisible');
+
+                // Cursor element
+                const cursor = document.createElement('span');
+                cursor.className = 'cursor-blink';
+                element.appendChild(cursor);
+
+                for (const node of originalNodes) {
+                    if (node.nodeType === Node.TEXT_NODE) {
+                        const text = node.textContent;
+                        for (let i = 0; i < text.length; i++) {
+                            cursor.before(text[i]);
+                            await new Promise(r => setTimeout(r, speed));
+                        }
+                    } else if (node.nodeType === Node.ELEMENT_NODE) {
+                        const newNode = node.cloneNode(false); // Clone structure without content
+                        cursor.before(newNode);
+
+                        // Recursive typing for inner text of spans
+                        if (node.childNodes.length > 0) {
+                            const innerText = node.textContent; // Assumption: Syntax spans are simple text
+                            for (let i = 0; i < innerText.length; i++) {
+                                newNode.textContent += innerText[i];
+                                await new Promise(r => setTimeout(r, speed));
+                            }
+                        }
+                    }
+                }
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+
+                        // Trigger Code Typewriter if it's the container
+                        if (entry.target.querySelector('#code-block') && !isTyping) {
+                            isTyping = true;
+                            // Small delay to let card reveal first
+                            setTimeout(() => typeWriter(codeBlock, 5), 500);
+                        }
+
+                        // Also trigger if the code block itself is observed (backup)
+                        if (entry.target.id === 'code-block' && !isTyping) {
+                            isTyping = true;
+                            typeWriter(codeBlock, 5);
+                        }
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
+        });
+    </script>
+</body>
+
+</html>

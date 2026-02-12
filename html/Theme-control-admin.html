@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Admin: Theme &amp; Identity Manager</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#10b981", // Emerald 500
+                        "primary-dim": "#059669", // Emerald 600
+                        "accent": "#34d399", // Emerald 400
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#050505", // Deep OLED Black
+                        "surface-dark": "#0a0a0a",
+                        "surface-light": "#121212",
+                        "border-dark": "#1f2937",
+                        "text-dim": "#6b7280",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"],
+                        "mono": ["ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", "monospace"]
+                    },
+                    backgroundImage: {
+                        'grid-pattern': "linear-gradient(to right, #1f2937 1px, transparent 1px), linear-gradient(to bottom, #1f2937 1px, transparent 1px)",
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .grid-bg {
+            background-size: 40px 40px;
+            mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
+            -webkit-mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
+        }
+        .glow-text {
+            text-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+        }
+        .glow-box {
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
+        }
+        .scanline {
+            background: linear-gradient(
+                to bottom,
+                transparent 50%,
+                rgba(16, 185, 129, 0.03) 51%
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 50;
+        }
+        .glass-panel {
+            background: rgba(10, 10, 10, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(31, 41, 55, 0.5);
+        }
+        .tech-border::before, .tech-border::after {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-color: #10b981;
+            border-style: solid;
+            transition: all 0.3s ease;
+        }
+        .tech-border::before {
+            top: -1px;
+            left: -1px;
+            border-width: 1px 0 0 1px;
+        }
+        .tech-border::after {
+            bottom: -1px;
+            right: -1px;
+            border-width: 0 1px 1px 0;
+        }
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: #10b981;
+            cursor: pointer;
+            margin-top: -6px;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+            border: 2px solid #050505;
+        }
+        input[type="range"]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #1f2937;
+            border-radius: 2px;
+        }
+        .preview-iframe {
+            transform-origin: top left;
+            transform: scale(0.5);
+            width: 200%;
+            height: 200%;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-background-dark font-display text-white min-h-screen flex flex-col relative selection:bg-primary selection:text-black">
+<div class="fixed inset-0 z-0 pointer-events-none opacity-20 grid-bg bg-grid-pattern"></div>
+<div class="fixed inset-0 z-50 pointer-events-none scanline"></div>
+<header class="relative z-50 flex items-center justify-between whitespace-nowrap border-b border-border-dark px-6 md:px-10 py-4 glass-panel sticky top-0">
+<div class="flex items-center gap-4 text-white">
+<div class="size-6 text-primary">
+<span class="material-symbols-outlined">settings_suggest</span>
+</div>
+<h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em]">SAYED ELSHAZLY</h2>
+<span class="hidden md:block h-4 w-[1px] bg-border-dark mx-2"></span>
+<span class="hidden md:block text-xs font-mono text-primary bg-primary/10 px-2 py-1 rounded border border-primary/20">ADMIN: THEME_MANAGER</span>
+</div>
+<div class="flex items-center gap-8">
+<div class="hidden md:flex items-center gap-9">
+<a class="text-white text-xs font-mono uppercase tracking-wider border-b border-primary" href="#">Visual Identity</a>
+<a class="text-text-dim hover:text-primary transition-colors text-xs font-mono uppercase tracking-wider" href="#">Content CMS</a>
+<a class="text-text-dim hover:text-primary transition-colors text-xs font-mono uppercase tracking-wider" href="#">Analytics</a>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 text-xs font-mono text-text-dim">
+<span class="size-2 rounded-full bg-green-500 animate-pulse"></span>
+        SYSTEM ONLINE
+    </div>
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded bg-white hover:bg-gray-200 transition-colors text-background-dark text-xs font-bold h-8 px-4 tracking-wider uppercase">
+            Save Changes
+        </button>
+</div>
+</div>
+</header>
+<main class="flex-1 relative flex flex-col w-full max-w-7xl mx-auto z-10 pb-20">
+<section class="px-6 md:px-10 pt-10 pb-6 w-full">
+<div class="flex flex-col gap-2 mb-4">
+<div class="flex items-center gap-2 text-primary text-xs font-mono tracking-widest uppercase mb-2">
+<span class="w-2 h-2 bg-primary rounded-full"></span>
+                System Configuration
+            </div>
+<h1 class="text-3xl md:text-5xl font-black leading-none tracking-tight uppercase glow-text max-w-4xl">
+                Visual Identity <span class="text-text-dim block md:inline text-2xl md:text-4xl align-middle opacity-50">//</span> <span class="text-white">Theme Control</span>
+</h1>
+</div>
+</section>
+<div class="px-6 md:px-10 grid grid-cols-1 lg:grid-cols-12 gap-8 h-full">
+<div class="lg:col-span-4 flex flex-col gap-6">
+<div class="glass-panel p-6 rounded-lg border border-border-dark relative group overflow-hidden tech-border">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-sm font-bold text-white uppercase tracking-wider">Accent Palette</h3>
+<span class="material-symbols-outlined text-text-dim text-sm">palette</span>
+</div>
+<div class="grid grid-cols-3 gap-4">
+<label class="cursor-pointer group/color">
+<input checked="" class="peer sr-only" name="accent" type="radio"/>
+<div class="h-20 rounded-md bg-[#10b981] relative border-2 border-transparent peer-checked:border-white peer-checked:shadow-[0_0_15px_rgba(16,185,129,0.4)] transition-all">
+<div class="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
+<div class="absolute bottom-2 left-2 text-[10px] font-mono font-bold text-black bg-white/80 px-1 rounded">EMERALD</div>
+<div class="absolute top-2 right-2 opacity-0 peer-checked:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-black text-sm font-bold bg-white rounded-full p-0.5">check</span>
+</div>
+</div>
+</label>
+<label class="cursor-pointer group/color">
+<input class="peer sr-only" name="accent" type="radio"/>
+<div class="h-20 rounded-md bg-[#fbbf24] relative border-2 border-transparent peer-checked:border-white peer-checked:shadow-[0_0_15px_rgba(251,191,36,0.4)] transition-all opacity-80 hover:opacity-100">
+<div class="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
+<div class="absolute bottom-2 left-2 text-[10px] font-mono font-bold text-black bg-white/80 px-1 rounded">GOLD</div>
+<div class="absolute top-2 right-2 opacity-0 peer-checked:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-black text-sm font-bold bg-white rounded-full p-0.5">check</span>
+</div>
+</div>
+</label>
+<label class="cursor-pointer group/color">
+<input class="peer sr-only" name="accent" type="radio"/>
+<div class="h-20 rounded-md bg-[#f97316] relative border-2 border-transparent peer-checked:border-white peer-checked:shadow-[0_0_15px_rgba(249,115,22,0.4)] transition-all opacity-80 hover:opacity-100">
+<div class="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
+<div class="absolute bottom-2 left-2 text-[10px] font-mono font-bold text-black bg-white/80 px-1 rounded">ORANGE</div>
+<div class="absolute top-2 right-2 opacity-0 peer-checked:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-black text-sm font-bold bg-white rounded-full p-0.5">check</span>
+</div>
+</div>
+</label>
+</div>
+<div class="mt-6 pt-4 border-t border-white/10 flex justify-between items-center text-xs text-text-dim font-mono">
+<span>HEX VALUE</span>
+<span class="bg-surface-dark px-2 py-1 rounded border border-border-dark text-white">#10B981</span>
+</div>
+</div>
+<div class="glass-panel p-6 rounded-lg border border-border-dark">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-sm font-bold text-white uppercase tracking-wider">Visual FX</h3>
+<span class="material-symbols-outlined text-text-dim text-sm">tune</span>
+</div>
+<div class="space-y-8">
+<div class="space-y-3">
+<div class="flex justify-between text-xs font-mono">
+<label class="text-text-dim">GRID_OPACITY</label>
+<span class="text-primary">20%</span>
+</div>
+<div class="relative h-4 flex items-center">
+<input class="relative z-10" max="100" min="0" type="range" value="20"/>
+<div class="absolute w-full h-1 bg-border-dark rounded overflow-hidden">
+<div class="h-full bg-primary/30 w-[20%]"></div>
+</div>
+</div>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between text-xs font-mono">
+<label class="text-text-dim">GLITCH_INTENSITY</label>
+<span class="text-orange-500">HIGH</span>
+</div>
+<div class="relative h-4 flex items-center">
+<input class="relative z-10" max="100" min="0" type="range" value="75"/>
+<div class="absolute w-full h-1 bg-border-dark rounded overflow-hidden">
+<div class="h-full bg-orange-500/50 w-[75%]"></div>
+</div>
+</div>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between text-xs font-mono">
+<label class="text-text-dim">ANIMATION_SPEED</label>
+<span class="text-primary">1.0x</span>
+</div>
+<div class="relative h-4 flex items-center">
+<input class="relative z-10" max="200" min="50" type="range" value="100"/>
+<div class="absolute w-full h-1 bg-border-dark rounded overflow-hidden">
+<div class="h-full bg-primary/30 w-[50%]"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="glass-panel p-6 rounded-lg border border-border-dark">
+<div class="flex justify-between items-center mb-4">
+<h3 class="text-sm font-bold text-white uppercase tracking-wider">Typography</h3>
+<span class="material-symbols-outlined text-text-dim text-sm">text_fields</span>
+</div>
+<div class="flex flex-col gap-3">
+<button class="flex items-center justify-between p-3 rounded bg-surface-dark border border-primary/40 text-left hover:bg-white/5 transition-colors">
+<div>
+<span class="block text-xs text-text-dim font-mono mb-1">DISPLAY FONT</span>
+<span class="text-sm font-bold text-white">Space Grotesk</span>
+</div>
+<span class="material-symbols-outlined text-primary text-sm">radio_button_checked</span>
+</button>
+<button class="flex items-center justify-between p-3 rounded bg-surface-dark border border-border-dark text-left hover:bg-white/5 transition-colors opacity-60 hover:opacity-100">
+<div>
+<span class="block text-xs text-text-dim font-mono mb-1">DISPLAY FONT</span>
+<span class="text-sm font-bold text-white">Inter Tight</span>
+</div>
+<span class="material-symbols-outlined text-text-dim text-sm">radio_button_unchecked</span>
+</button>
+<button class="flex items-center justify-between p-3 rounded bg-surface-dark border border-border-dark text-left hover:bg-white/5 transition-colors opacity-60 hover:opacity-100">
+<div>
+<span class="block text-xs text-text-dim font-mono mb-1">DISPLAY FONT</span>
+<span class="text-sm font-bold text-white">Syne</span>
+</div>
+<span class="material-symbols-outlined text-text-dim text-sm">radio_button_unchecked</span>
+</button>
+</div>
+</div>
+</div>
+<div class="lg:col-span-8 flex flex-col h-full">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2">
+<h3 class="text-sm font-bold text-white uppercase tracking-wider">Live Preview</h3>
+<span class="px-1.5 py-0.5 rounded text-[10px] bg-primary/20 text-primary border border-primary/30 font-mono">UPDATED 2S AGO</span>
+</div>
+<div class="flex gap-2">
+<button class="p-2 hover:bg-white/10 rounded text-text-dim hover:text-white transition-colors"><span class="material-symbols-outlined text-sm">desktop_windows</span></button>
+<button class="p-2 hover:bg-white/10 rounded text-text-dim hover:text-white transition-colors"><span class="material-symbols-outlined text-sm">smartphone</span></button>
+<button class="p-2 hover:bg-white/10 rounded text-text-dim hover:text-white transition-colors"><span class="material-symbols-outlined text-sm">refresh</span></button>
+</div>
+</div>
+<div class="flex-1 glass-panel border border-border-dark rounded-xl overflow-hidden relative group">
+<div class="absolute top-0 left-0 w-full h-8 bg-[#1a1a1a] border-b border-border-dark flex items-center px-4 gap-2 z-20">
+<div class="flex gap-1.5">
+<div class="size-2.5 rounded-full bg-red-500/50"></div>
+<div class="size-2.5 rounded-full bg-yellow-500/50"></div>
+<div class="size-2.5 rounded-full bg-green-500/50"></div>
+</div>
+<div class="mx-auto w-[60%] h-5 bg-[#0a0a0a] rounded text-[10px] text-text-dim font-mono flex items-center justify-center border border-white/5">
+                        localhost:3000
+                    </div>
+</div>
+<div class="w-full h-full pt-8 bg-background-dark relative overflow-y-auto">
+<div class="fixed inset-0 z-50 pointer-events-none opacity-50" style="background: linear-gradient(to bottom, transparent 50%, rgba(16, 185, 129, 0.03) 51%); background-size: 100% 4px;"></div>
+<div class="absolute inset-0 z-0 opacity-20" style="background-image: linear-gradient(to right, #1f2937 1px, transparent 1px), linear-gradient(to bottom, #1f2937 1px, transparent 1px); background-size: 40px 40px; mask-image: radial-gradient(circle at center, black 30%, transparent 80%);"></div>
+<div class="relative z-10 px-8 py-12 flex flex-col items-center justify-center min-h-[500px] text-center">
+<div class="flex items-center gap-2 text-primary text-xs font-mono tracking-widest uppercase mb-6">
+<span class="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></span>
+                            Portfolio v2.0
+                        </div>
+<h1 class="text-5xl font-black text-white glow-text mb-6">
+                            ARCHITECTING<br/>
+<span class="text-transparent bg-clip-text bg-gradient-to-r from-white via-primary to-white">DIGITAL REALITY</span>
+</h1>
+<p class="text-text-dim max-w-md text-sm leading-relaxed mb-8">
+                            High-performance interfaces designed for the next generation of web applications. Built with precision, optimized for scale.
+                        </p>
+<div class="flex gap-4">
+<div class="px-6 py-3 bg-primary text-black font-bold text-xs uppercase tracking-wider rounded hover:bg-primary-dim transition-colors cursor-pointer">
+                                Explore Work
+                            </div>
+<div class="px-6 py-3 border border-border-dark text-white font-bold text-xs uppercase tracking-wider rounded hover:bg-white/5 transition-colors cursor-pointer">
+                                Documentation
+                            </div>
+</div>
+<div class="absolute top-20 right-10 w-40 p-3 glass-panel rounded border border-white/5 rotate-6 hidden lg:block">
+<div class="flex justify-between items-center mb-2">
+<span class="text-[8px] font-mono text-text-dim">STATUS</span>
+<div class="size-1.5 bg-primary rounded-full animate-pulse"></div>
+</div>
+<div class="h-10 bg-surface-dark rounded flex items-end justify-between px-1 pb-1 gap-1">
+<div class="w-2 bg-primary/40 h-[40%] rounded-sm"></div>
+<div class="w-2 bg-primary/60 h-[70%] rounded-sm"></div>
+<div class="w-2 bg-primary h-[50%] rounded-sm"></div>
+<div class="w-2 bg-primary/30 h-[30%] rounded-sm"></div>
+</div>
+</div>
+<div class="absolute bottom-20 left-10 w-48 p-3 glass-panel rounded border border-white/5 -rotate-3 hidden lg:block">
+<div class="flex gap-2 items-center mb-2">
+<span class="material-symbols-outlined text-primary text-sm">terminal</span>
+<span class="text-[9px] text-white font-mono">System.init()</span>
+</div>
+<div class="space-y-1">
+<div class="h-1 w-full bg-white/10 rounded"></div>
+<div class="h-1 w-[80%] bg-white/10 rounded"></div>
+<div class="h-1 w-[90%] bg-primary/30 rounded mt-1"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-4 grid grid-cols-3 gap-4">
+<div class="glass-panel p-4 rounded border border-border-dark flex items-center gap-3">
+<div class="bg-surface-dark p-2 rounded text-text-dim"><span class="material-symbols-outlined text-sm">contrast</span></div>
+<div>
+<span class="block text-[10px] text-text-dim font-mono uppercase">Contrast Ratio</span>
+<span class="text-sm font-bold text-white">12.5:1 (AAA)</span>
+</div>
+</div>
+<div class="glass-panel p-4 rounded border border-border-dark flex items-center gap-3">
+<div class="bg-surface-dark p-2 rounded text-text-dim"><span class="material-symbols-outlined text-sm">speed</span></div>
+<div>
+<span class="block text-[10px] text-text-dim font-mono uppercase">Render Time</span>
+<span class="text-sm font-bold text-primary">~16ms</span>
+</div>
+</div>
+<div class="glass-panel p-4 rounded border border-border-dark flex items-center gap-3">
+<div class="bg-surface-dark p-2 rounded text-text-dim"><span class="material-symbols-outlined text-sm">css</span></div>
+<div>
+<span class="block text-[10px] text-text-dim font-mono uppercase">CSS Bundle</span>
+<span class="text-sm font-bold text-white">42.8 KB</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<footer class="w-full border-t border-border-dark bg-surface-dark py-6 mt-auto">
+<div class="max-w-7xl mx-auto px-6 md:px-10 flex flex-col md:flex-row justify-between items-center text-xs text-text-dim font-mono">
+<div class="flex items-center gap-2">
+<span class="size-2 bg-orange-500 rounded-full animate-pulse"></span>
+            ADMIN MODE: READ/WRITE ACCESS
+        </div>
+<div class="mt-4 md:mt-0 flex gap-6">
+<span class="hover:text-white cursor-pointer transition-colors">VERSION 3.1.0</span>
+<span class="hover:text-white cursor-pointer transition-colors">CHANGELOG</span>
+<span>© 2024 SAYED ELSHAZLY</span>
+</div>
+</div>
+</footer>
+</body></html>

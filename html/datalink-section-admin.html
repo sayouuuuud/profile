@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Admin: System Data &amp; Links</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#10b981", // Emerald 500
+                        "primary-dim": "#059669", // Emerald 600
+                        "accent": "#34d399", // Emerald 400
+                        "gold": "#fbbf24", // Amber 400
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#050505", // Deep OLED Black
+                        "surface-dark": "#0a0a0a",
+                        "surface-light": "#121212",
+                        "border-dark": "#1f2937",
+                        "text-dim": "#6b7280",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"],
+                        "mono": ["ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", "monospace"]
+                    },
+                    backgroundImage: {
+                        'grid-pattern': "linear-gradient(to right, #1f2937 1px, transparent 1px), linear-gradient(to bottom, #1f2937 1px, transparent 1px)",
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .grid-bg {
+            background-size: 40px 40px;
+            mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
+            -webkit-mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
+        }
+        .scanline {
+            background: linear-gradient(
+                to bottom,
+                transparent 50%,
+                rgba(16, 185, 129, 0.03) 51%
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 50;
+        }
+        .glass-panel {
+            background: rgba(10, 10, 10, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(31, 41, 55, 0.5);
+        }
+        input[type="text"], input[type="number"], textarea, select {
+            background-color: rgba(18, 18, 18, 0.8);
+            border: 1px solid #1f2937;
+            color: white;
+            font-family: 'ui-monospace', monospace;
+            transition: all 0.2s;
+        }
+        input[type="text"]:focus, input[type="number"]:focus, textarea:focus, select:focus {
+            border-color: #10b981;
+            box-shadow: 0 0 0 1px #10b981;
+            outline: none;
+        }.json-key { color: #10b981; }
+        .json-string { color: #fbbf24; }
+        .json-number { color: #f472b6; }
+        .json-boolean { color: #60a5fa; }
+        .json-bracket { color: #9ca3af; }
+        .line-numbers {
+            counter-reset: line;
+        }
+        .line-numbers > div {
+            counter-increment: line;
+        }
+        .line-numbers > div::before {
+            content: counter(line);
+            display: inline-block;
+            width: 2rem;
+            margin-right: 1rem;
+            text-align: right;
+            color: #4b5563;
+            user-select: none;
+        }
+    </style>
+</head>
+<body class="bg-background-dark font-display text-white min-h-screen flex flex-col relative selection:bg-primary selection:text-black">
+<div class="fixed inset-0 z-0 pointer-events-none opacity-20 grid-bg bg-grid-pattern"></div>
+<div class="fixed inset-0 z-50 pointer-events-none scanline"></div>
+<header class="relative z-50 flex items-center justify-between whitespace-nowrap border-b border-border-dark px-6 md:px-10 py-4 glass-panel sticky top-0">
+<div class="flex items-center gap-4 text-white">
+<div class="size-6 text-primary">
+<span class="material-symbols-outlined">dataset</span>
+</div>
+<h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em]">ADMIN: SYSTEM DATA &amp; LINKS</h2>
+<span class="hidden md:block h-4 w-[1px] bg-border-dark mx-2"></span>
+<span class="hidden md:block text-xs font-mono text-primary bg-primary/10 px-2 py-1 rounded border border-primary/20">EDITOR: DATA_LINK_MATRIX</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex items-center gap-2 text-xs font-mono text-text-dim">
+<span class="size-2 rounded-full bg-primary animate-pulse"></span>
+                SYSTEM STABLE
+            </div>
+<button class="flex items-center justify-center gap-2 bg-surface-dark hover:bg-white/5 border border-border-dark text-text-dim transition-colors text-xs font-bold h-9 px-5 rounded tracking-wider uppercase">
+<span class="material-symbols-outlined text-sm">terminal</span>
+                Terminal
+            </button>
+</div>
+</header>
+<main class="flex-1 relative flex flex-col w-full max-w-7xl mx-auto z-10 pb-20 px-6 md:px-10 pt-8 gap-8">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 h-full">
+<div class="lg:col-span-8 flex flex-col h-full min-h-[600px]">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2 text-primary text-xs font-mono tracking-widest uppercase">
+<span class="material-symbols-outlined text-sm">data_object</span>
+                    JSON_STRUCTURE_ROOT
+                </div>
+<div class="flex items-center gap-3">
+<span class="text-[10px] font-mono text-text-dim">professional_certifications.json</span>
+<button class="flex items-center gap-2 bg-primary hover:bg-primary-dim transition-colors text-black text-xs font-bold py-1.5 px-4 rounded tracking-wider uppercase">
+<span class="material-symbols-outlined text-sm">commit</span>
+                        Commit Changes
+                    </button>
+</div>
+</div>
+<div class="flex-1 glass-panel rounded-lg border border-border-dark relative overflow-hidden flex flex-col">
+<div class="bg-surface-dark/50 border-b border-white/5 px-4 py-2 flex items-center justify-between">
+<div class="flex gap-2">
+<button class="size-3 rounded-full bg-red-500/20 border border-red-500/50"></button>
+<button class="size-3 rounded-full bg-yellow-500/20 border border-yellow-500/50"></button>
+<button class="size-3 rounded-full bg-green-500/20 border border-green-500/50"></button>
+</div>
+<div class="text-[10px] font-mono text-text-dim flex gap-4">
+<span>UTF-8</span>
+<span>JSON</span>
+<span>424 BYTES</span>
+</div>
+</div>
+<div class="flex-1 overflow-auto bg-[#0a0a0a] font-mono text-sm p-4 leading-relaxed custom-scrollbar">
+<div class="line-numbers text-gray-300">
+<div><span class="json-bracket">{</span></div>
+<div><span class="ml-4 json-key">"certifications"</span><span class="json-bracket">:</span> <span class="json-bracket">[</span></div>
+<div><span class="ml-8 json-bracket">{</span></div>
+<div><span class="ml-12 json-key">"id"</span><span class="json-bracket">:</span> <span class="json-string">"CERT_AWS_001"</span><span class="json-bracket">,</span></div>
+<div><span class="ml-12 json-key">"title"</span><span class="json-bracket">:</span> <span class="json-string">"AWS Certified Solutions Architect"</span><span class="json-bracket">,</span></div>
+<div><span class="ml-12 json-key">"issuer"</span><span class="json-bracket">:</span> <span class="json-string">"Amazon Web Services"</span><span class="json-bracket">,</span></div>
+<div><span class="ml-12 json-key">"date_issued"</span><span class="json-bracket">:</span> <span class="json-string">"2023-11-15"</span><span class="json-bracket">,</span></div>
+<div><span class="ml-12 json-key">"active"</span><span class="json-bracket">:</span> <span class="json-boolean">true</span><span class="json-bracket">,</span></div>
+<div><span class="ml-12 json-key">"skills"</span><span class="json-bracket">:</span> <span class="json-bracket">[</span><span class="json-string">"Cloud Architecture"</span><span class="json-bracket">,</span> <span class="json-string">"IAM"</span><span class="json-bracket">,</span> <span class="json-string">"S3"</span><span class="json-bracket">]</span></div>
+<div><span class="ml-8 json-bracket">}</span><span class="json-bracket">,</span></div>
+<div><span class="ml-8 json-bracket">{</span></div>
+<div><span class="ml-12 json-key">"id"</span><span class="json-bracket">:</span> <span class="json-string">"CERT_GCP_002"</span><span class="json-bracket">,</span></div>
+<div><span class="ml-12 json-key">"title"</span><span class="json-bracket">:</span> <span class="json-string">"Google Professional Cloud Architect"</span><span class="json-bracket">,</span></div>
+<div><span class="ml-12 json-key">"issuer"</span><span class="json-bracket">:</span> <span class="json-string">"Google Cloud"</span><span class="json-bracket">,</span></div>
+<div><span class="ml-12 json-key">"date_issued"</span><span class="json-bracket">:</span> <span class="json-string">"2024-01-20"</span><span class="json-bracket">,</span></div>
+<div><span class="ml-12 json-key">"active"</span><span class="json-bracket">:</span> <span class="json-boolean">true</span><span class="json-bracket">,</span></div>
+<div><span class="ml-12 json-key">"skills"</span><span class="json-bracket">:</span> <span class="json-bracket">[</span><span class="json-string">"Kubernetes"</span><span class="json-bracket">,</span> <span class="json-string">"BigQuery"</span><span class="json-bracket">]</span></div>
+<div><span class="ml-8 json-bracket">}</span></div>
+<div><span class="ml-4 json-bracket">]</span><span class="json-bracket">,</span></div>
+<div><span class="ml-4 json-key">"meta"</span><span class="json-bracket">:</span> <span class="json-bracket">{</span></div>
+<div><span class="ml-8 json-key">"last_updated"</span><span class="json-bracket">:</span> <span class="json-number">1709834200</span><span class="json-bracket">,</span></div>
+<div><span class="ml-8 json-key">"version"</span><span class="json-bracket">:</span> <span class="json-string">"v2.4.1"</span></div>
+<div><span class="ml-4 json-bracket">}</span></div>
+<div><span class="json-bracket">}</span></div>
+<div class="opacity-50 mt-4 border-t border-dashed border-white/10 pt-2"><span class="text-text-dim text-xs">// End of file stream</span></div>
+</div>
+</div>
+</div>
+</div>
+<div class="lg:col-span-4 flex flex-col gap-8">
+<div class="flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2 text-primary text-xs font-mono tracking-widest uppercase">
+<span class="material-symbols-outlined text-sm">hub</span>
+                        LINK_COMM_MATRIX
+                    </div>
+<button class="text-[10px] font-mono text-primary border border-primary/30 px-3 py-1 rounded hover:bg-primary/10 transition-colors uppercase">
+                        + New Symlink
+                    </button>
+</div>
+<div class="glass-panel p-5 rounded-lg border border-border-dark space-y-4">
+<div class="group relative">
+<div class="flex items-center gap-3 bg-surface-dark border border-white/5 p-3 rounded hover:border-primary/50 transition-all">
+<div class="size-8 bg-[#0077b5]/20 text-[#0077b5] rounded flex items-center justify-center border border-[#0077b5]/30">
+<span class="material-symbols-outlined text-sm">business_center</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-center mb-1">
+<span class="text-xs font-bold text-white uppercase tracking-wider">LinkedIn</span>
+<span class="text-[9px] font-mono text-primary bg-primary/10 px-1 rounded">ACTIVE</span>
+</div>
+<input class="w-full bg-transparent border-none p-0 text-[10px] font-mono text-text-dim focus:ring-0 truncate" type="text" value="linkedin.com/in/architect-profile"/>
+</div>
+<button class="text-text-dim hover:text-white transition-colors">
+<span class="material-symbols-outlined text-sm">edit</span>
+</button>
+</div>
+</div>
+<div class="group relative">
+<div class="flex items-center gap-3 bg-surface-dark border border-white/5 p-3 rounded hover:border-white/20 transition-all">
+<div class="size-8 bg-white/10 text-white rounded flex items-center justify-center border border-white/20">
+<span class="material-symbols-outlined text-sm">code</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-center mb-1">
+<span class="text-xs font-bold text-white uppercase tracking-wider">GitHub</span>
+<span class="text-[9px] font-mono text-primary bg-primary/10 px-1 rounded">ACTIVE</span>
+</div>
+<input class="w-full bg-transparent border-none p-0 text-[10px] font-mono text-text-dim focus:ring-0 truncate" type="text" value="github.com/system-admin"/>
+</div>
+<button class="text-text-dim hover:text-white transition-colors">
+<span class="material-symbols-outlined text-sm">edit</span>
+</button>
+</div>
+</div>
+<div class="group relative">
+<div class="flex items-center gap-3 bg-surface-dark border border-white/5 p-3 rounded hover:border-gold/50 transition-all">
+<div class="size-8 bg-gold/10 text-gold rounded flex items-center justify-center border border-gold/30">
+<span class="material-symbols-outlined text-sm">mail</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-center mb-1">
+<span class="text-xs font-bold text-white uppercase tracking-wider">Secure Relay</span>
+<span class="text-[9px] font-mono text-text-dim bg-white/5 px-1 rounded">REDIRECT</span>
+</div>
+<input class="w-full bg-transparent border-none p-0 text-[10px] font-mono text-text-dim focus:ring-0 truncate" type="text" value="hello@portfolio.dev"/>
+</div>
+<button class="text-text-dim hover:text-white transition-colors">
+<span class="material-symbols-outlined text-sm">edit</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-4 flex-1">
+<div class="flex items-center gap-2 text-primary text-xs font-mono tracking-widest uppercase">
+<span class="material-symbols-outlined text-sm">forum</span>
+                    COMMUNICATION_STATUS
+                </div>
+<div class="glass-panel p-0 rounded-lg border border-border-dark flex-1 flex flex-col overflow-hidden">
+<div class="bg-surface-dark/80 p-3 border-b border-white/5 flex justify-between items-center">
+<span class="text-[10px] font-mono text-text-dim uppercase">Recent Signals</span>
+<span class="size-1.5 rounded-full bg-primary animate-pulse"></span>
+</div>
+<div class="flex-1 overflow-y-auto p-4 space-y-4 font-mono text-xs custom-scrollbar">
+<div class="flex gap-3">
+<div class="text-[10px] text-text-dim pt-1">10:42</div>
+<div class="flex-1">
+<div class="text-white mb-0.5"><span class="text-primary">&gt;</span> Incoming query</div>
+<div class="text-text-dim text-[10px] border-l border-white/10 pl-2">Source: Contact Form<br/>IP: 192.168.1.X</div>
+</div>
+</div>
+<div class="flex gap-3">
+<div class="text-[10px] text-text-dim pt-1">09:15</div>
+<div class="flex-1">
+<div class="text-white mb-0.5"><span class="text-gold">&gt;</span> System Alert</div>
+<div class="text-text-dim text-[10px] border-l border-white/10 pl-2">Latency spike detected in region: eu-central-1</div>
+</div>
+</div>
+<div class="flex gap-3">
+<div class="text-[10px] text-text-dim pt-1">08:00</div>
+<div class="flex-1">
+<div class="text-white mb-0.5"><span class="text-primary">&gt;</span> Auto-Reply Sent</div>
+<div class="text-text-dim text-[10px] border-l border-white/10 pl-2">To: recruiter@tech.corp<br/>Template: GENERAL_AVAILABILITY</div>
+</div>
+</div>
+<div class="flex gap-3 opacity-60">
+<div class="text-[10px] text-text-dim pt-1">Yesterday</div>
+<div class="flex-1">
+<div class="text-white mb-0.5"><span class="text-primary">&gt;</span> Portfolio Viewed</div>
+<div class="text-text-dim text-[10px] border-l border-white/10 pl-2">Session duration: 4m 12s</div>
+</div>
+</div>
+</div>
+<div class="p-3 bg-surface-dark/50 border-t border-white/5">
+<input class="w-full bg-black/40 border border-white/10 rounded px-2 py-1 text-[10px] font-mono text-white placeholder-text-dim focus:border-primary/50" placeholder="Type command..." type="text"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<footer class="w-full border-t border-border-dark bg-surface-dark py-8 mt-auto">
+<div class="max-w-7xl mx-auto px-6 md:px-10 flex flex-col md:flex-row justify-between items-center text-xs text-text-dim font-mono">
+<div class="flex items-center gap-2">
+<span class="size-2 bg-green-500 rounded-full animate-pulse"></span>
+                DATA NODE: SYNCED
+            </div>
+<div class="mt-4 md:mt-0">
+                © 2024 ADMIN CONSOLE // SYSTEM DATA
+            </div>
+</div>
+</footer>
+</body></html>

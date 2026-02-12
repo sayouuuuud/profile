@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Admin: Skill Matrix Command</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#10b981", // Emerald 500
+                        "primary-dim": "#059669", // Emerald 600
+                        "accent": "#34d399", // Emerald 400
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#050505", // Deep OLED Black
+                        "surface-dark": "#0a0a0a",
+                        "surface-light": "#121212",
+                        "border-dark": "#1f2937",
+                        "text-dim": "#6b7280",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"],
+                        "mono": ["ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", "monospace"]
+                    },
+                    backgroundImage: {
+                        'grid-pattern': "linear-gradient(to right, #1f2937 1px, transparent 1px), linear-gradient(to bottom, #1f2937 1px, transparent 1px)",
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .grid-bg {
+            background-size: 40px 40px;
+            mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
+            -webkit-mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
+        }
+        .glow-text {
+            text-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+        }
+        .glow-box {
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
+        }
+        .scanline {
+            background: linear-gradient(
+                to bottom,
+                transparent 50%,
+                rgba(16, 185, 129, 0.03) 51%
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 50;
+        }
+        .glass-panel {
+            background: rgba(10, 10, 10, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(31, 41, 55, 0.5);
+        }
+        .tech-border::before, .tech-border::after {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-color: #10b981;
+            border-style: solid;
+            transition: all 0.3s ease;
+        }
+        .tech-border::before {
+            top: -1px;
+            left: -1px;
+            border-width: 1px 0 0 1px;
+        }
+        .tech-border::after {
+            bottom: -1px;
+            right: -1px;
+            border-width: 0 1px 1px 0;
+        }
+        input[type="text"], input[type="number"], textarea, select {
+            background-color: rgba(18, 18, 18, 0.8);
+            border: 1px solid #1f2937;
+            color: white;
+            font-family: 'Space Grotesk', sans-serif;
+            transition: all 0.2s;
+        }
+        input[type="text"]:focus, input[type="number"]:focus, textarea:focus, select:focus {
+            border-color: #10b981;
+            box-shadow: 0 0 0 1px #10b981;
+            outline: none;
+        }input[type=range] {
+            -webkit-appearance: none; 
+            width: 100%; 
+            background: transparent; 
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: #10b981;
+            cursor: pointer;
+            margin-top: -6px; 
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #1f2937;
+            border-radius: 2px;
+        }
+        input[type=range]:focus::-webkit-slider-runnable-track {
+            background: #374151;
+        }
+    </style>
+</head>
+<body class="bg-background-dark font-display text-white min-h-screen flex flex-col relative selection:bg-primary selection:text-black">
+<div class="fixed inset-0 z-0 pointer-events-none opacity-20 grid-bg bg-grid-pattern"></div>
+<div class="fixed inset-0 z-50 pointer-events-none scanline"></div>
+<header class="relative z-50 flex items-center justify-between whitespace-nowrap border-b border-border-dark px-6 md:px-10 py-4 glass-panel sticky top-0">
+<div class="flex items-center gap-4 text-white">
+<div class="size-6 text-primary">
+<span class="material-symbols-outlined">admin_panel_settings</span>
+</div>
+<h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em]">ADMIN DASHBOARD</h2>
+<span class="hidden md:block h-4 w-[1px] bg-border-dark mx-2"></span>
+<span class="hidden md:block text-xs font-mono text-primary bg-primary/10 px-2 py-1 rounded border border-primary/20">EDITOR: SKILL_MATRIX</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex items-center gap-2 text-xs font-mono text-text-dim">
+<span class="size-2 rounded-full bg-yellow-500 animate-pulse"></span>
+                UNSAVED CHANGES
+            </div>
+<button class="flex items-center justify-center gap-2 bg-primary hover:bg-primary-dim transition-colors text-black text-xs font-bold h-9 px-5 rounded tracking-wider uppercase">
+<span class="material-symbols-outlined text-sm">save</span>
+                Save Matrix
+            </button>
+</div>
+</header>
+<main class="flex-1 relative flex flex-col w-full max-w-7xl mx-auto z-10 pb-20 px-6 md:px-10 pt-8">
+<section class="mb-8">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2 text-primary text-xs font-mono tracking-widest uppercase">
+<span class="material-symbols-outlined text-sm">radar</span>
+                Radar Geometry Config
+            </div>
+<div class="text-[10px] font-mono text-text-dim">
+                GLOBAL_SCALE: 1.0
+            </div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+<div class="glass-panel p-6 rounded-lg border border-border-dark relative flex flex-col h-full tech-border">
+<div class="flex justify-between items-center mb-6 pb-4 border-b border-white/5">
+<h3 class="text-lg font-bold text-white flex items-center gap-2">
+<span class="text-primary">01.</span> PRODUCT
+                    </h3>
+<span class="text-[10px] font-mono text-primary border border-primary/30 px-2 py-1 rounded bg-primary/10">RADAR_ID_01</span>
+</div>
+<div class="space-y-6 flex-1">
+<div class="space-y-4">
+<div class="group">
+<div class="flex justify-between text-xs font-mono mb-2">
+<label class="text-text-dim">STRATEGY</label>
+<span class="text-primary">90%</span>
+</div>
+<input class="w-full" max="100" min="0" type="range" value="90"/>
+</div>
+<div class="group">
+<div class="flex justify-between text-xs font-mono mb-2">
+<label class="text-text-dim">DISCOVERY</label>
+<span class="text-primary">85%</span>
+</div>
+<input class="w-full" max="100" min="0" type="range" value="85"/>
+</div>
+<div class="group">
+<div class="flex justify-between text-xs font-mono mb-2">
+<label class="text-text-dim">ROADMAP</label>
+<span class="text-primary">95%</span>
+</div>
+<input class="w-full" max="100" min="0" type="range" value="95"/>
+</div>
+<div class="group">
+<div class="flex justify-between text-xs font-mono mb-2">
+<label class="text-text-dim">ANALYTICS</label>
+<span class="text-primary">70%</span>
+</div>
+<input class="w-full" max="100" min="0" type="range" value="70"/>
+</div>
+<div class="group">
+<div class="flex justify-between text-xs font-mono mb-2">
+<label class="text-text-dim">COMMUNICATION</label>
+<span class="text-primary">80%</span>
+</div>
+<input class="w-full" max="100" min="0" type="range" value="80"/>
+</div>
+</div>
+</div>
+<div class="mt-6 pt-4 border-t border-white/5">
+<button class="w-full py-2 text-xs font-mono uppercase border border-border-dark hover:border-primary text-text-dim hover:text-white transition-colors rounded">
+                    Preview Geometry
+                </button>
+</div>
+</div>
+<div class="glass-panel p-6 rounded-lg border border-border-dark relative flex flex-col h-full tech-border">
+<div class="flex justify-between items-center mb-6 pb-4 border-b border-white/5">
+<h3 class="text-lg font-bold text-white flex items-center gap-2">
+<span class="text-primary">02.</span> ENGINEERING
+                    </h3>
+<span class="text-[10px] font-mono text-primary border border-primary/30 px-2 py-1 rounded bg-primary/10">RADAR_ID_02</span>
+</div>
+<div class="space-y-6 flex-1">
+<div class="space-y-4">
+<div class="group">
+<div class="flex justify-between text-xs font-mono mb-2">
+<label class="text-text-dim">FRONTEND</label>
+<span class="text-primary">98%</span>
+</div>
+<input class="w-full" max="100" min="0" type="range" value="98"/>
+</div>
+<div class="group">
+<div class="flex justify-between text-xs font-mono mb-2">
+<label class="text-text-dim">BACKEND</label>
+<span class="text-primary">85%</span>
+</div>
+<input class="w-full" max="100" min="0" type="range" value="85"/>
+</div>
+<div class="group">
+<div class="flex justify-between text-xs font-mono mb-2">
+<label class="text-text-dim">DEVOPS</label>
+<span class="text-primary">75%</span>
+</div>
+<input class="w-full" max="100" min="0" type="range" value="75"/>
+</div>
+<div class="group">
+<div class="flex justify-between text-xs font-mono mb-2">
+<label class="text-text-dim">ARCHITECTURE</label>
+<span class="text-primary">92%</span>
+</div>
+<input class="w-full" max="100" min="0" type="range" value="92"/>
+</div>
+<div class="group">
+<div class="flex justify-between text-xs font-mono mb-2">
+<label class="text-text-dim">TESTING</label>
+<span class="text-primary">80%</span>
+</div>
+<input class="w-full" max="100" min="0" type="range" value="80"/>
+</div>
+</div>
+</div>
+<div class="mt-6 pt-4 border-t border-white/5">
+<button class="w-full py-2 text-xs font-mono uppercase border border-border-dark hover:border-primary text-text-dim hover:text-white transition-colors rounded">
+                    Preview Geometry
+                </button>
+</div>
+</div>
+<div class="glass-panel p-6 rounded-lg border border-border-dark relative flex flex-col h-full tech-border">
+<div class="flex justify-between items-center mb-6 pb-4 border-b border-white/5">
+<h3 class="text-lg font-bold text-white flex items-center gap-2">
+<span class="text-primary">03.</span> TOOLS
+                    </h3>
+<span class="text-[10px] font-mono text-primary border border-primary/30 px-2 py-1 rounded bg-primary/10">RADAR_ID_03</span>
+</div>
+<div class="space-y-6 flex-1">
+<div class="space-y-4">
+<div class="group">
+<div class="flex justify-between text-xs font-mono mb-2">
+<label class="text-text-dim">FIGMA</label>
+<span class="text-primary">95%</span>
+</div>
+<input class="w-full" max="100" min="0" type="range" value="95"/>
+</div>
+<div class="group">
+<div class="flex justify-between text-xs font-mono mb-2">
+<label class="text-text-dim">VS CODE</label>
+<span class="text-primary">100%</span>
+</div>
+<input class="w-full" max="100" min="0" type="range" value="100"/>
+</div>
+<div class="group">
+<div class="flex justify-between text-xs font-mono mb-2">
+<label class="text-text-dim">LINEAR</label>
+<span class="text-primary">90%</span>
+</div>
+<input class="w-full" max="100" min="0" type="range" value="90"/>
+</div>
+<div class="group">
+<div class="flex justify-between text-xs font-mono mb-2">
+<label class="text-text-dim">NOTION</label>
+<span class="text-primary">95%</span>
+</div>
+<input class="w-full" max="100" min="0" type="range" value="95"/>
+</div>
+<div class="group">
+<div class="flex justify-between text-xs font-mono mb-2">
+<label class="text-text-dim">GITHUB</label>
+<span class="text-primary">88%</span>
+</div>
+<input class="w-full" max="100" min="0" type="range" value="88"/>
+</div>
+</div>
+</div>
+<div class="mt-6 pt-4 border-t border-white/5">
+<button class="w-full py-2 text-xs font-mono uppercase border border-border-dark hover:border-primary text-text-dim hover:text-white transition-colors rounded">
+                    Preview Geometry
+                </button>
+</div>
+</div>
+</div>
+</section>
+<section class="mb-12">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2 text-primary text-xs font-mono tracking-widest uppercase">
+<span class="material-symbols-outlined text-sm">tune</span>
+                Skill Progress Editor
+            </div>
+<div class="flex gap-2">
+<button class="text-[10px] font-mono bg-surface-dark hover:bg-white/5 border border-border-dark text-text-dim px-3 py-1 rounded transition-colors uppercase">
+                    Reset All
+                </button>
+<button class="text-[10px] font-mono bg-primary/10 hover:bg-primary/20 border border-primary/30 text-primary px-3 py-1 rounded transition-colors uppercase">
+                    + Add Category
+                </button>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+<div class="glass-panel p-6 rounded-lg border border-border-dark relative overflow-hidden">
+<div class="flex justify-between items-center mb-6 border-b border-white/5 pb-4">
+<h3 class="text-lg font-bold text-white flex items-center gap-3">
+<span class="text-emerald-400">CORE TECH</span>
+<span class="text-xs font-mono text-text-dim bg-white/5 px-2 py-0.5 rounded">STACK_01</span>
+</h3>
+<button class="text-[10px] font-mono text-primary border border-primary/30 px-3 py-1 rounded hover:bg-primary/10 transition-colors uppercase">
+                        + Add Skill
+                    </button>
+</div>
+<div class="space-y-4">
+<div class="group flex items-center gap-4 bg-surface-dark/50 p-3 rounded border border-white/5 hover:border-primary/30 transition-colors">
+<div class="cursor-move text-text-dim hover:text-white">
+<span class="material-symbols-outlined text-lg">drag_indicator</span>
+</div>
+<div class="flex-1 grid grid-cols-12 gap-4 items-center">
+<div class="col-span-5">
+<label class="text-[9px] text-text-dim uppercase block mb-1">Skill Name</label>
+<input class="w-full text-sm py-1 px-2 rounded bg-black/40 border-border-dark text-white font-bold" type="text" value="Next.js"/>
+</div>
+<div class="col-span-3">
+<label class="text-[9px] text-text-dim uppercase block mb-1">Type</label>
+<select class="w-full text-xs py-1 px-2 rounded bg-black/40 border-border-dark text-text-dim">
+<option>Framework</option>
+<option>Language</option>
+<option>Tool</option>
+</select>
+</div>
+<div class="col-span-4">
+<label class="text-[9px] text-text-dim uppercase block mb-1">Proficiency</label>
+<div class="flex items-center gap-2">
+<input class="flex-1" max="100" min="0" type="range" value="95"/>
+<span class="text-xs font-mono text-primary w-8 text-right">95%</span>
+</div>
+</div>
+</div>
+<button class="text-text-dim hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined text-lg">delete</span>
+</button>
+</div>
+<div class="group flex items-center gap-4 bg-surface-dark/50 p-3 rounded border border-white/5 hover:border-primary/30 transition-colors">
+<div class="cursor-move text-text-dim hover:text-white">
+<span class="material-symbols-outlined text-lg">drag_indicator</span>
+</div>
+<div class="flex-1 grid grid-cols-12 gap-4 items-center">
+<div class="col-span-5">
+<label class="text-[9px] text-text-dim uppercase block mb-1">Skill Name</label>
+<input class="w-full text-sm py-1 px-2 rounded bg-black/40 border-border-dark text-white font-bold" type="text" value="React Native"/>
+</div>
+<div class="col-span-3">
+<label class="text-[9px] text-text-dim uppercase block mb-1">Type</label>
+<select class="w-full text-xs py-1 px-2 rounded bg-black/40 border-border-dark text-text-dim">
+<option>Framework</option>
+<option>Language</option>
+<option>Tool</option>
+</select>
+</div>
+<div class="col-span-4">
+<label class="text-[9px] text-text-dim uppercase block mb-1">Proficiency</label>
+<div class="flex items-center gap-2">
+<input class="flex-1" max="100" min="0" type="range" value="85"/>
+<span class="text-xs font-mono text-primary w-8 text-right">85%</span>
+</div>
+</div>
+</div>
+<button class="text-text-dim hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined text-lg">delete</span>
+</button>
+</div>
+<div class="group flex items-center gap-4 bg-surface-dark/50 p-3 rounded border border-white/5 hover:border-primary/30 transition-colors">
+<div class="cursor-move text-text-dim hover:text-white">
+<span class="material-symbols-outlined text-lg">drag_indicator</span>
+</div>
+<div class="flex-1 grid grid-cols-12 gap-4 items-center">
+<div class="col-span-5">
+<label class="text-[9px] text-text-dim uppercase block mb-1">Skill Name</label>
+<input class="w-full text-sm py-1 px-2 rounded bg-black/40 border-border-dark text-white font-bold" type="text" value="TypeScript"/>
+</div>
+<div class="col-span-3">
+<label class="text-[9px] text-text-dim uppercase block mb-1">Type</label>
+<select class="w-full text-xs py-1 px-2 rounded bg-black/40 border-border-dark text-text-dim">
+<option>Language</option>
+<option>Framework</option>
+<option>Tool</option>
+</select>
+</div>
+<div class="col-span-4">
+<label class="text-[9px] text-text-dim uppercase block mb-1">Proficiency</label>
+<div class="flex items-center gap-2">
+<input class="flex-1" max="100" min="0" type="range" value="92"/>
+<span class="text-xs font-mono text-primary w-8 text-right">92%</span>
+</div>
+</div>
+</div>
+<button class="text-text-dim hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined text-lg">delete</span>
+</button>
+</div>
+</div>
+</div>
+<div class="glass-panel p-6 rounded-lg border border-border-dark relative overflow-hidden">
+<div class="flex justify-between items-center mb-6 border-b border-white/5 pb-4">
+<h3 class="text-lg font-bold text-white flex items-center gap-3">
+<span class="text-blue-400">METHODOLOGIES</span>
+<span class="text-xs font-mono text-text-dim bg-white/5 px-2 py-0.5 rounded">STACK_02</span>
+</h3>
+<button class="text-[10px] font-mono text-primary border border-primary/30 px-3 py-1 rounded hover:bg-primary/10 transition-colors uppercase">
+                        + Add Skill
+                    </button>
+</div>
+<div class="space-y-4">
+<div class="group flex items-center gap-4 bg-surface-dark/50 p-3 rounded border border-white/5 hover:border-blue-400/30 transition-colors">
+<div class="cursor-move text-text-dim hover:text-white">
+<span class="material-symbols-outlined text-lg">drag_indicator</span>
+</div>
+<div class="flex-1 grid grid-cols-12 gap-4 items-center">
+<div class="col-span-5">
+<label class="text-[9px] text-text-dim uppercase block mb-1">Skill Name</label>
+<input class="w-full text-sm py-1 px-2 rounded bg-black/40 border-border-dark text-white font-bold" type="text" value="Agile / Scrum"/>
+</div>
+<div class="col-span-3">
+<label class="text-[9px] text-text-dim uppercase block mb-1">Type</label>
+<select class="w-full text-xs py-1 px-2 rounded bg-black/40 border-border-dark text-text-dim">
+<option>Process</option>
+<option>Soft Skill</option>
+</select>
+</div>
+<div class="col-span-4">
+<label class="text-[9px] text-text-dim uppercase block mb-1">Proficiency</label>
+<div class="flex items-center gap-2">
+<input class="flex-1" max="100" min="0" type="range" value="90"/>
+<span class="text-xs font-mono text-blue-400 w-8 text-right">90%</span>
+</div>
+</div>
+</div>
+<button class="text-text-dim hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined text-lg">delete</span>
+</button>
+</div>
+<div class="group flex items-center gap-4 bg-surface-dark/50 p-3 rounded border border-white/5 hover:border-blue-400/30 transition-colors">
+<div class="cursor-move text-text-dim hover:text-white">
+<span class="material-symbols-outlined text-lg">drag_indicator</span>
+</div>
+<div class="flex-1 grid grid-cols-12 gap-4 items-center">
+<div class="col-span-5">
+<label class="text-[9px] text-text-dim uppercase block mb-1">Skill Name</label>
+<input class="w-full text-sm py-1 px-2 rounded bg-black/40 border-border-dark text-white font-bold" type="text" value="System Design"/>
+</div>
+<div class="col-span-3">
+<label class="text-[9px] text-text-dim uppercase block mb-1">Type</label>
+<select class="w-full text-xs py-1 px-2 rounded bg-black/40 border-border-dark text-text-dim">
+<option>Architecture</option>
+<option>Process</option>
+</select>
+</div>
+<div class="col-span-4">
+<label class="text-[9px] text-text-dim uppercase block mb-1">Proficiency</label>
+<div class="flex items-center gap-2">
+<input class="flex-1" max="100" min="0" type="range" value="85"/>
+<span class="text-xs font-mono text-blue-400 w-8 text-right">85%</span>
+</div>
+</div>
+</div>
+<button class="text-text-dim hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined text-lg">delete</span>
+</button>
+</div>
+<div class="group flex items-center gap-4 bg-surface-dark/50 p-3 rounded border border-white/5 hover:border-blue-400/30 transition-colors">
+<div class="cursor-move text-text-dim hover:text-white">
+<span class="material-symbols-outlined text-lg">drag_indicator</span>
+</div>
+<div class="flex-1 grid grid-cols-12 gap-4 items-center">
+<div class="col-span-5">
+<label class="text-[9px] text-text-dim uppercase block mb-1">Skill Name</label>
+<input class="w-full text-sm py-1 px-2 rounded bg-black/40 border-border-dark text-white font-bold" type="text" value="CI/CD Pipelines"/>
+</div>
+<div class="col-span-3">
+<label class="text-[9px] text-text-dim uppercase block mb-1">Type</label>
+<select class="w-full text-xs py-1 px-2 rounded bg-black/40 border-border-dark text-text-dim">
+<option>DevOps</option>
+<option>Process</option>
+</select>
+</div>
+<div class="col-span-4">
+<label class="text-[9px] text-text-dim uppercase block mb-1">Proficiency</label>
+<div class="flex items-center gap-2">
+<input class="flex-1" max="100" min="0" type="range" value="80"/>
+<span class="text-xs font-mono text-blue-400 w-8 text-right">80%</span>
+</div>
+</div>
+</div>
+<button class="text-text-dim hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined text-lg">delete</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<footer class="w-full border-t border-border-dark bg-surface-dark py-8">
+<div class="max-w-7xl mx-auto px-6 md:px-10 flex flex-col md:flex-row justify-between items-center text-xs text-text-dim font-mono">
+<div class="flex items-center gap-2">
+<span class="size-2 bg-green-500 rounded-full animate-pulse"></span>
+                ADMIN CONSOLE: ONLINE
+            </div>
+<div class="mt-4 md:mt-0">
+                © 2024 SAYED ELSHAZLY // ADMIN
+            </div>
+</div>
+</footer>
+
+</body></html>

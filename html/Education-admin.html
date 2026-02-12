@@ -1,0 +1,400 @@
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Admin: Enhanced Education Controller</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#10b981", // Emerald 500
+                        "primary-dim": "#059669", // Emerald 600
+                        "accent": "#34d399", // Emerald 400
+                        "gold": "#d4af37", // Metallic Gold
+                        "gold-dim": "#aa8c2c",
+                        "navy-dark": "#02040a",
+                        "navy-panel": "#060b14",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#050505", // Deep OLED Black
+                        "surface-dark": "#0a0a0a",
+                        "surface-light": "#121212",
+                        "border-dark": "#1f2937",
+                        "text-dim": "#6b7280",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"],
+                        "serif-display": ["Cinzel", "serif"],
+                        "mono": ["ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", "monospace"]
+                    },
+                    backgroundImage: {
+                        'grid-pattern': "linear-gradient(to right, #1f2937 1px, transparent 1px), linear-gradient(to bottom, #1f2937 1px, transparent 1px)",
+                    }
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        @layer base {
+            p, .body-text {
+                @apply font-light text-gray-300;
+            }
+            h1, h2, h3 {
+                @apply tracking-[0.1em];
+            }
+            input[type="text"], input[type="number"] {
+                @apply bg-surface-light border border-white/10 text-white rounded-sm focus:border-primary focus:ring-1 focus:ring-primary placeholder-gray-600 font-mono text-sm py-2 px-3;
+            }
+            label {
+                @apply block text-[10px] uppercase tracking-widest text-text-dim font-mono mb-1;
+            }
+        }
+        .grid-bg {
+            background-size: 60px 60px;
+            mask-image: radial-gradient(circle at center, black 40%, transparent 90%);
+            -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 90%);
+            opacity: 0.15;
+        }
+        .scanline {
+            background: linear-gradient(
+                to bottom,
+                transparent 50%,
+                rgba(16, 185, 129, 0.02) 51%
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 50;
+        }
+        .glass-panel {
+            background: rgba(10, 10, 10, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .admin-card-header {
+            background: linear-gradient(90deg, rgba(16, 185, 129, 0.05) 0%, transparent 100%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        input[type=range] {
+            -webkit-appearance: none; 
+            background: transparent; 
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: #10b981;
+            cursor: pointer;
+            margin-top: -6px; 
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+        }
+        .hide-scroll::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scroll {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-background-dark font-display text-white min-h-screen flex flex-col relative selection:bg-primary selection:text-black">
+<div class="fixed inset-0 z-0 pointer-events-none grid-bg bg-grid-pattern"></div>
+<div class="fixed inset-0 z-50 pointer-events-none scanline"></div>
+<header class="relative z-50 flex items-center justify-between whitespace-nowrap border-b border-border-dark px-6 md:px-12 py-4 glass-panel sticky top-0">
+<div class="flex items-center gap-4 text-white">
+<div class="size-6 text-primary animate-pulse flex items-center justify-center border border-primary/30 rounded-sm bg-primary/5">
+<span class="material-symbols-outlined text-sm">admin_panel_settings</span>
+</div>
+<h2 class="text-white text-sm font-bold leading-tight tracking-[0.1em]">ADMIN // EDUCATION_CONTROLLER</h2>
+<span class="hidden md:block h-4 w-[1px] bg-border-dark mx-2"></span>
+<span class="hidden md:block text-[10px] font-mono text-primary/80 uppercase">Access Level: Architect</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-text-dim hover:text-white transition-colors text-[10px] font-mono uppercase tracking-widest flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">logout</span> Disconnect
+        </button>
+</div>
+</header>
+<main class="flex-1 relative w-full max-w-[1400px] mx-auto z-10 py-12 px-6 md:px-12">
+<div class="flex flex-col mb-12">
+<div class="flex items-center gap-4 mb-2">
+<h1 class="text-2xl md:text-3xl font-black text-white tracking-[0.05em] uppercase">Academic Foundation</h1>
+<div class="h-px bg-border-dark flex-1"></div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 text-[10px] text-emerald-400 font-mono">
+<span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span>
+        LIVE EDIT
+    </div>
+</div>
+</div>
+<p class="text-text-dim font-mono text-xs tracking-[0.1em] uppercase">// Manage educational credentials &amp; timeline progress</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 w-full">
+<div class="glass-panel rounded-sm border border-border-dark relative overflow-hidden flex flex-col">
+<div class="admin-card-header p-6 flex justify-between items-center">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-light border border-white/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-lg">school</span>
+</div>
+<div>
+<h3 class="text-sm font-bold text-white tracking-widest">CARD_01</h3>
+<span class="text-[10px] text-text-dim font-mono uppercase">NCTU Bachelors</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-[9px] bg-primary/10 text-primary border border-primary/20 px-2 py-0.5 rounded-sm font-mono uppercase">Active</span>
+</div>
+</div>
+<div class="p-6 md:p-8 space-y-8 flex-1 overflow-y-auto max-h-[700px] hide-scroll">
+<div class="space-y-4">
+<div class="flex items-center gap-2 mb-2 pb-2 border-b border-white/5">
+<span class="material-symbols-outlined text-text-dim text-sm">badge</span>
+<span class="text-xs text-white font-mono uppercase tracking-widest">Primary Data</span>
+</div>
+<div class="grid gap-4">
+<div>
+<label for="nctu-degree">Degree Title</label>
+<input class="w-full" id="nctu-degree" type="text" value="Bachelor of Technology"/>
+</div>
+<div>
+<label for="nctu-inst">Institution Name</label>
+<input class="w-full" id="nctu-inst" type="text" value="New Cairo Technological University"/>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label for="nctu-major">Major Tag</label>
+<input class="w-full" id="nctu-major" type="text" value="IT &amp; System Architecture"/>
+</div>
+<div>
+<label for="nctu-time">Timeline</label>
+<input class="w-full" id="nctu-time" type="text" value="2024 - Pres."/>
+</div>
+</div>
+</div>
+</div>
+<div class="space-y-4">
+<div class="flex items-center gap-2 mb-2 pb-2 border-b border-white/5">
+<span class="material-symbols-outlined text-text-dim text-sm">image</span>
+<span class="text-xs text-white font-mono uppercase tracking-widest">Institution Logo</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="size-16 bg-surface-light border border-white/10 rounded flex items-center justify-center">
+<img alt="NCTU Logo" class="w-10 h-10 object-contain opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJyx0b4MCWazwqO-7dzZ_N46BHliu5Uj5SvSkHEfdMv8zXSdcI4Aqjun3xzh6QTEvTg7I5KN_G-s49KonLlwiF0hLBCFjy9BbbgWk9rnDRqDzMnvtmDJeanmmodcv5R-aAU3rGdnJdmq2_tpLxBQVQ-xJMbH3vuIiMUElIy2PkB38EHz8kWZqa50v5X2o-lUCk1mf0ge6E05pJ7k79-txmtuRu6QgMY0A_DsCPybOfopKJ0jttk6A0LbMgMfMEmRs4K6QqGil1_-4"/>
+</div>
+<div class="flex-1">
+<label class="cursor-pointer bg-white/5 hover:bg-white/10 border border-white/10 hover:border-primary/50 text-white text-xs py-2 px-4 rounded-sm transition-all flex items-center justify-center gap-2 w-full border-dashed">
+<span class="material-symbols-outlined text-sm">upload_file</span>
+                                    Upload New Asset
+                                    <input class="hidden" type="file"/>
+</label>
+<p class="text-[9px] text-text-dim mt-2 font-mono">Recommended: 200x200px PNG (Transparent)</p>
+</div>
+</div>
+</div>
+<div class="space-y-6 bg-surface-light/30 p-4 rounded-sm border border-white/5">
+<div class="flex items-center gap-2 mb-2 pb-2 border-b border-white/5">
+<span class="material-symbols-outlined text-text-dim text-sm">trending_up</span>
+<span class="text-xs text-white font-mono uppercase tracking-widest">Timeline Progress</span>
+</div>
+<div>
+<div class="flex justify-between items-end mb-2">
+<label class="mb-0 text-white">Completion Percentage</label>
+<span class="text-primary font-mono text-lg font-bold">45%</span>
+</div>
+<input class="w-full accent-primary" max="100" min="0" step="1" type="range" value="45"/>
+</div>
+<div class="space-y-4 pt-4 border-t border-white/5">
+<div class="grid gap-3">
+<div class="flex gap-2">
+<div class="flex-1">
+<label>Metric 1 Label</label>
+<input class="w-full" type="text" value="IT Infrastructure"/>
+</div>
+<div class="w-20">
+<label>Grade</label>
+<input class="w-full text-center text-primary font-bold" type="text" value="A+"/>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<input class="flex-1 accent-primary" max="100" min="0" step="1" type="range" value="95"/>
+<span class="text-xs font-mono text-text-dim w-8 text-right">95%</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-6 border-t border-white/10 bg-surface-dark flex gap-4">
+<button class="flex-1 bg-primary hover:bg-primary-dim text-white text-xs font-bold py-3 px-4 rounded-sm uppercase tracking-widest transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">save</span> Save Changes
+            </button>
+</div>
+</div>
+<div class="glass-panel rounded-sm border border-border-dark relative overflow-hidden flex flex-col">
+<div class="admin-card-header p-6 flex justify-between items-center">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-light border border-white/10 flex items-center justify-center text-blue-400">
+<span class="material-symbols-outlined text-lg">school</span>
+</div>
+<div>
+<h3 class="text-sm font-bold text-white tracking-widest">CARD_02</h3>
+<span class="text-[10px] text-text-dim font-mono uppercase">WE School Applied Tech</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-[9px] bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2 py-0.5 rounded-sm font-mono uppercase">Completed</span>
+</div>
+</div>
+<div class="p-6 md:p-8 space-y-8 flex-1 overflow-y-auto max-h-[700px] hide-scroll">
+<div class="space-y-4">
+<div class="flex items-center gap-2 mb-2 pb-2 border-b border-white/5">
+<span class="material-symbols-outlined text-text-dim text-sm">badge</span>
+<span class="text-xs text-white font-mono uppercase tracking-widest">Primary Data</span>
+</div>
+<div class="grid gap-4">
+<div>
+<label for="we-degree">Degree Title</label>
+<input class="w-full" id="we-degree" type="text" value="Applied Technology"/>
+</div>
+<div>
+<label for="we-inst">Institution Name</label>
+<input class="w-full" id="we-inst" type="text" value="We School For Applied Technology"/>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label for="we-major">Major Tag</label>
+<input class="w-full" id="we-major" type="text" value="IT &amp; Web Development"/>
+</div>
+<div>
+<label for="we-time">Timeline</label>
+<input class="w-full" id="we-time" type="text" value="2021 - 2024"/>
+</div>
+</div>
+</div>
+</div>
+<div class="space-y-4">
+<div class="flex items-center gap-2 mb-2 pb-2 border-b border-white/5">
+<span class="material-symbols-outlined text-text-dim text-sm">image</span>
+<span class="text-xs text-white font-mono uppercase tracking-widest">Institution Logo</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="size-16 bg-surface-light border border-white/10 rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl text-white/20">school</span>
+</div>
+<div class="flex-1">
+<label class="cursor-pointer bg-white/5 hover:bg-white/10 border border-white/10 hover:border-primary/50 text-white text-xs py-2 px-4 rounded-sm transition-all flex items-center justify-center gap-2 w-full border-dashed">
+<span class="material-symbols-outlined text-sm">upload_file</span>
+                                    Upload New Asset
+                                    <input class="hidden" type="file"/>
+</label>
+<p class="text-[9px] text-text-dim mt-2 font-mono">Recommended: 200x200px PNG (Transparent)</p>
+</div>
+</div>
+</div>
+<div class="space-y-6 bg-surface-light/30 p-4 rounded-sm border border-white/5">
+<div class="flex items-center gap-2 mb-2 pb-2 border-b border-white/5">
+<span class="material-symbols-outlined text-text-dim text-sm">trending_up</span>
+<span class="text-xs text-white font-mono uppercase tracking-widest">Timeline Progress</span>
+</div>
+<div>
+<div class="flex justify-between items-end mb-2">
+<label class="mb-0 text-white">Completion Percentage</label>
+<span class="text-primary font-mono text-lg font-bold">100%</span>
+</div>
+<input class="w-full accent-primary" max="100" min="0" step="1" type="range" value="100"/>
+</div>
+<div class="space-y-4 pt-4 border-t border-white/5">
+<div class="grid gap-3">
+<div class="flex gap-2">
+<div class="flex-1">
+<label>Metric 1 Label</label>
+<input class="w-full" type="text" value="Web Development"/>
+</div>
+<div class="w-20">
+<label>Grade</label>
+<input class="w-full text-center text-primary font-bold" type="text" value="Top 1%"/>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<input class="flex-1 accent-primary" max="100" min="0" step="1" type="range" value="99"/>
+<span class="text-xs font-mono text-text-dim w-8 text-right">99%</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-6 border-t border-white/10 bg-surface-dark flex gap-4">
+<button class="flex-1 bg-primary hover:bg-primary-dim text-white text-xs font-bold py-3 px-4 rounded-sm uppercase tracking-widest transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">save</span> Update Record
+            </button>
+</div>
+</div>
+<div class="glass-panel rounded-sm border border-border-dark border-dashed relative overflow-hidden flex flex-col min-h-[500px] group">
+<div class="admin-card-header p-6 flex justify-between items-center opacity-50 group-hover:opacity-100 transition-opacity">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-light border border-white/10 flex items-center justify-center text-white/40 group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-lg">add_task</span>
+</div>
+<div>
+<h3 class="text-sm font-bold text-white tracking-widest">CARD_03</h3>
+<span class="text-[10px] text-text-dim font-mono uppercase">New Institution Entry</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-[9px] bg-white/5 text-text-dim border border-white/10 px-2 py-0.5 rounded-sm font-mono uppercase">Draft</span>
+</div>
+</div>
+<div class="flex-1 flex flex-col items-center justify-center p-8 text-center space-y-6">
+<div class="w-20 h-20 rounded-full bg-primary/5 border border-primary/20 flex items-center justify-center group-hover:scale-110 group-hover:border-primary/50 transition-all duration-500">
+<span class="material-symbols-outlined text-4xl text-primary/40 group-hover:text-primary animate-pulse">add</span>
+</div>
+<div class="space-y-2">
+<h4 class="text-white font-bold tracking-widest text-sm uppercase">Add Education Card</h4>
+<p class="text-[10px] text-text-dim font-mono max-w-[200px] mx-auto uppercase">Expand your academic foundation by adding a new educational milestone.</p>
+</div>
+<button class="w-full max-w-[200px] bg-transparent hover:bg-primary/10 border border-primary/30 text-primary text-[10px] font-bold py-3 px-4 rounded-sm uppercase tracking-widest transition-all">
+            Initialize CARD_03
+        </button>
+</div>
+<div class="px-8 pb-8 opacity-0 group-hover:opacity-20 transition-opacity pointer-events-none">
+<div class="space-y-4">
+<div class="h-1 bg-white/5 rounded"></div>
+<div class="grid grid-cols-2 gap-2">
+<div class="h-8 bg-white/5 rounded"></div>
+<div class="h-8 bg-white/5 rounded"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-12 flex justify-center">
+<button class="bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 py-4 px-12 rounded-sm flex items-center gap-3 transition-all group">
+<span class="material-symbols-outlined text-xl group-hover:rotate-90 transition-transform">add_circle</span>
+<span class="text-xs font-bold uppercase tracking-[0.3em]">Add New Card Slot</span>
+</button>
+</div>
+</main>
+<footer class="w-full border-t border-border-dark bg-surface-dark py-8 mt-auto">
+<div class="max-w-7xl mx-auto px-6 md:px-12 flex flex-col md:flex-row justify-between items-center text-xs text-text-dim font-mono">
+<div class="flex items-center gap-3 tracking-[0.1em]">
+<span class="size-1.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_#22c55e]"></span>
+                DATABASE STATUS: CONNECTED
+            </div>
+<div class="mt-4 md:mt-0 tracking-[0.2em]">
+                ADMIN CONSOLE V.1.1 // ENHANCED_EDUCATION
+            </div>
+</div>
+</footer>
+
+</body></html>
