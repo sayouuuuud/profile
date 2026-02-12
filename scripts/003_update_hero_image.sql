@@ -1,0 +1,4 @@
+-- Update hero image URL in site_settings
+UPDATE public.site_settings
+SET hero_image_url = 'https://lh3.googleusercontent.com/aida-public/AB6AXuBnhDVNl5A_YaL_GiK8LLgK_7KxDeEy3OOABcU7Gl4rPg9VGJoj5GhGuRfv1M06Etb6404f-1jNaLb-0zib9pEcVBS9wtzYqI6bVPp-L7sNyzKEn47UvP7Mp2a--qxu01p1w9REp29CdeAsNoG-hFPnJZagqMlOKl9gONd9jSypOLNvzrsqli8v7dvCxF93o9GJtPodIP68ei4MdOeeH4-fvbai3G0vs1hRjbzhUmOKN9r8lBWb3EeI2qBbfw5bt01sPNqsfhpDPm0'
+WHERE hero_name = 'SAYED ELSHAZLY';

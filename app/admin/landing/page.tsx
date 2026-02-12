@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 import { Save, Rocket, BarChart3, FileText, Loader2 } from "lucide-react";
+import { ImageUpload } from "@/components/admin/image-upload";
 
 export default function AdminLandingPage() {
   const supabase = createClient();
@@ -39,6 +40,7 @@ export default function AdminLandingPage() {
           hero_class: settings.hero_class,
           hero_status: settings.hero_status,
           hero_location: settings.hero_location,
+          hero_image_url: settings.hero_image_url,
           contact_email: settings.contact_email,
         }).eq("id", settings.id);
       }
@@ -132,6 +134,11 @@ export default function AdminLandingPage() {
               className="bg-background border border-border rounded px-3 py-2 text-sm text-foreground font-mono focus:border-primary focus:outline-none transition-colors resize-none"
             />
           </div>
+          <ImageUpload
+            label="Hero Image"
+            value={settings.hero_image_url || ""}
+            onChange={(url) => setSettings({ ...settings, hero_image_url: url })}
+          />
         </section>
 
         {/* Metrics */}

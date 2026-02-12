@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client"
 import Link from "next/link"
 import { ArrowRight, Zap, Target, Shield, ShoppingCart } from "lucide-react"
 import { ScrollReveal } from "@/components/scroll-reveal"
+import { Header } from "@/components/landing/header"
 
 export default function CaseStudiesPage() {
   const [caseStudies, setCaseStudies] = useState<any[] | null>(null)
@@ -36,27 +37,7 @@ export default function CaseStudiesPage() {
       {/* Scanline */}
       <div className="fixed inset-0 z-50 pointer-events-none" style={{ background: "linear-gradient(to bottom, transparent 50%, rgba(16,185,129,0.03) 51%)", backgroundSize: "100% 4px" }} />
 
-      {/* Header */}
-      <header className="relative z-50 flex items-center justify-between whitespace-nowrap border-b border-border px-6 md:px-10 py-4 sticky top-0" style={{ background: "rgba(10,10,10,0.7)", backdropFilter: "blur(12px)" }}>
-        <div className="flex items-center gap-4">
-          <div className="size-6 text-primary animate-pulse">
-            <Target className="size-6" />
-          </div>
-          <h2 className="text-foreground text-lg font-bold leading-tight tracking-tight">SAYED ELSHAZLY</h2>
-          <span className="hidden md:block h-4 w-px bg-border mx-2" />
-          <span className="hidden md:block text-xs font-mono text-primary bg-primary/10 px-2 py-1 rounded border border-primary/20">SYSTEM_ARCHIVE</span>
-        </div>
-        <div className="flex items-center gap-8">
-          <div className="hidden md:flex items-center gap-9">
-            <Link href="/case-studies" className="text-foreground hover:text-primary transition-colors text-xs font-mono uppercase tracking-wider">Missions</Link>
-            <Link href="/" className="text-muted-foreground hover:text-primary transition-colors text-xs font-mono uppercase tracking-wider">Intel</Link>
-            <Link href="/#contact" className="text-muted-foreground hover:text-primary transition-colors text-xs font-mono uppercase tracking-wider">Contact</Link>
-          </div>
-          <Link href="/" className="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded bg-foreground hover:bg-foreground/80 transition-colors text-background text-xs font-bold h-8 px-4 tracking-wider uppercase">
-            {"Status: Active"}
-          </Link>
-        </div>
-      </header>
+      <Header />
 
       <main className="flex-1 relative flex flex-col w-full max-w-7xl mx-auto z-10 pb-20">
         {/* Hero Section */}

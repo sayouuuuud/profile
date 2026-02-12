@@ -11,7 +11,7 @@ interface Metric {
   icon: string | null
 }
 
-function AnimatedNumber({ target, suffix }: { target: string; suffix: string }) {
+function AnimatedNumber({ target, suffix, suffixColor = "#10b981" }: { target: string; suffix: string; suffixColor?: string }) {
   const ref = useRef<HTMLDivElement>(null)
   const [display, setDisplay] = useState("0")
 
@@ -45,8 +45,8 @@ function AnimatedNumber({ target, suffix }: { target: string; suffix: string }) 
   }, [target])
 
   return (
-    <div ref={ref} className="text-5xl font-light text-foreground tracking-tighter">
-      {display}<span className="text-2xl text-emerald">{suffix}</span>
+    <div ref={ref} className="text-5xl font-light text-white tracking-tighter">
+      {display}<span className="text-2xl" style={{ color: suffixColor }}>{suffix}</span>
     </div>
   )
 }
@@ -60,18 +60,19 @@ export function MetricsSection({ metrics }: { metrics: Metric[] }) {
 
   return (
     <section className="px-6 md:px-12 py-12" id="metrics">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full items-stretch">
         {[0, 1, 2].map((i) => (
-          <ScrollReveal key={i} delay={(i + 1) * 100}>
-            <div className="glass-panel p-8 rounded-sm border border-border relative group overflow-hidden flex flex-col justify-between min-h-[220px] hover:border-emerald/30 transition-all duration-500">
+          <ScrollReveal key={i} delay={(i + 1) * 100} className="h-full">
+            <div className="glass-panel p-8 rounded-sm border border-[#1f2937] relative group overflow-hidden flex flex-col justify-between h-full min-h-[220px] hover:border-[#10b981]/30 transition-all duration-500">
               <div className="flex justify-between items-start mb-4">
                 <div>
-                  <h3 className="text-sm font-mono text-text-dim uppercase tracking-[0.2em] mb-2">
+                  <h3 className="text-sm font-mono text-[#6b7280] uppercase tracking-[0.2em] mb-2">
                     {metrics[i]?.title || defaultMetrics[i].title}
                   </h3>
                   <AnimatedNumber
                     target={metrics[i]?.value || defaultMetrics[i].value}
-                    suffix={metrics[i]?.suffix || defaultMetrics[i].suffix}
+                    suffix={i === 1 ? "+" : (metrics[i]?.suffix || defaultMetrics[i].suffix)}
+                    suffixColor={i === 1 ? "#f97316" : "#10b981"}
                   />
                 </div>
               </div>
@@ -79,13 +80,13 @@ export function MetricsSection({ metrics }: { metrics: Metric[] }) {
                 {i === 0 && (
                   <div className="h-16 flex items-end gap-1 w-full opacity-50">
                     {[20, 40, 30, 60, 50, 80, 10].map((h, j) => (
-                      <div key={j} className={`w-full transition-all duration-700 ${j === 6 ? "bg-emerald" : "bg-emerald/10"}`} style={{ height: `${h}%`, transitionDelay: `${j * 100}ms` }} />
+                      <div key={j} className={`w-full transition-all duration-700 ${j === 6 ? "bg-[#10b981]" : "bg-[#10b981]/10"}`} style={{ height: `${h}%`, transitionDelay: `${j * 100}ms` }} />
                     ))}
                   </div>
                 )}
                 {i === 1 && (
                   <div className="flex items-center gap-2 mb-2">
-                    <div className="h-1 w-full bg-border rounded-full overflow-hidden">
+                    <div className="h-1 w-full bg-[#1f2937] rounded-full overflow-hidden">
                       <div className="h-full bg-orange-500 w-[85%] transition-all duration-1000" />
                     </div>
                     <span className="text-xs font-mono text-orange-500">85%</span>
@@ -105,7 +106,7 @@ export function MetricsSection({ metrics }: { metrics: Metric[] }) {
                     </svg>
                   </div>
                 )}
-                <p className="text-[10px] text-text-dim font-mono mt-3 uppercase tracking-wider">{defaultMetrics[i].label}</p>
+                <p className="text-[10px] text-[#6b7280] font-mono mt-3 uppercase tracking-wider">{defaultMetrics[i].label}</p>
               </div>
             </div>
           </ScrollReveal>
