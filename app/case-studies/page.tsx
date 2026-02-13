@@ -92,9 +92,17 @@ export default function CaseStudiesPage() {
                 >
                   {/* Background */}
                   <div className="absolute inset-0 z-0">
-                    <div className="w-full h-full bg-gradient-to-br from-surface-dark to-gray-900 transition-all duration-500 relative group-hover:opacity-20 group-hover:grayscale">
-                      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent" />
-                    </div>
+                    {cs.thumbnail_url ? (
+                      <img
+                        src={cs.thumbnail_url}
+                        alt={cs.title}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-40 group-hover:opacity-20 group-hover:grayscale"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-surface-dark to-gray-900 transition-all duration-500 relative group-hover:opacity-20 group-hover:grayscale" />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
 
                   {/* Content */}

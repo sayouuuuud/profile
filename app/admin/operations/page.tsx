@@ -26,11 +26,12 @@ export default function AdminOperationsPage() {
       for (const op of operations) {
         if (op.id) {
           const { id, created_at, updated_at, ...rest } = op;
-          await supabase.from("operations").update({ ...rest, updated_at: new Date().toISOString() }).eq("id", id);
+          const { error } = await supabase.from("operations").update({ ...rest, updated_at: new Date().toISOString() }).eq("id", id);
+          if (error) throw error;
         }
       }
       setMessage("Operations saved.");
-    } catch { setMessage("Error saving."); }
+    } catch (err: any) { setMessage(err.message || "Error saving."); }
     setSaving(false);
   }
 

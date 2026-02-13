@@ -30,17 +30,19 @@ export default function AdminDatalinksPage() {
       for (const link of socialLinks) {
         if (link.id) {
           const { id, created_at, updated_at, ...rest } = link;
-          await supabase.from("social_links").update({ ...rest, updated_at: new Date().toISOString() }).eq("id", id);
+          const { error } = await supabase.from("social_links").update({ ...rest, updated_at: new Date().toISOString() }).eq("id", id);
+          if (error) throw error;
         }
       }
       for (const dl of datalinks) {
         if (dl.id) {
           const { id, created_at, updated_at, ...rest } = dl;
-          await supabase.from("datalinks").update({ ...rest, updated_at: new Date().toISOString() }).eq("id", id);
+          const { error } = await supabase.from("datalinks").update({ ...rest, updated_at: new Date().toISOString() }).eq("id", id);
+          if (error) throw error;
         }
       }
       setMessage("Datalinks saved.");
-    } catch { setMessage("Error."); }
+    } catch (err: any) { setMessage(err.message || "Error saving."); }
     setSaving(false);
   }
 

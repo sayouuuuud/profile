@@ -30,16 +30,18 @@ export default function AdminSkillsPage() {
     try {
       for (const cat of categories) {
         if (cat.id) {
-          await supabase.from("skill_categories").update({ name: cat.name, proficiency: cat.proficiency, sort_order: cat.sort_order }).eq("id", cat.id);
+          const { error } = await supabase.from("skill_categories").update({ name: cat.name, proficiency: cat.proficiency, sort_order: cat.sort_order }).eq("id", cat.id);
+          if (error) throw error;
         }
       }
       for (const sk of skills) {
         if (sk.id) {
-          await supabase.from("skills").update({ name: sk.name, level: sk.level, sort_order: sk.sort_order }).eq("id", sk.id);
+          const { error } = await supabase.from("skills").update({ name: sk.name, level: sk.level, sort_order: sk.sort_order }).eq("id", sk.id);
+          if (error) throw error;
         }
       }
       setMessage("Skills saved.");
-    } catch { setMessage("Error."); }
+    } catch (err: any) { setMessage(err.message || "Error saving."); }
     setSaving(false);
   }
 

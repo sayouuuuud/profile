@@ -32,7 +32,7 @@ export default function AdminLandingPage() {
     setMessage("");
     try {
       if (settings) {
-        await supabase.from("site_settings").update({
+        const { error } = await supabase.from("site_settings").update({
           hero_name: settings.hero_name,
           hero_subtitle: settings.hero_subtitle,
           hero_description: settings.hero_description,
@@ -43,23 +43,26 @@ export default function AdminLandingPage() {
           hero_image_url: settings.hero_image_url,
           contact_email: settings.contact_email,
         }).eq("id", settings.id);
+        if (error) throw error;
       }
       for (const m of metrics) {
-        await supabase.from("metrics").update({
+        const { error } = await supabase.from("metrics").update({
           title: m.title, value: m.value, suffix: m.suffix,
         }).eq("id", m.id);
+        if (error) throw error;
       }
       if (brief) {
-        await supabase.from("executive_brief").update({
+        const { error } = await supabase.from("executive_brief").update({
           philosophy: brief.philosophy,
           operating_model: brief.operating_model,
           velocity_factor: brief.velocity_factor,
           summary: brief.summary,
         }).eq("id", brief.id);
+        if (error) throw error;
       }
       setMessage("All changes saved successfully.");
-    } catch {
-      setMessage("Error saving changes.");
+    } catch (err: any) {
+      setMessage(err.message || "Error saving changes.");
     }
     setSaving(false);
   }

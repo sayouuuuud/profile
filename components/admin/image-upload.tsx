@@ -1,8 +1,9 @@
 "use client"
 
 import { createClient } from "@/lib/supabase/client"
-import { Upload, X, Loader2 } from "lucide-react"
+import { Upload, X, Loader2, Play } from "lucide-react"
 import { useState, useRef } from "react"
+import { VideoModal } from "@/components/ui/video-modal"
 
 interface ImageUploadProps {
   value: string
@@ -21,13 +22,13 @@ export function ImageUpload({ value, onChange, label, bucket = "images" }: Image
     const file = e.target.files?.[0]
     if (!file) return
 
-    if (!file.type.startsWith("image/")) {
-      setError("Please select an image file")
+    if (!file.type.startsWith("image/") && !file.type.startsWith("video/")) {
+      setError("Please select an image or video file")
       return
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      setError("Image must be less than 5MB")
+    if (file.size > 100 * 1024 * 1024) { // 100MB limit
+      setError("File must be less than 100MB")
       return
     }
 
@@ -35,23 +36,28 @@ export function ImageUpload({ value, onChange, label, bucket = "images" }: Image
     setError("")
 
     try {
-      const fileExt = file.name.split(".").pop()
-      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`
-      const filePath = `${fileName}`
+      const formData = new FormData()
+      formData.append("file", file)
+      formData.append("upload_preset", process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "portfolio_unsigned")
+      formData.append("cloud_name", process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "")
 
-      const { error: uploadError, data } = await supabase.storage
-        .from(bucket)
-        .upload(filePath, file, {
-          cacheControl: "3600",
-          upsert: false,
-        })
+      const res = await fetch(
+        `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/auto/upload`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      )
 
-      if (uploadError) throw uploadError
+      const data = await res.json()
 
-      const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(filePath)
-      onChange(urlData.publicUrl)
+      if (!res.ok) {
+        throw new Error(data.error?.message || "Upload failed")
+      }
+
+      onChange(data.secure_url)
     } catch (err: any) {
-      setError(err.message || "Failed to upload image")
+      setError(err.message || "Failed to upload file")
     } finally {
       setUploading(false)
     }
@@ -64,24 +70,53 @@ export function ImageUpload({ value, onChange, label, bucket = "images" }: Image
     }
   }
 
+  // Determine file type from URL or leave ambiguous
+  const isVideo = value?.match(/\.(mp4|webm|mov)$/i) || value?.includes("/video/upload/");
+
   return (
     <div className="flex flex-col gap-2">
       <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">
         {label}
       </label>
-      
+
       <div className="relative">
         {value ? (
           <div className="relative group">
-            <img
-              src={value}
-              alt="Preview"
-              className="w-full h-40 object-cover rounded border border-border"
-            />
+            {isVideo ? (
+              <VideoModal
+                videoUrl={value}
+                trigger={
+                  <div className="w-full aspect-video bg-black rounded border border-border flex items-center justify-center cursor-pointer group/video overflow-hidden relative">
+                    {/* Grid Background */}
+                    <div className="absolute inset-0 opacity-20"
+                      style={{ backgroundImage: "linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px)", backgroundSize: "20px 20px" }}
+                    />
+
+                    {/* Video Element (Muted/Loop for preview) */}
+                    <video src={value} className="absolute inset-0 w-full h-full object-cover opacity-50" muted loop playsInline onMouseOver={e => e.currentTarget.play()} onMouseOut={e => e.currentTarget.pause()} />
+
+                    {/* Play Button Overlay */}
+                    <div className="relative z-10 size-12 rounded-full bg-[#10b981]/10 border border-[#10b981] flex items-center justify-center backdrop-blur-sm group-hover/video:scale-110 transition-transform">
+                      <Play className="size-5 text-[#10b981] ml-0.5" />
+                    </div>
+
+                    <div className="absolute bottom-2 left-2 px-2 py-0.5 bg-black/50 border border-[#10b981]/30 rounded text-[9px] font-mono text-[#10b981]">
+                      PREVIEW TRANSMISSION
+                    </div>
+                  </div>
+                }
+              />
+            ) : (
+              <img
+                src={value}
+                alt="Preview"
+                className="w-full h-40 object-cover rounded border border-border"
+              />
+            )}
             <button
               type="button"
               onClick={handleRemove}
-              className="absolute top-2 right-2 p-1.5 bg-red-500/90 hover:bg-red-500 text-white rounded opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute top-2 right-2 p-1.5 bg-red-500/90 hover:bg-red-500 text-white rounded opacity-0 group-hover:opacity-100 transition-opacity z-20"
             >
               <X className="size-4" />
             </button>
@@ -95,16 +130,16 @@ export function ImageUpload({ value, onChange, label, bucket = "images" }: Image
                 <Upload className="size-8 text-muted-foreground" />
               )}
               <p className="text-xs font-mono text-muted-foreground">
-                {uploading ? "Uploading..." : "Click to upload image"}
+                {uploading ? "Uploading..." : "Click to upload"}
               </p>
               <p className="text-[10px] font-mono text-muted-foreground/60">
-                PNG, JPG up to 5MB
+                Images or Video up to 100MB
               </p>
             </div>
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/*"
+              accept="image/*,video/*"
               onChange={handleFileChange}
               disabled={uploading}
               className="hidden"

@@ -25,11 +25,12 @@ export default function AdminEducationPage() {
       for (const edu of education) {
         if (edu.id) {
           const { id, created_at, updated_at, ...rest } = edu;
-          await supabase.from("education").update({ ...rest, updated_at: new Date().toISOString() }).eq("id", id);
+          const { error } = await supabase.from("education").update({ ...rest, updated_at: new Date().toISOString() }).eq("id", id);
+          if (error) throw error;
         }
       }
       setMessage("Education saved.");
-    } catch { setMessage("Error."); }
+    } catch (err: any) { setMessage(err.message || "Error saving."); }
     setSaving(false);
   }
 

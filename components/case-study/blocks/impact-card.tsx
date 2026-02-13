@@ -12,10 +12,10 @@ interface ImpactCardData {
 
 export function ImpactCard({ data }: { data: ImpactCardData }) {
   return (
-    <div className="glass-panel border border-[#1f2937] p-8 rounded-sm relative overflow-hidden group">
+    <div className="glass-panel border border-[#1f2937] p-8 rounded-sm relative overflow-hidden group h-full flex flex-col justify-between">
       {/* Background glow */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#10b981]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-      
+
       <div className="relative z-10 space-y-6">
         {/* Title */}
         <div className="flex items-center justify-between">
@@ -44,7 +44,7 @@ export function ImpactCard({ data }: { data: ImpactCardData }) {
           {/* Arrow */}
           <div className="flex items-center justify-center">
             <svg className="w-12 h-12 text-[#10b981]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
 

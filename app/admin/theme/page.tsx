@@ -23,9 +23,10 @@ export default function AdminThemePage() {
     setSaving(true);
     try {
       const { id, ...rest } = theme;
-      await supabase.from("theme_settings").update({ ...rest, updated_at: new Date().toISOString() }).eq("id", id);
+      const { error } = await supabase.from("theme_settings").update({ ...rest, updated_at: new Date().toISOString() }).eq("id", id);
+      if (error) throw error;
       setMessage("Theme saved.");
-    } catch { setMessage("Error."); }
+    } catch (err: any) { setMessage(err.message || "Error saving."); }
     setSaving(false);
   }
 

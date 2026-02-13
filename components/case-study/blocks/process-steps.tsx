@@ -7,13 +7,13 @@ interface ProcessStepsData {
 
 export function ProcessSteps({ data }: { data: ProcessStepsData }) {
   const steps = data.steps || []
-  
+
   return (
-    <div className="glass-panel border border-[#1f2937] p-8 rounded-sm space-y-6">
+    <div className="glass-panel border border-[#1f2937] p-8 rounded-sm space-y-6 h-full flex flex-col">
       <h3 className="text-xs font-mono text-[#10b981] uppercase tracking-[0.2em]">
         {data.title || "PROCESS"}
       </h3>
-      
+
       <div className="space-y-4">
         {steps.map((step, i) => (
           <div key={i} className="flex gap-4 group">
@@ -21,7 +21,7 @@ export function ProcessSteps({ data }: { data: ProcessStepsData }) {
             <div className="flex-shrink-0 w-12 h-12 rounded-sm bg-[#10b981]/10 border border-[#10b981]/30 flex items-center justify-center text-xl font-bold text-[#10b981] group-hover:scale-110 transition-transform">
               {step.number || (i + 1)}
             </div>
-            
+
             {/* Content */}
             <div className="flex-1 pt-1">
               <h4 className="text-sm font-bold text-white mb-2">{step.title}</h4>

@@ -25,11 +25,12 @@ export default function AdminCertificatesPage() {
       for (const cert of certificates) {
         if (cert.id) {
           const { id, created_at, updated_at, ...rest } = cert;
-          await supabase.from("certificates").update({ ...rest, updated_at: new Date().toISOString() }).eq("id", id);
+          const { error } = await supabase.from("certificates").update({ ...rest, updated_at: new Date().toISOString() }).eq("id", id);
+          if (error) throw error;
         }
       }
       setMessage("Certificates saved.");
-    } catch { setMessage("Error."); }
+    } catch (err: any) { setMessage(err.message || "Error saving."); }
     setSaving(false);
   }
 

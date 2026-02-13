@@ -330,7 +330,7 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (data: any) 
           <FieldRow label="Language"><Input value={d.lang || ""} onChange={(v) => set("lang", v)} /></FieldRow>
           <FieldRow label="Content (JSON)">
             <textarea value={JSON.stringify(d.content || [], null, 2)}
-              onChange={(e) => { try { set("content", JSON.parse(e.target.value)) } catch {} }}
+              onChange={(e) => { try { set("content", JSON.parse(e.target.value)) } catch { } }}
               rows={8}
               className="w-full bg-background border border-border rounded px-3 py-2 text-xs text-foreground font-mono focus:border-primary focus:outline-none resize-none"
               spellCheck={false} />
@@ -571,9 +571,10 @@ function FieldRow({ label, children }: { label: string; children: React.ReactNod
     </div>
   )
 }
-function Input({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+function Input({ value, onChange, ...props }: Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> & { value: string; onChange: (v: string) => void }) {
   return <input type="text" value={value} onChange={(e) => onChange(e.target.value)}
-    className="bg-background border border-border rounded px-3 py-2 text-sm text-foreground font-mono focus:border-primary focus:outline-none transition-colors w-full" />
+    className="bg-background border border-border rounded px-3 py-2 text-sm text-foreground font-mono focus:border-primary focus:outline-none transition-colors w-full"
+    {...props} />
 }
 function TextArea({ value, onChange, rows = 2 }: { value: string; onChange: (v: string) => void; rows?: number }) {
   return <textarea value={value} onChange={(e) => onChange(e.target.value)} rows={rows}
@@ -606,15 +607,33 @@ export default function AdminCaseStudies() {
     setMessage("")
     try {
       const { id, created_at, updated_at, ...rest } = selected
+      let error
       if (id) {
-        await supabase.from("case_studies").update({ ...rest, updated_at: new Date().toISOString() }).eq("id", id)
+        const res = await supabase.from("case_studies").update({ ...rest, updated_at: new Date().toISOString() }).eq("id", id)
+        error = res.error
       } else {
-        await supabase.from("case_studies").insert(rest)
+        const res = await supabase.from("case_studies").insert(rest)
+        error = res.error
       }
+      if (error) throw error
       await loadStudies()
       setMessage("Case study saved.")
-    } catch {
-      setMessage("Error saving.")
+    } catch (err: any) {
+      console.error("Save Error:", err)
+      let errorMsg = err.message
+      if (!errorMsg && typeof err === 'object') {
+        try {
+          errorMsg = JSON.stringify(err, null, 2)
+          if (errorMsg === '{}') {
+            // If JSON.stringify gives empty object, try to get properties explicitly
+            const props = Object.getOwnPropertyNames(err).reduce((acc: any, key) => { acc[key] = err[key]; return acc; }, {})
+            errorMsg = JSON.stringify(props, null, 2)
+          }
+        } catch (e) {
+          errorMsg = "Unserializable Error"
+        }
+      }
+      setMessage(`Error: ${errorMsg || "Unknown error occurred"}`)
     }
     setSaving(false)
   }
@@ -630,6 +649,7 @@ export default function AdminCaseStudies() {
     setSelected({
       slug: "", title: "", subtitle: "", client: "", category: "", status: "COMPLETED",
       duration: "", team_size: "", summary: "", challenge: "", solution: "", impact: "",
+      website_url: "", video_url: "",
       hero_tag: "", footer_text: "",
       tags: [], metrics: [], tech_stack: [], content_blocks: [],
       is_featured: false, is_visible: true, sort_order: studies.length,
@@ -748,141 +768,151 @@ export default function AdminCaseStudies() {
 
             {/* Basic Fields */}
             {activeTab === "info" && (
-            <section className="p-6 rounded border border-border bg-surface-dark/50 space-y-4">
-              <h2 className="text-sm font-bold text-foreground tracking-widest flex items-center gap-2">
-                <BookOpen className="size-4 text-primary" /> MISSION CONFIGURATION
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {[
-                  { key: "title", label: "Title" }, { key: "slug", label: "Slug" }, { key: "subtitle", label: "Subtitle" },
-                  { key: "client", label: "Client" }, { key: "category", label: "Category" }, { key: "status", label: "Status" },
-                  { key: "duration", label: "Duration" }, { key: "team_size", label: "Team Size" },
-                  { key: "hero_tag", label: "Hero Tag" }, { key: "date", label: "Date" },
-                ].map(({ key, label }) => (
-                  <FieldRow key={key} label={label}>
-                    <Input value={selected[key] || ""} onChange={(v) => setSelected({ ...selected, [key]: v })} />
+              <section className="p-6 rounded border border-border bg-surface-dark/50 space-y-4">
+                <h2 className="text-sm font-bold text-foreground tracking-widest flex items-center gap-2">
+                  <BookOpen className="size-4 text-primary" /> MISSION CONFIGURATION
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {[
+                    { key: "title", label: "Title" }, { key: "slug", label: "Slug" }, { key: "subtitle", label: "Subtitle" },
+                    { key: "client", label: "Client" }, { key: "category", label: "Category" }, { key: "status", label: "Status" },
+                    { key: "duration", label: "Duration" }, { key: "team_size", label: "Team Size" },
+                    { key: "hero_tag", label: "Hero Tag" }, { key: "date", label: "Date" },
+                    { key: "website_url", label: "Website URL" },
+                  ].map(({ key, label }) => (
+                    <FieldRow key={key} label={label}>
+                      <Input value={selected[key] || ""} onChange={(v) => setSelected({ ...selected, [key]: v })} />
+                    </FieldRow>
+                  ))}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <ImageUpload
+                    label="Video Asset"
+                    value={selected.video_url || ""}
+                    onChange={(url) => setSelected({ ...selected, video_url: url })}
+                  />
+                </div>
+
+                {["summary", "footer_text"].map((key) => (
+                  <FieldRow key={key} label={key.replace(/_/g, " ")}>
+                    <TextArea value={selected[key] || ""} onChange={(v) => setSelected({ ...selected, [key]: v })} rows={3} />
                   </FieldRow>
                 ))}
-              </div>
-              {["summary", "footer_text"].map((key) => (
-                <FieldRow key={key} label={key.replace(/_/g, " ")}>
-                  <TextArea value={selected[key] || ""} onChange={(v) => setSelected({ ...selected, [key]: v })} rows={3} />
+                <FieldRow label="Tech Stack (comma-separated)">
+                  <Input value={(selected.tech_stack || []).join(", ")} onChange={(v) => setSelected({ ...selected, tech_stack: v.split(",").map((s: string) => s.trim()).filter(Boolean) })} />
                 </FieldRow>
-              ))}
-              <FieldRow label="Tech Stack (comma-separated)">
-                <Input value={(selected.tech_stack || []).join(", ")} onChange={(v) => setSelected({ ...selected, tech_stack: v.split(",").map((s: string) => s.trim()).filter(Boolean) })} />
-              </FieldRow>
-              <div className="flex items-center gap-4">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" checked={selected.is_featured || false} onChange={(e) => setSelected({ ...selected, is_featured: e.target.checked })} className="accent-emerald-500" />
-                  <span className="text-xs font-mono text-muted-foreground uppercase">Featured</span>
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" checked={selected.is_visible !== false} onChange={(e) => setSelected({ ...selected, is_visible: e.target.checked })} className="accent-emerald-500" />
-                  <span className="text-xs font-mono text-muted-foreground uppercase">Visible</span>
-                </label>
-              </div>
-            </section>
+                <div className="flex items-center gap-4">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" checked={selected.is_featured || false} onChange={(e) => setSelected({ ...selected, is_featured: e.target.checked })} className="accent-emerald-500" />
+                    <span className="text-xs font-mono text-muted-foreground uppercase">Featured</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" checked={selected.is_visible !== false} onChange={(e) => setSelected({ ...selected, is_visible: e.target.checked })} className="accent-emerald-500" />
+                    <span className="text-xs font-mono text-muted-foreground uppercase">Visible</span>
+                  </label>
+                </div>
+              </section>
             )}
 
             {/* ======== CONTENT BLOCKS BUILDER ======== */}
             {activeTab === "blocks" && (
-            <section className="p-6 rounded border border-border bg-surface-dark/50 space-y-4">
-              <div className="flex items-center justify-between">
-                <h2 className="text-sm font-bold text-foreground tracking-widest flex items-center gap-2">
-                  <GripVertical className="size-4 text-primary" /> CONTENT BLOCKS
-                  <span className="text-[10px] font-mono text-muted-foreground ml-2">({(selected.content_blocks || []).length} blocks)</span>
-                </h2>
-                <button type="button" onClick={() => setShowModal(true)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 hover:bg-primary/20 text-primary text-xs font-mono border border-primary/30 rounded transition-colors">
-                  <Plus className="size-3" /> Add Block
-                </button>
-              </div>
+              <section className="p-6 rounded border border-border bg-surface-dark/50 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-sm font-bold text-foreground tracking-widest flex items-center gap-2">
+                    <GripVertical className="size-4 text-primary" /> CONTENT BLOCKS
+                    <span className="text-[10px] font-mono text-muted-foreground ml-2">({(selected.content_blocks || []).length} blocks)</span>
+                  </h2>
+                  <button type="button" onClick={() => setShowModal(true)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 hover:bg-primary/20 text-primary text-xs font-mono border border-primary/30 rounded transition-colors">
+                    <Plus className="size-3" /> Add Block
+                  </button>
+                </div>
 
-              {/* Blocks list */}
-              <div className="space-y-3">
-                {(selected.content_blocks || []).map((block: Block, idx: number) => {
-                  const def = BLOCK_REGISTRY.find(b => b.type === block.type)
-                  const IconComp = BLOCK_ICONS[def?.icon || "Zap"] || Zap
-                  const isExpanded = expandedBlocks[block.id]
-                  return (
-                    <div key={block.id} className={`border rounded overflow-hidden transition-colors ${isExpanded ? "border-primary/40 bg-primary/[0.02]" : "border-border"}`}>
-                      {/* Block header */}
-                      <div className="flex items-center gap-3 px-4 py-3 bg-background hover:bg-foreground/[0.02] transition-colors">
-                        {/* Reorder */}
-                        <div className="flex flex-col gap-0.5">
-                          <button type="button" onClick={() => moveBlock(block.id, "up")} disabled={idx === 0}
-                            className="text-muted-foreground hover:text-foreground disabled:opacity-20 transition-colors"><ArrowUp className="size-3" /></button>
-                          <button type="button" onClick={() => moveBlock(block.id, "down")} disabled={idx === (selected.content_blocks || []).length - 1}
-                            className="text-muted-foreground hover:text-foreground disabled:opacity-20 transition-colors"><ArrowDown className="size-3" /></button>
+                {/* Blocks list */}
+                <div className="space-y-3">
+                  {(selected.content_blocks || []).map((block: Block, idx: number) => {
+                    const def = BLOCK_REGISTRY.find(b => b.type === block.type)
+                    const IconComp = BLOCK_ICONS[def?.icon || "Zap"] || Zap
+                    const isExpanded = expandedBlocks[block.id]
+                    return (
+                      <div key={block.id} className={`border rounded overflow-hidden transition-colors ${isExpanded ? "border-primary/40 bg-primary/[0.02]" : "border-border"}`}>
+                        {/* Block header */}
+                        <div className="flex items-center gap-3 px-4 py-3 bg-background hover:bg-foreground/[0.02] transition-colors">
+                          {/* Reorder */}
+                          <div className="flex flex-col gap-0.5">
+                            <button type="button" onClick={() => moveBlock(block.id, "up")} disabled={idx === 0}
+                              className="text-muted-foreground hover:text-foreground disabled:opacity-20 transition-colors"><ArrowUp className="size-3" /></button>
+                            <button type="button" onClick={() => moveBlock(block.id, "down")} disabled={idx === (selected.content_blocks || []).length - 1}
+                              className="text-muted-foreground hover:text-foreground disabled:opacity-20 transition-colors"><ArrowDown className="size-3" /></button>
+                          </div>
+                          {/* Icon + info */}
+                          <div className="size-8 rounded bg-primary/10 flex items-center justify-center shrink-0">
+                            <IconComp className="size-4 text-primary" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-xs font-bold text-foreground truncate">{def?.label || block.type}</div>
+                            <div className="text-[10px] text-muted-foreground font-mono">{def?.category}</div>
+                          </div>
+                          {/* Width selector */}
+                          <div className="flex gap-1 shrink-0">
+                            {(def?.widths || WIDTH_OPTIONS.map(w => w.value)).map((w) => (
+                              <button key={w} type="button" onClick={() => updateBlock(block.id, { width: w as BlockWidth })}
+                                className={`text-[9px] font-mono px-2 py-1 rounded border transition-colors ${block.width === w ? "bg-primary/20 border-primary/40 text-primary" : "border-border text-muted-foreground hover:border-foreground/20"}`}>
+                                {w}
+                              </button>
+                            ))}
+                          </div>
+                          {/* Edit toggle + delete */}
+                          <button type="button" onClick={() => setExpandedBlocks(prev => ({ ...prev, [block.id]: !prev[block.id] }))}
+                            className="text-muted-foreground hover:text-primary transition-colors">
+                            {isExpanded ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
+                          </button>
+                          <button type="button" onClick={() => deleteBlock(block.id)}
+                            className="text-red-400/50 hover:text-red-400 transition-colors"><Trash2 className="size-3.5" /></button>
                         </div>
-                        {/* Icon + info */}
-                        <div className="size-8 rounded bg-primary/10 flex items-center justify-center shrink-0">
-                          <IconComp className="size-4 text-primary" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="text-xs font-bold text-foreground truncate">{def?.label || block.type}</div>
-                          <div className="text-[10px] text-muted-foreground font-mono">{def?.category}</div>
-                        </div>
-                        {/* Width selector */}
-                        <div className="flex gap-1 shrink-0">
-                          {(def?.widths || WIDTH_OPTIONS.map(w => w.value)).map((w) => (
-                            <button key={w} type="button" onClick={() => updateBlock(block.id, { width: w as BlockWidth })}
-                              className={`text-[9px] font-mono px-2 py-1 rounded border transition-colors ${block.width === w ? "bg-primary/20 border-primary/40 text-primary" : "border-border text-muted-foreground hover:border-foreground/20"}`}>
-                              {w}
-                            </button>
-                          ))}
-                        </div>
-                        {/* Edit toggle + delete */}
-                        <button type="button" onClick={() => setExpandedBlocks(prev => ({ ...prev, [block.id]: !prev[block.id] }))}
-                          className="text-muted-foreground hover:text-primary transition-colors">
-                          {isExpanded ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
-                        </button>
-                        <button type="button" onClick={() => deleteBlock(block.id)}
-                          className="text-red-400/50 hover:text-red-400 transition-colors"><Trash2 className="size-3.5" /></button>
+                        {/* Block editor (expanded) */}
+                        {isExpanded && (
+                          <div className="px-4 py-4 border-t border-border bg-background">
+                            <BlockEditor block={block} onChange={(data) => updateBlock(block.id, { data })} />
+                          </div>
+                        )}
                       </div>
-                      {/* Block editor (expanded) */}
-                      {isExpanded && (
-                        <div className="px-4 py-4 border-t border-border bg-background">
-                          <BlockEditor block={block} onChange={(data) => updateBlock(block.id, { data })} />
-                        </div>
-                      )}
+                    )
+                  })}
+                  {(selected.content_blocks || []).length === 0 && (
+                    <div className="text-center py-12 text-muted-foreground">
+                      <GripVertical className="size-8 mx-auto mb-3 opacity-20" />
+                      <p className="text-xs font-mono">No content blocks yet. Click "Add Block" to start building.</p>
                     </div>
-                  )
-                })}
-                {(selected.content_blocks || []).length === 0 && (
-                  <div className="text-center py-12 text-muted-foreground">
-                    <GripVertical className="size-8 mx-auto mb-3 opacity-20" />
-                    <p className="text-xs font-mono">No content blocks yet. Click "Add Block" to start building.</p>
-                  </div>
-                )}
-              </div>
-            </section>
+                  )}
+                </div>
+              </section>
             )}
 
             {/* ======== IMAGES TAB ======== */}
             {activeTab === "images" && (
-            <section className="p-6 rounded border border-border bg-surface-dark/50 space-y-4">
-              <h2 className="text-sm font-bold text-foreground tracking-widest flex items-center gap-2">
-                <Eye className="size-4 text-primary" /> IMAGE ASSETS
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <ImageUpload
-                  label="Thumbnail Image"
-                  value={selected.thumbnail_url || ""}
-                  onChange={(url) => setSelected({ ...selected, thumbnail_url: url })}
-                />
-                <ImageUpload
-                  label="Cover Image"
-                  value={selected.cover_image_url || ""}
-                  onChange={(url) => setSelected({ ...selected, cover_image_url: url })}
-                />
-              </div>
-              <div className="text-[10px] text-muted-foreground font-mono mt-4 p-3 bg-background border border-border rounded">
-                <p className="mb-1"><strong className="text-foreground">Thumbnail:</strong> Used in the case studies listing grid.</p>
-                <p><strong className="text-foreground">Cover:</strong> Displayed as the hero image on the case study detail page.</p>
-              </div>
-            </section>
+              <section className="p-6 rounded border border-border bg-surface-dark/50 space-y-4">
+                <h2 className="text-sm font-bold text-foreground tracking-widest flex items-center gap-2">
+                  <Eye className="size-4 text-primary" /> IMAGE ASSETS
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <ImageUpload
+                    label="Thumbnail Image"
+                    value={selected.thumbnail_url || ""}
+                    onChange={(url) => setSelected({ ...selected, thumbnail_url: url })}
+                  />
+                  <ImageUpload
+                    label="Cover Image"
+                    value={selected.cover_image_url || ""}
+                    onChange={(url) => setSelected({ ...selected, cover_image_url: url })}
+                  />
+                </div>
+                <div className="text-[10px] text-muted-foreground font-mono mt-4 p-3 bg-background border border-border rounded">
+                  <p className="mb-1"><strong className="text-foreground">Thumbnail:</strong> Used in the case studies listing grid.</p>
+                  <p><strong className="text-foreground">Cover:</strong> Displayed as the hero image on the case study detail page.</p>
+                </div>
+              </section>
             )}
           </div>
         )}

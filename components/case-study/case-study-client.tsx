@@ -2,9 +2,10 @@
 
 import { useEffect, useRef, type ReactNode } from "react"
 import Link from "next/link"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, Play } from "lucide-react"
 import { Header } from "@/components/landing/header"
 import { BlockGrid } from "./blocks/block-renderer"
+import { VideoModal } from "@/components/ui/video-modal"
 
 /* ========== Scroll Reveal ========== */
 function Reveal({ children, className = "", delay = 0 }: { children: ReactNode; className?: string; delay?: number }) {
@@ -77,6 +78,35 @@ export function CaseStudyClient({ cs }: { cs: any }) {
             <Reveal delay={200}>
               <p className="text-[#6b7280] text-lg mt-4 max-w-2xl font-light">{cs.summary}</p>
             </Reveal>
+
+            {/* CTA Buttons */}
+            {(cs.website_url || cs.video_url) && (
+              <Reveal delay={300} className="mt-8 flex flex-wrap gap-4">
+                {cs.website_url && (
+                  <a
+                    href={cs.website_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-6 py-3 bg-[#10b981] text-black hover:bg-[#059669] rounded font-bold uppercase tracking-wider text-sm transition-all hover:scale-105"
+                  >
+                    Visit Website
+                    <ArrowLeft className="rotate-[135deg] size-4" />
+                  </a>
+                )}
+
+                {cs.video_url && (
+                  <VideoModal
+                    videoUrl={cs.video_url}
+                    trigger={
+                      <button className="flex items-center gap-2 px-6 py-3 border border-[#374151] hover:border-[#10b981] hover:text-[#10b981] text-white rounded font-bold uppercase tracking-wider text-sm transition-all hover:scale-105 group">
+                        <Play className="size-4 fill-current" />
+                        Watch Video
+                      </button>
+                    }
+                  />
+                )}
+              </Reveal>
+            )}
           </div>
         </section>
 

@@ -90,14 +90,14 @@ export function BlockGrid({ blocks }: { blocks: ContentBlock[] }) {
   const sorted = [...blocks].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
 
   return (
-    <div className="grid grid-cols-12 gap-6 w-full">
+    <div className="grid grid-cols-12 gap-6 w-full items-stretch">
       {sorted.map((block, idx) => {
         const Component = BLOCK_COMPONENTS[block.type]
         if (!Component) return null
         const colClass = WIDTH_TO_COLS[block.width] || "col-span-12"
         return (
-          <div key={block.id} className={colClass}>
-            <Reveal delay={idx * 80}>
+          <div key={block.id} className={`${colClass} flex`}>
+            <Reveal delay={idx * 80} className="w-full h-full">
               <Component data={block.data} />
             </Reveal>
           </div>

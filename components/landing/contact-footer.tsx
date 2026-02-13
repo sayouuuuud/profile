@@ -143,6 +143,7 @@ export function ContactSection({ socials }: { socials: SocialLink[] }) {
                     onChange={(e) => setFormState({ ...formState, email: e.target.value })}
                     placeholder="you@example.com"
                     className="bg-background border border-border rounded-sm px-3 py-2.5 text-sm text-foreground font-mono focus:border-emerald focus:outline-none transition-colors placeholder:text-muted-foreground/40"
+                    suppressHydrationWarning
                   />
                 </div>
               </div>
