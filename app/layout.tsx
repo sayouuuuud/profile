@@ -1,4 +1,4 @@
-import React from "react"
+import React, { Suspense } from "react"
 import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Cinzel, Inter } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
@@ -48,7 +48,9 @@ export default function RootLayout({
       <body className="font-sans antialiased">
         <ThemeProvider />
         <NotificationsProvider>
-          <AnalyticsTracker />
+          <Suspense fallback={null}>
+            <AnalyticsTracker />
+          </Suspense>
           {children}
           <Toaster />
         </NotificationsProvider>
