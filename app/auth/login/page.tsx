@@ -30,9 +30,11 @@ export default function LoginPage() {
       setLoading(false);
       await logLoginEvent(email, "failure", error.message);
     } else {
-      await logLoginEvent(email, "success");
-      router.push("/admin");
-      router.refresh();
+      // Log success in background (don't await to speed up redirect)
+      logLoginEvent(email, "success");
+
+      // Force hard redirect to ensure fresh server state/cookies
+      window.location.href = "/admin";
     }
   }
 

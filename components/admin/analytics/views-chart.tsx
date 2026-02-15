@@ -30,7 +30,11 @@ export function ViewsChart({ data }: ViewsChartProps) {
         const dateStr = d.toISOString().split('T')[0] // YYYY-MM-DD
 
         // Find matching data for this date
-        const matchingItem = data.find(item => item.date === dateStr)
+        // Find matching data for this date
+        const matchingItem = data.find(item => {
+            const itemDate = typeof item.date === 'string' ? item.date.split('T')[0] : item.date;
+            return itemDate === dateStr;
+        })
 
         return {
             day: i + 1,

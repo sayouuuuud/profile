@@ -8,6 +8,10 @@ DROP POLICY IF EXISTS "Allow admins to delete messages" ON public.messages;
 -- Enable RLS
 ALTER TABLE public.messages ENABLE ROW LEVEL SECURITY;
 
+-- Explicit Grants
+GRANT INSERT ON TABLE public.messages TO anon, authenticated;
+GRANT SELECT, UPDATE, DELETE ON TABLE public.messages TO authenticated;
+
 -- Allow public (anonymous) users to insert messages
 CREATE POLICY "Allow public to insert messages"
 ON public.messages
@@ -50,7 +54,20 @@ CREATE TABLE IF NOT EXISTS public.analytics_events (
   timestamp TIMESTAMPTZ DEFAULT now()
 );
 
+-- Ensure columns exist (For existing tables)
+DO $$
+BEGIN
+    ALTER TABLE public.analytics_events ADD COLUMN IF NOT EXISTS referrer TEXT;
+    ALTER TABLE public.analytics_events ADD COLUMN IF NOT EXISTS country TEXT;
+    ALTER TABLE public.analytics_events ADD COLUMN IF NOT EXISTS device_type TEXT;
+    ALTER TABLE public.analytics_events ADD COLUMN IF NOT EXISTS visitor_id TEXT;
+END $$;
+
 ALTER TABLE public.analytics_events ENABLE ROW LEVEL SECURITY;
+
+-- Explicit Grants
+GRANT INSERT ON TABLE public.analytics_events TO anon;
+GRANT SELECT ON TABLE public.analytics_events TO authenticated;
 
 DROP POLICY IF EXISTS "Allow public insert to analytics" ON public.analytics_events;
 CREATE POLICY "Allow public insert to analytics"
@@ -66,7 +83,7 @@ FOR SELECT
 TO authenticated
 USING (true);
 
--- Views
+-- Views (FORCE replace to ensure ownership/permissions)
 CREATE OR REPLACE VIEW public.analytics_daily_stats AS
 SELECT
   date_trunc('day', timestamp) AS date,
@@ -113,7 +130,20 @@ CREATE TABLE IF NOT EXISTS public.login_events (
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
+-- Ensure columns exist (For existing tables)
+DO $$
+BEGIN
+    ALTER TABLE public.login_events ADD COLUMN IF NOT EXISTS email TEXT;
+    ALTER TABLE public.login_events ADD COLUMN IF NOT EXISTS status TEXT;
+    ALTER TABLE public.login_events ADD COLUMN IF NOT EXISTS ip_address TEXT;
+    ALTER TABLE public.login_events ADD COLUMN IF NOT EXISTS user_agent TEXT;
+END $$;
+
 ALTER TABLE public.login_events ENABLE ROW LEVEL SECURITY;
+
+-- Explicit Grants
+GRANT INSERT ON TABLE public.login_events TO anon; -- Needed for server action failure logging
+GRANT SELECT ON TABLE public.login_events TO authenticated;
 
 DROP POLICY IF EXISTS "Allow admins to read login_events" ON public.login_events;
 CREATE POLICY "Allow admins to read login_events"
@@ -141,6 +171,8 @@ CREATE TABLE IF NOT EXISTS public.notifications (
 );
 
 ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
+
+GRANT ALL ON TABLE public.notifications TO authenticated;
 
 DROP POLICY IF EXISTS "Allow admins to access notifications" ON public.notifications;
 CREATE POLICY "Allow admins to access notifications"

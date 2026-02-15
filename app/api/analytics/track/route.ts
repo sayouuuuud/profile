@@ -5,42 +5,32 @@ import crypto from "crypto";
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { path, referrer } = body;
+        const { path, referrer, visitor_id, device_type, user_agent } = body;
 
         if (!path) {
             return NextResponse.json({ error: "Path is required" }, { status: 400 });
         }
 
-        // Extract headers
+        // Fallback or validation
         const ip = request.headers.get("x-forwarded-for")?.split(",")[0] || "unknown";
-        const userAgent = request.headers.get("user-agent") || "unknown";
         const country = request.headers.get("x-vercel-ip-country") || request.headers.get("cf-ipcountry") || "Unknown";
 
-        // Generate anonymous visitor ID (hash of IP + UA + Month) to somewhat anonymize but track unique monthly visitors
-        const currentMonth = new Date().toISOString().slice(0, 7);
-        const visitorId = crypto
-            .createHash("sha256")
-            .update(`${ip}-${userAgent}-${currentMonth}`)
-            .digest("hex")
-            .substring(0, 16);
-
-        // Determine device type
-        const isMobile = /mobile/i.test(userAgent);
-        const isTablet = /tablet|ipad/i.test(userAgent);
-        let deviceType = "desktop";
-        if (isTablet) deviceType = "tablet";
-        else if (isMobile) deviceType = "mobile";
+        // Use client provided data if available, otherwise fallback (though client should provide)
+        const finalVisitorId = visitor_id || crypto.createHash("sha256").update(`${ip}-${user_agent}-${new Date().toISOString().slice(0, 7)}`).digest("hex").substring(0, 16);
+        const finalDeviceType = device_type || "desktop";
+        const finalUserAgent = user_agent || request.headers.get("user-agent") || "unknown";
 
         const supabase = await createClient();
 
         // Insert event
         const { error } = await supabase.from("analytics_events").insert({
             page_path: path,
-            visitor_id: visitorId,
+            visitor_id: finalVisitorId,
             country,
-            device_type: deviceType,
+            device_type: finalDeviceType,
             referrer: referrer || null,
-            user_agent: userAgent
+            user_agent: finalUserAgent,
+            event_type: 'page_view'
         });
 
         if (error) {

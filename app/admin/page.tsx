@@ -145,7 +145,7 @@ export default async function AdminDashboard() {
                             {new Date(msg.created_at).toLocaleDateString()}
                           </span>
                         </div>
-                        <p className="text-xs text-muted-foreground truncate max-w-[300px]">{msg.subject || "No Subject"}</p>
+                        <p className="text-xs text-muted-foreground truncate">{msg.subject || "No Subject"}</p>
                       </div>
                     </div>
                     <Link href="/admin/messages" className="opacity-0 group-hover:opacity-100 transition-opacity p-2 text-muted-foreground hover:text-primary">

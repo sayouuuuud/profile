@@ -59,7 +59,7 @@ export function CloudDiagnosticWidget() {
     };
 
     return (
-        <div className="rounded-xl border border-border bg-surface-dark/50 p-5 flex flex-col justify-between h-full">
+        <div className="rounded-xl border border-border bg-surface-dark/50 p-5 flex flex-col h-full">
             <div className="flex items-center justify-between mb-4">
                 <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">System Diagnostic</h3>
                 <div className="flex items-center gap-2">
@@ -70,7 +70,7 @@ export function CloudDiagnosticWidget() {
                 </div>
             </div>
 
-            <div className="space-y-5 mt-2">
+            <div className="space-y-4 mt-2 flex-1">
                 {/* Storage / Bandwidth Section */}
                 {loading ? (
                     <div className="flex items-center justify-center py-4 text-muted-foreground">

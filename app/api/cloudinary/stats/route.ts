@@ -34,14 +34,34 @@ export async function GET() {
 
         const data = await response.json();
 
+        // Determine Limit and Usage
+        // For Free plans, bandwidth limit is often 0. Use Credits as fallback.
+        // 1 Credit ~= 1 GB (1,073,741,824 bytes) as per Cloudinary free plan.
+        const bandwidthUsage = data.bandwidth?.usage || 0;
+        let bandwidthLimit = data.bandwidth?.limit || 0;
+        let usedPercent = data.bandwidth?.used_percent || 0;
+
+        const creditsLimit = data.credits?.limit;
+        const creditsUsage = data.credits?.usage;
+
+        if (bandwidthLimit === 0 && creditsLimit) {
+            // Fallback: Use Credits Limit as proxy
+            bandwidthLimit = creditsLimit * 1024 * 1024 * 1024;
+
+            // Recalculate percent based on credits if available
+            if (data.credits?.used_percent) {
+                usedPercent = data.credits.used_percent;
+            }
+        }
+
         return NextResponse.json({
             plan: data.plan,
             last_updated: data.last_updated,
             bandwidth: {
-                usage: data.bandwidth?.usage || 0,
-                limit: data.bandwidth?.limit || 0,
-                used_percent: data.bandwidth?.used_percent || 0,
-                credits_limit: data.credits?.limit // Sometimes relevant for free plans
+                usage: bandwidthUsage,
+                limit: bandwidthLimit,
+                used_percent: usedPercent,
+                credits_limit: creditsLimit
             },
             storage: {
                 usage: data.storage?.usage || 0,

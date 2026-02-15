@@ -66,7 +66,7 @@ export function TopContent({ initialData }: TopContentProps) {
                                 <tr key={i} className="hover:bg-white/5 transition-colors group">
                                     <td className="px-4 py-3 font-medium text-foreground max-w-[200px] truncate" title={item.page_path}>
                                         <span className="text-primary mr-2 font-mono">/{i + 1}</span>
-                                        {item.page_path}
+                                        {formatPath(item.page_path)}
                                     </td>
                                     <td className="px-4 py-3 text-foreground font-bold text-right font-mono">
                                         {item.views.toLocaleString()}
@@ -111,4 +111,26 @@ function TrendingUp(props: any) {
             <polyline points="17 6 23 6 23 12" />
         </svg>
     )
+}
+
+function formatPath(path: string): string {
+    if (path === "/") return "Home";
+    if (path === "/about") return "About";
+    if (path === "/projects") return "Projects";
+    if (path === "/case-studies") return "Case Studies";
+    if (path === "/contact") return "Contact";
+    if (path === "/admin") return "Admin Dashboard";
+
+    // Check if it starts with /case-studies/
+    if (path.startsWith("/case-studies/")) {
+        // Return title case of slug
+        const slug = path.split("/").pop();
+        return slug ? slug.replace(/-/g, " ").replace(/\b\w/g, l => l.toUpperCase()) : "Case Study";
+    }
+
+    // Remove query params
+    const cleanPath = path.split('?')[0];
+    if (cleanPath !== path) return formatPath(cleanPath);
+
+    return path;
 }
