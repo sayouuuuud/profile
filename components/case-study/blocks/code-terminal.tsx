@@ -3,11 +3,11 @@
 export function CodeTerminalBlock({ data }: { data: any }) {
   const lines = data.content || []
   return (
-    <div className="bg-black rounded-xl border border-[#1f2937] font-mono text-xs overflow-hidden shadow-2xl relative flex flex-col h-full">
+    <div className="bg-black rounded-xl border border-border font-mono text-xs overflow-hidden shadow-2xl relative flex flex-col h-full">
       <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none z-10" />
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#10b981]/50 to-transparent opacity-50" />
       {/* Title bar */}
-      <div className="bg-[#121212]/80 backdrop-blur-md px-4 py-3 border-b border-[#1f2937] flex items-center justify-between relative z-20">
+      <div className="bg-[#121212]/80 backdrop-blur-md px-4 py-3 border-b border-border flex items-center justify-between relative z-20">
         <div className="flex items-center gap-4">
           <div className="flex gap-2">
             <div className="size-3 rounded-full bg-[#ff5f56] border border-[#e0443e]" />

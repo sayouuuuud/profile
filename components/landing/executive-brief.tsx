@@ -1,6 +1,5 @@
 "use client"
 
-import { Fingerprint } from "lucide-react"
 import { ScrollReveal } from "@/components/scroll-reveal"
 
 interface BriefProps {
@@ -10,81 +9,117 @@ interface BriefProps {
     velocity_factor: string
     summary: string | null
     tags: string[] | null
+    experience_highlights?: string[] | null
   } | null
 }
 
 export function ExecutiveBrief({ brief }: BriefProps) {
   const b = brief || {
     philosophy: "Ship to learn. Optimize to scale.",
-    operating_model: "ZERO-SUM EXECUTION",
-    velocity_factor: "HIGH-FREQUENCY",
-    summary: "Senior Technical Product Manager with 10+ years of experience in full-stack architecture and product leadership.",
-    tags: ["TPM Leadership", "Full Stack", "Systems Design", "Cloud Native"],
+    operating_model: "Outcome-Driven Execution",
+    velocity_factor: "High-Impact Delivery",
+    summary: "Senior Technical Product Manager with 10+ years of experience bridging product strategy and engineering execution. Proven track record at major telecom organizations and agile tech startups.",
+    tags: ["TPM Leadership", "Full Stack", "Systems Design", "Cloud Native", "AI / ML", "Data-Driven"],
+    experience_highlights: [
+      "Led product strategy at WE Telecom, driving infrastructure modernization across enterprise platforms.",
+      "Built and shipped AI-powered products at Infinite Tech from zero to production.",
+      "Championed data-driven decision making for complex, mission-critical systems.",
+    ],
   }
 
-  return (
-    <section className="px-6 md:px-12 py-24" id="brief">
-      <ScrollReveal>
-        <div className="glass-panel p-10 md:p-14 rounded-sm border border-border relative overflow-hidden tech-border">
-          <div className="grid md:grid-cols-12 gap-16 items-start">
-            <div className="md:col-span-4 pr-0 md:pr-4">
-              <h3 className="text-2xl font-bold mb-12 text-foreground flex items-center gap-3 tracking-[0.1em]">
-                <Fingerprint className="h-7 w-7 text-emerald" />
-                EXECUTIVE BRIEF
-              </h3>
-              <div className="space-y-10">
-                <div>
-                  <span className="text-xs font-mono text-emerald uppercase tracking-[0.2em] block mb-3">Core Philosophy</span>
-                  <p className="text-xl font-light text-foreground leading-tight">{'"' + b.philosophy + '"'}</p>
-                </div>
-                <div>
-                  <span className="text-xs font-mono text-text-dim uppercase tracking-[0.2em] block mb-3">Operating Model</span>
-                  <div className="flex items-center gap-3">
-                    <span className="h-1.5 w-1.5 bg-emerald rounded-full shadow-[0_0_8px_#10b981]" />
-                    <span className="text-sm font-bold text-foreground tracking-widest">{b.operating_model}</span>
-                  </div>
-                </div>
-                <div>
-                  <span className="text-xs font-mono text-text-dim uppercase tracking-[0.2em] block mb-3">Velocity Factor</span>
-                  <div className="flex items-center gap-3">
-                    <span className="h-1.5 w-1.5 bg-emerald rounded-full animate-pulse shadow-[0_0_8px_#10b981]" />
-                    <span className="text-sm font-bold text-foreground tracking-widest">{b.velocity_factor}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+  // Handle both string array and object array formats
+  const rawHighlights = b.experience_highlights || [
+    "Led product strategy at WE Telecom, driving infrastructure modernization across enterprise platforms.",
+    "Built and shipped AI-powered products at Infinite Tech from zero to production.",
+    "Championed data-driven decision making for complex, mission-critical systems.",
+  ]
 
-            <div className="md:col-span-8">
-              <div className="max-w-none">
-                {b.summary && (
-                  <p className="text-xl md:text-2xl font-light leading-relaxed text-gray-300 mb-10">{b.summary}</p>
-                )}
-                <div className="space-y-8 text-sm text-text-dim font-mono leading-relaxed border-t border-foreground/5 pt-10">
-                  <div>
-                    <p className="mb-4 flex items-start gap-2">
-                      <span className="text-emerald mt-0.5">{">"}</span>
-                      <span>Proven track record at major telecom giants (WE Telecom) and agile tech startups (Infinite Tech).</span>
-                    </p>
-                    <p className="flex items-start gap-2">
-                      <span className="text-emerald mt-0.5">{">"}</span>
-                      <span>Driving data-driven decision making for complex infrastructures.</span>
-                    </p>
-                  </div>
-                  {b.tags && (
-                    <div className="flex flex-wrap content-start gap-3">
-                      {(b.tags as string[]).map((tag: string) => (
-                        <span key={tag} className="bg-foreground/5 border border-foreground/10 px-4 py-2 rounded-sm text-xs text-foreground uppercase tracking-widest hover:border-emerald/40 hover:bg-emerald/5 transition-all duration-300 cursor-default">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
+  const highlights = Array.isArray(rawHighlights)
+    ? rawHighlights.map((item: any) => {
+        if (typeof item === 'string') return item
+        if (typeof item === 'object' && item.label && item.value) {
+          return `${item.label}: ${item.value}`
+        }
+        return String(item)
+      })
+    : []
+
+  return (
+    <section className="px-6 md:px-12 py-24" id="about">
+      <div className="max-w-7xl mx-auto">
+        <ScrollReveal>
+          <div className="flex items-center gap-3 mb-12">
+            <div className="h-px flex-1 max-w-[40px] bg-emerald/40" />
+            <span className="text-xs text-emerald tracking-widest uppercase">About Me</span>
+          </div>
+        </ScrollReveal>
+
+        <div className="grid md:grid-cols-12 gap-12 lg:gap-20">
+          {/* Left column */}
+          <div className="md:col-span-5">
+            <ScrollReveal delay={100}>
+              <blockquote className="border-l-2 border-emerald/40 pl-6 py-1">
+                <p className="text-xl md:text-2xl font-light text-foreground leading-relaxed italic">
+                  {'"' + b.philosophy + '"'}
+                </p>
+              </blockquote>
+            </ScrollReveal>
+
+            <ScrollReveal delay={200}>
+              <div className="mt-10 space-y-6">
+                <div>
+                  <span className="text-xs text-muted-foreground tracking-wide uppercase block mb-2">Operating Model</span>
+                  <span className="text-sm font-medium text-foreground">{b.operating_model}</span>
+                </div>
+                <div>
+                  <span className="text-xs text-muted-foreground tracking-wide uppercase block mb-2">Delivery Style</span>
+                  <span className="text-sm font-medium text-foreground">{b.velocity_factor}</span>
                 </div>
               </div>
-            </div>
+            </ScrollReveal>
+          </div>
+
+          {/* Right column */}
+          <div className="md:col-span-7">
+            {b.summary && (
+              <ScrollReveal delay={100}>
+                <p className="text-lg md:text-xl font-light leading-relaxed text-foreground/80 mb-8">
+                  {b.summary}
+                </p>
+              </ScrollReveal>
+            )}
+
+            <ScrollReveal delay={200}>
+              <div className="space-y-4 mb-10">
+                {highlights.map((item, i) => (
+                  <div key={i} className="flex items-start gap-3">
+                    <span className="mt-2 h-1.5 w-1.5 rounded-full bg-emerald shrink-0" />
+                    <p className="text-sm text-muted-foreground leading-relaxed">{item}</p>
+                  </div>
+                ))}
+              </div>
+            </ScrollReveal>
+
+            {b.tags && Array.isArray(b.tags) && (
+              <ScrollReveal delay={300}>
+                <div className="flex flex-wrap gap-2 pt-6 border-t border-border">
+                  {b.tags.map((tag: any, idx: number) => {
+                    const tagText = typeof tag === 'string' ? tag : String(tag)
+                    return (
+                      <span
+                        key={idx}
+                        className="bg-secondary border border-border px-3 py-1.5 rounded-md text-xs text-muted-foreground hover:text-foreground hover:border-emerald/30 transition-all duration-300 cursor-default"
+                      >
+                        {tagText}
+                      </span>
+                    )
+                  })}
+                </div>
+              </ScrollReveal>
+            )}
           </div>
         </div>
-      </ScrollReveal>
+      </div>
     </section>
   )
 }

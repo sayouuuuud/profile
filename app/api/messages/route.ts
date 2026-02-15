@@ -28,10 +28,16 @@ export async function POST(request: Request) {
       email: email.trim(),
       subject: subject?.trim() || null,
       message: message.trim(),
+      status: "unread",
     });
 
     if (error) {
-      console.error("Failed to insert message:", error);
+      console.error("Failed to insert message:", {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint,
+      });
       return NextResponse.json(
         { error: "Failed to send message. Please try again." },
         { status: 500 }
@@ -39,7 +45,8 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ success: true });
-  } catch {
+  } catch (err) {
+    console.error("Messages API unhandled error:", err);
     return NextResponse.json(
       { error: "Internal server error." },
       { status: 500 }

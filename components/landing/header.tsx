@@ -1,39 +1,50 @@
 "use client";
 
 import Link from "next/link";
-import { Terminal, Menu, X } from "lucide-react";
-import { useState } from "react";
+import { Menu, X } from "lucide-react";
+import { useState, useEffect } from "react";
 
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const links = [
-    { href: "#brief", label: "Brief" },
-    { href: "#capabilities", label: "Skills" },
-    { href: "#operations", label: "Timeline" },
-    { href: "#validations", label: "Certifications" },
-    { href: "#education", label: "Education" },
-    { href: "#arsenal", label: "Arsenal" },
+    { href: "#about", label: "About" },
+    { href: "#work", label: "Work" },
+    { href: "#process", label: "Process" },
+    { href: "#experience", label: "Experience" },
+    { href: "#contact", label: "Contact" },
   ];
 
   return (
-    <header className="relative z-50 flex items-center justify-between whitespace-nowrap border-b border-border px-6 md:px-12 py-6 glass-panel sticky top-0">
-      <div className="flex items-center gap-4 text-foreground">
-        <Terminal className="h-5 w-5 text-emerald animate-pulse" />
-        <h2 className="text-foreground text-lg font-bold leading-tight tracking-[0.1em]">
-          SAYED ELSHAZLY
-        </h2>
-        <span className="hidden md:block h-4 w-px bg-border mx-2" />
-        <span className="hidden md:block text-xs font-mono text-emerald/80">
-          ONLINE
+    <header
+      className={`relative z-50 flex items-center justify-between whitespace-nowrap px-6 md:px-12 py-5 sticky top-0 transition-all duration-500 ${
+        scrolled
+          ? "glass-panel border-b border-border"
+          : "bg-transparent border-b border-transparent"
+      }`}
+    >
+      <Link href="/" className="flex items-center gap-3 text-foreground">
+        <div className="h-7 w-7 rounded-md bg-emerald/10 border border-emerald/20 flex items-center justify-center">
+          <span className="text-emerald text-xs font-bold">SE</span>
+        </div>
+        <span className="text-foreground text-sm font-semibold tracking-wide">
+          Sayed Elshazly
         </span>
-      </div>
+      </Link>
+
       <div className="flex items-center gap-8">
-        <nav className="hidden md:flex items-center gap-10">
+        <nav className="hidden md:flex items-center gap-8">
           {links.map((link) => (
             <a
               key={link.href}
-              className="text-foreground/70 hover:text-foreground transition-colors text-xs font-mono uppercase tracking-[0.2em]"
+              className="text-muted-foreground hover:text-foreground transition-colors text-sm"
               href={link.href}
             >
               {link.label}
@@ -42,25 +53,29 @@ export function Header() {
         </nav>
         <Link
           href="/case-studies"
-          className="hidden md:flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-sm bg-foreground hover:bg-foreground/80 transition-colors text-background text-xs font-bold h-9 px-5 tracking-widest uppercase"
+          className="hidden md:flex items-center justify-center rounded-lg bg-emerald hover:bg-emerald-dim transition-colors text-background text-sm font-medium h-9 px-5"
         >
-          Projects
+          Case Studies
         </Link>
         <button
           className="md:hidden text-foreground"
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label="Toggle menu"
         >
-          {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          {mobileOpen ? (
+            <X className="h-5 w-5" />
+          ) : (
+            <Menu className="h-5 w-5" />
+          )}
         </button>
       </div>
 
       {mobileOpen && (
-        <div className="absolute top-full left-0 right-0 bg-[#050505] border-b border-border p-6 flex flex-col gap-4 md:hidden z-50">
+        <div className="absolute top-full left-0 right-0 glass-panel border-b border-border p-6 flex flex-col gap-4 md:hidden z-50">
           {links.map((link) => (
             <a
               key={link.href}
-              className="text-foreground/70 hover:text-foreground transition-colors text-xs font-mono uppercase tracking-[0.2em] py-2"
+              className="text-muted-foreground hover:text-foreground transition-colors text-sm py-2"
               href={link.href}
               onClick={() => setMobileOpen(false)}
             >
@@ -69,10 +84,10 @@ export function Header() {
           ))}
           <Link
             href="/case-studies"
-            className="flex items-center justify-center rounded-sm bg-foreground text-background text-xs font-bold h-9 px-5 tracking-widest uppercase mt-2"
+            className="flex items-center justify-center rounded-lg bg-emerald text-background text-sm font-medium h-9 px-5 mt-2"
             onClick={() => setMobileOpen(false)}
           >
-            Projects
+            Case Studies
           </Link>
         </div>
       )}

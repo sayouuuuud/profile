@@ -43,7 +43,7 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (data: any) 
               <input type="range" min="0" max="100" value={d.fill_percent || 75}
                 onChange={(e) => set("fill_percent", parseInt(e.target.value))}
                 className="flex-1 accent-emerald-500" />
-              <span className="text-xs font-mono text-foreground w-8">{d.fill_percent || 75}%</span>
+              <span className="text-xs text-foreground w-8">{d.fill_percent || 75}%</span>
             </div>
           </FieldRow>
           <FieldRow label="Description"><TextArea value={d.description || ""} onChange={(v) => set("description", v)} /></FieldRow>
@@ -56,7 +56,7 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (data: any) 
           <FieldRow label="Tag"><Input value={d.tag || ""} onChange={(v) => set("tag", v)} /></FieldRow>
           <FieldRow label="Tag Color">
             <select value={d.tag_color || "emerald"} onChange={(e) => set("tag_color", e.target.value)}
-              className="bg-background border border-border rounded px-3 py-2 text-sm text-foreground font-mono focus:border-primary focus:outline-none w-full">
+              className="bg-background border border-border rounded px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none w-full">
               <option value="emerald">Emerald</option><option value="orange">Orange</option><option value="red">Red</option>
             </select>
           </FieldRow>
@@ -65,9 +65,9 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (data: any) 
           <FieldRow label="Description"><TextArea value={d.description || ""} onChange={(v) => set("description", v)} /></FieldRow>
           <div className="border-t border-border pt-3">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Bars</span>
+              <span className="text-[10px] text-muted-foreground uppercase tracking-widest">Bars</span>
               <button type="button" onClick={() => set("bars", [...(d.bars || []), { label: "NEW", value: "0", percent: 50, color: "emerald" }])}
-                className="text-primary text-[10px] font-mono hover:underline">+ Add Bar</button>
+                className="text-primary text-[10px] hover:underline">+ Add Bar</button>
             </div>
             {(d.bars || []).map((bar: any, i: number) => (
               <div key={i} className="grid grid-cols-5 gap-2 mb-2 items-center">
@@ -75,9 +75,9 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (data: any) 
                 <Input value={bar.value} onChange={(v) => { const bars = [...d.bars]; bars[i] = { ...bars[i], value: v }; set("bars", bars) }} />
                 <input type="number" min="0" max="100" value={bar.percent}
                   onChange={(e) => { const bars = [...d.bars]; bars[i] = { ...bars[i], percent: parseInt(e.target.value) || 0 }; set("bars", bars) }}
-                  className="bg-background border border-border rounded px-2 py-1.5 text-xs text-foreground font-mono focus:border-primary focus:outline-none" />
+                  className="bg-background border border-border rounded px-2 py-1.5 text-xs text-foreground focus:border-primary focus:outline-none" />
                 <select value={bar.color} onChange={(e) => { const bars = [...d.bars]; bars[i] = { ...bars[i], color: e.target.value }; set("bars", bars) }}
-                  className="bg-background border border-border rounded px-2 py-1.5 text-xs text-foreground font-mono focus:border-primary focus:outline-none">
+                  className="bg-background border border-border rounded px-2 py-1.5 text-xs text-foreground focus:border-primary focus:outline-none">
                   <option value="emerald">Green</option><option value="orange">Orange</option><option value="red">Red</option><option value="slate">Gray</option>
                 </select>
                 <button type="button" onClick={() => { const bars = [...d.bars]; bars.splice(i, 1); set("bars", bars) }}
@@ -106,9 +106,9 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (data: any) 
       return (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Items</span>
+            <span className="text-[10px] text-muted-foreground uppercase tracking-widest">Items</span>
             <button type="button" onClick={() => set("items", [...(d.items || []), { title: "New Item", desc: "Description" }])}
-              className="text-primary text-[10px] font-mono hover:underline">+ Add Item</button>
+              className="text-primary text-[10px] hover:underline">+ Add Item</button>
           </div>
           {(d.items || []).map((item: any, i: number) => (
             <div key={i} className="border border-border rounded p-3 space-y-2 relative">
@@ -130,7 +130,7 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (data: any) 
           <FieldRow label="Delta"><Input value={d.delta || ""} onChange={(v) => set("delta", v)} /></FieldRow>
           <FieldRow label="Direction">
             <select value={d.delta_direction || "up"} onChange={(e) => set("delta_direction", e.target.value)}
-              className="bg-background border border-border rounded px-3 py-2 text-sm text-foreground font-mono focus:border-primary focus:outline-none w-full">
+              className="bg-background border border-border rounded px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none w-full">
               <option value="up">Up (Green)</option><option value="down">Down (Red)</option>
             </select>
           </FieldRow>
@@ -145,9 +145,9 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (data: any) 
         <div className="space-y-3">
           <FieldRow label="Title"><Input value={d.title || ""} onChange={(v) => set("title", v)} /></FieldRow>
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Milestones</span>
+            <span className="text-[10px] text-muted-foreground uppercase tracking-widest">Milestones</span>
             <button type="button" onClick={() => set("milestones", [...(d.milestones || []), { title: "New Milestone", date: "Week X", status: "pending", description: "" }])}
-              className="text-primary text-[10px] font-mono hover:underline">+ Add</button>
+              className="text-primary text-[10px] hover:underline">+ Add</button>
           </div>
           {(d.milestones || []).map((m: any, i: number) => (
             <div key={i} className="border border-border rounded p-3 space-y-2 relative">
@@ -157,7 +157,7 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (data: any) 
                 <Input value={m.title} onChange={(v) => { const ms = [...d.milestones]; ms[i] = { ...ms[i], title: v }; set("milestones", ms) }} />
                 <Input value={m.date} onChange={(v) => { const ms = [...d.milestones]; ms[i] = { ...ms[i], date: v }; set("milestones", ms) }} />
                 <select value={m.status} onChange={(e) => { const ms = [...d.milestones]; ms[i] = { ...ms[i], status: e.target.value }; set("milestones", ms) }}
-                  className="bg-background border border-border rounded px-2 py-1.5 text-xs text-foreground font-mono focus:border-primary focus:outline-none">
+                  className="bg-background border border-border rounded px-2 py-1.5 text-xs text-foreground focus:border-primary focus:outline-none">
                   <option value="completed">Completed</option><option value="in-progress">In Progress</option><option value="pending">Pending</option>
                 </select>
               </div>
@@ -172,9 +172,9 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (data: any) 
         <div className="space-y-3">
           <FieldRow label="Title"><Input value={d.title || ""} onChange={(v) => set("title", v)} /></FieldRow>
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Rows</span>
+            <span className="text-[10px] text-muted-foreground uppercase tracking-widest">Rows</span>
             <button type="button" onClick={() => set("rows", [...(d.rows || []), { label: "New", before: "-", after: "-", status: "improved" }])}
-              className="text-primary text-[10px] font-mono hover:underline">+ Add Row</button>
+              className="text-primary text-[10px] hover:underline">+ Add Row</button>
           </div>
           {(d.rows || []).map((row: any, i: number) => (
             <div key={i} className="grid grid-cols-5 gap-2 items-center">
@@ -182,7 +182,7 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (data: any) 
               <Input value={row.before} onChange={(v) => { const rows = [...d.rows]; rows[i] = { ...rows[i], before: v }; set("rows", rows) }} />
               <Input value={row.after} onChange={(v) => { const rows = [...d.rows]; rows[i] = { ...rows[i], after: v }; set("rows", rows) }} />
               <select value={row.status} onChange={(e) => { const rows = [...d.rows]; rows[i] = { ...rows[i], status: e.target.value }; set("rows", rows) }}
-                className="bg-background border border-border rounded px-2 py-1.5 text-xs text-foreground font-mono focus:border-primary focus:outline-none">
+                className="bg-background border border-border rounded px-2 py-1.5 text-xs text-foreground focus:border-primary focus:outline-none">
                 <option value="improved">Improved</option><option value="degraded">Degraded</option><option value="unchanged">Same</option>
               </select>
               <button type="button" onClick={() => { const rows = [...d.rows]; rows.splice(i, 1); set("rows", rows) }}
@@ -197,16 +197,16 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (data: any) 
         <div className="space-y-3">
           <FieldRow label="Title"><Input value={d.title || ""} onChange={(v) => set("title", v)} /></FieldRow>
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Steps</span>
+            <span className="text-[10px] text-muted-foreground uppercase tracking-widest">Steps</span>
             <button type="button" onClick={() => set("steps", [...(d.steps || []), { label: "Step", description: "Desc", icon: "Zap" }])}
-              className="text-primary text-[10px] font-mono hover:underline">+ Add Step</button>
+              className="text-primary text-[10px] hover:underline">+ Add Step</button>
           </div>
           {(d.steps || []).map((step: any, i: number) => (
             <div key={i} className="grid grid-cols-4 gap-2 items-center">
               <Input value={step.label} onChange={(v) => { const steps = [...d.steps]; steps[i] = { ...steps[i], label: v }; set("steps", steps) }} />
               <Input value={step.description} onChange={(v) => { const steps = [...d.steps]; steps[i] = { ...steps[i], description: v }; set("steps", steps) }} />
               <select value={step.icon} onChange={(e) => { const steps = [...d.steps]; steps[i] = { ...steps[i], icon: e.target.value }; set("steps", steps) }}
-                className="bg-background border border-border rounded px-2 py-1.5 text-xs text-foreground font-mono focus:border-primary focus:outline-none">
+                className="bg-background border border-border rounded px-2 py-1.5 text-xs text-foreground focus:border-primary focus:outline-none">
                 {["Upload", "Cpu", "Shield", "Rocket", "Database", "Network", "Code", "Zap"].map(ic => <option key={ic} value={ic}>{ic}</option>)}
               </select>
               <button type="button" onClick={() => { const steps = [...d.steps]; steps.splice(i, 1); set("steps", steps) }}
@@ -222,13 +222,13 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (data: any) 
           <FieldRow label="Tag"><Input value={d.tag || ""} onChange={(v) => set("tag", v)} /></FieldRow>
           <FieldRow label="Title"><Input value={d.title || ""} onChange={(v) => set("title", v)} /></FieldRow>
           <FieldRow label="Value"><input type="number" value={d.value || 0} onChange={(e) => set("value", parseFloat(e.target.value) || 0)}
-            className="bg-background border border-border rounded px-3 py-2 text-sm text-foreground font-mono focus:border-primary focus:outline-none w-full" /></FieldRow>
+            className="bg-background border border-border rounded px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none w-full" /></FieldRow>
           <FieldRow label="Max"><input type="number" value={d.max || 100} onChange={(e) => set("max", parseFloat(e.target.value) || 100)}
-            className="bg-background border border-border rounded px-3 py-2 text-sm text-foreground font-mono focus:border-primary focus:outline-none w-full" /></FieldRow>
+            className="bg-background border border-border rounded px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none w-full" /></FieldRow>
           <FieldRow label="Suffix"><Input value={d.suffix || ""} onChange={(v) => set("suffix", v)} /></FieldRow>
           <FieldRow label="Color">
             <select value={d.color || "emerald"} onChange={(e) => set("color", e.target.value)}
-              className="bg-background border border-border rounded px-3 py-2 text-sm text-foreground font-mono focus:border-primary focus:outline-none w-full">
+              className="bg-background border border-border rounded px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none w-full">
               <option value="emerald">Emerald</option><option value="blue">Blue</option><option value="orange">Orange</option><option value="red">Red</option><option value="indigo">Indigo</option>
             </select>
           </FieldRow>
@@ -240,16 +240,16 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (data: any) 
         <div className="space-y-3">
           <FieldRow label="Title"><Input value={d.title || ""} onChange={(v) => set("title", v)} /></FieldRow>
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Indicators</span>
+            <span className="text-[10px] text-muted-foreground uppercase tracking-widest">Indicators</span>
             <button type="button" onClick={() => set("indicators", [...(d.indicators || []), { label: "Service", status: "operational", value: "100%" }])}
-              className="text-primary text-[10px] font-mono hover:underline">+ Add</button>
+              className="text-primary text-[10px] hover:underline">+ Add</button>
           </div>
           {(d.indicators || []).map((ind: any, i: number) => (
             <div key={i} className="grid grid-cols-4 gap-2 items-center">
               <Input value={ind.label} onChange={(v) => { const inds = [...d.indicators]; inds[i] = { ...inds[i], label: v }; set("indicators", inds) }} />
               <Input value={ind.value} onChange={(v) => { const inds = [...d.indicators]; inds[i] = { ...inds[i], value: v }; set("indicators", inds) }} />
               <select value={ind.status} onChange={(e) => { const inds = [...d.indicators]; inds[i] = { ...inds[i], status: e.target.value }; set("indicators", inds) }}
-                className="bg-background border border-border rounded px-2 py-1.5 text-xs text-foreground font-mono focus:border-primary focus:outline-none">
+                className="bg-background border border-border rounded px-2 py-1.5 text-xs text-foreground focus:border-primary focus:outline-none">
                 <option value="operational">Operational</option><option value="degraded">Degraded</option><option value="down">Down</option>
               </select>
               <button type="button" onClick={() => { const inds = [...d.indicators]; inds.splice(i, 1); set("indicators", inds) }}
@@ -267,7 +267,7 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (data: any) 
           <FieldRow label="Label"><Input value={d.label || ""} onChange={(v) => set("label", v)} /></FieldRow>
           <FieldRow label="Description"><TextArea value={d.description || ""} onChange={(v) => set("description", v)} /></FieldRow>
           <div className="border-t border-border pt-3">
-            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest block mb-2">Comparison (optional)</span>
+            <span className="text-[10px] text-muted-foreground uppercase tracking-widest block mb-2">Comparison (optional)</span>
             <div className="grid grid-cols-2 gap-2">
               <FieldRow label="Before"><Input value={d.comparison?.before || ""} onChange={(v) => set("comparison", { ...d.comparison, before: v })} /></FieldRow>
               <FieldRow label="After"><Input value={d.comparison?.after || ""} onChange={(v) => set("comparison", { ...d.comparison, after: v })} /></FieldRow>
@@ -283,7 +283,7 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (data: any) 
           <FieldRow label="Body"><TextArea value={d.body || ""} onChange={(v) => set("body", v)} rows={4} /></FieldRow>
           <FieldRow label="Accent Color">
             <select value={d.accent_color || "emerald"} onChange={(e) => set("accent_color", e.target.value)}
-              className="bg-background border border-border rounded px-3 py-2 text-sm text-foreground font-mono focus:border-primary focus:outline-none w-full">
+              className="bg-background border border-border rounded px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none w-full">
               <option value="emerald">Emerald</option><option value="blue">Blue</option><option value="orange">Orange</option><option value="red">Red</option><option value="indigo">Indigo</option>
             </select>
           </FieldRow>
@@ -294,10 +294,10 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (data: any) 
       return (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Corner Nodes (4 max)</span>
+            <span className="text-[10px] text-muted-foreground uppercase tracking-widest">Corner Nodes (4 max)</span>
             {(d.nodes || []).length < 4 && (
               <button type="button" onClick={() => set("nodes", [...(d.nodes || []), { title: "NODE", sub: "Service", color: "emerald", icon_type: "code", stats: [{ l: "Metric", v: "0", v_color: "emerald-500" }] }])}
-                className="text-primary text-[10px] font-mono hover:underline">+ Add Node</button>
+                className="text-primary text-[10px] hover:underline">+ Add Node</button>
             )}
           </div>
           {(d.nodes || []).map((node: any, i: number) => (
@@ -310,11 +310,11 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (data: any) 
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <select value={node.color} onChange={(e) => { const nodes = [...d.nodes]; nodes[i] = { ...nodes[i], color: e.target.value }; set("nodes", nodes) }}
-                  className="bg-background border border-border rounded px-2 py-1.5 text-xs text-foreground font-mono focus:border-primary focus:outline-none">
+                  className="bg-background border border-border rounded px-2 py-1.5 text-xs text-foreground focus:border-primary focus:outline-none">
                   {["emerald", "indigo", "rose", "red", "blue", "orange"].map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
                 <select value={node.icon_type} onChange={(e) => { const nodes = [...d.nodes]; nodes[i] = { ...nodes[i], icon_type: e.target.value }; set("nodes", nodes) }}
-                  className="bg-background border border-border rounded px-2 py-1.5 text-xs text-foreground font-mono focus:border-primary focus:outline-none">
+                  className="bg-background border border-border rounded px-2 py-1.5 text-xs text-foreground focus:border-primary focus:outline-none">
                   {["vercel", "database", "streaming", "upload", "code", "rocket"].map(ic => <option key={ic} value={ic}>{ic}</option>)}
                 </select>
               </div>
@@ -343,7 +343,7 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (data: any) 
         <div className="space-y-3">
           <FieldRow label="Version"><Input value={d.version || ""} onChange={(v) => set("version", v)} /></FieldRow>
           <div className="border-t border-border pt-3">
-            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest block mb-2">Left Panel</span>
+            <span className="text-[10px] text-muted-foreground uppercase tracking-widest block mb-2">Left Panel</span>
             <div className="space-y-2">
               <Input value={d.left_panel?.label || ""} onChange={(v) => set("left_panel", { ...d.left_panel, label: v })} />
               <Input value={d.left_panel?.badge || ""} onChange={(v) => set("left_panel", { ...d.left_panel, badge: v })} />
@@ -352,7 +352,7 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (data: any) 
             </div>
           </div>
           <div className="border-t border-border pt-3">
-            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest block mb-2">Right Panel</span>
+            <span className="text-[10px] text-muted-foreground uppercase tracking-widest block mb-2">Right Panel</span>
             <div className="space-y-2">
               <Input value={d.right_panel?.label || ""} onChange={(v) => set("right_panel", { ...d.right_panel, label: v })} />
               <Input value={d.right_panel?.badge || ""} onChange={(v) => set("right_panel", { ...d.right_panel, badge: v })} />
@@ -383,16 +383,16 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (data: any) 
         <div className="space-y-3">
           <FieldRow label="Title"><Input value={d.title || ""} onChange={(v) => set("title", v)} /></FieldRow>
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Technologies</span>
+            <span className="text-[10px] text-muted-foreground uppercase tracking-widest">Technologies</span>
             <button type="button" onClick={() => set("technologies", [...(d.technologies || []), { name: "Tech", category: "Category", color: "bg-emerald-500" }])}
-              className="text-primary text-[10px] font-mono hover:underline">+ Add</button>
+              className="text-primary text-[10px] hover:underline">+ Add</button>
           </div>
           {(d.technologies || []).map((tech: any, i: number) => (
             <div key={i} className="grid grid-cols-4 gap-2 items-center">
               <Input value={tech.name} onChange={(v) => { const ts = [...d.technologies]; ts[i] = { ...ts[i], name: v }; set("technologies", ts) }} />
               <Input value={tech.category} onChange={(v) => { const ts = [...d.technologies]; ts[i] = { ...ts[i], category: v }; set("technologies", ts) }} />
               <select value={tech.color} onChange={(e) => { const ts = [...d.technologies]; ts[i] = { ...ts[i], color: e.target.value }; set("technologies", ts) }}
-                className="bg-background border border-border rounded px-2 py-1.5 text-xs text-foreground font-mono focus:border-primary focus:outline-none">
+                className="bg-background border border-border rounded px-2 py-1.5 text-xs text-foreground focus:border-primary focus:outline-none">
                 <option value="bg-emerald-500">Green</option><option value="bg-blue-500">Blue</option><option value="bg-cyan-500">Cyan</option><option value="bg-orange-500">Orange</option>
               </select>
               <button type="button" onClick={() => { const ts = [...d.technologies]; ts.splice(i, 1); set("technologies", ts) }}
@@ -421,9 +421,9 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (data: any) 
           <FieldRow label="Description"><TextArea value={d.description || ""} onChange={(v) => set("description", v)} /></FieldRow>
           <FieldRow label="Badge"><Input value={d.badge || ""} onChange={(v) => set("badge", v)} /></FieldRow>
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Metrics</span>
+            <span className="text-[10px] text-muted-foreground uppercase tracking-widest">Metrics</span>
             <button type="button" onClick={() => set("metrics", [...(d.metrics || []), { label: "Metric", value: "0" }])}
-              className="text-primary text-[10px] font-mono hover:underline">+ Add</button>
+              className="text-primary text-[10px] hover:underline">+ Add</button>
           </div>
           {(d.metrics || []).map((m: any, i: number) => (
             <div key={i} className="grid grid-cols-3 gap-2 items-center">
@@ -441,9 +441,9 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (data: any) 
         <div className="space-y-3">
           <FieldRow label="Title"><Input value={d.title || ""} onChange={(v) => set("title", v)} /></FieldRow>
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Steps</span>
+            <span className="text-[10px] text-muted-foreground uppercase tracking-widest">Steps</span>
             <button type="button" onClick={() => set("steps", [...(d.steps || []), { number: String((d.steps || []).length + 1).padStart(2, "0"), title: "Step", description: "" }])}
-              className="text-primary text-[10px] font-mono hover:underline">+ Add</button>
+              className="text-primary text-[10px] hover:underline">+ Add</button>
           </div>
           {(d.steps || []).map((step: any, i: number) => (
             <div key={i} className="border border-border rounded p-3 space-y-2 relative">
@@ -461,9 +461,9 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (data: any) 
         <div className="space-y-3">
           <FieldRow label="Title"><Input value={d.title || ""} onChange={(v) => set("title", v)} /></FieldRow>
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Metrics</span>
+            <span className="text-[10px] text-muted-foreground uppercase tracking-widest">Metrics</span>
             <button type="button" onClick={() => set("metrics", [...(d.metrics || []), { label: "Metric", value: "0", trend: "+0%", color: "#10b981" }])}
-              className="text-primary text-[10px] font-mono hover:underline">+ Add</button>
+              className="text-primary text-[10px] hover:underline">+ Add</button>
           </div>
           {(d.metrics || []).map((m: any, i: number) => (
             <div key={i} className="grid grid-cols-5 gap-2 items-center">
@@ -498,13 +498,13 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (data: any) 
           <FieldRow label="Description"><TextArea value={d.description || ""} onChange={(v) => set("description", v)} /></FieldRow>
           <FieldRow label="Severity">
             <select value={d.severity || "medium"} onChange={(e) => set("severity", e.target.value)}
-              className="bg-background border border-border rounded px-3 py-2 text-sm text-foreground font-mono focus:border-primary focus:outline-none w-full">
+              className="bg-background border border-border rounded px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none w-full">
               <option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="critical">Critical</option>
             </select>
           </FieldRow>
           <FieldRow label="Status">
             <select value={d.status || "pending"} onChange={(e) => set("status", e.target.value)}
-              className="bg-background border border-border rounded px-3 py-2 text-sm text-foreground font-mono focus:border-primary focus:outline-none w-full">
+              className="bg-background border border-border rounded px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none w-full">
               <option value="pending">Pending</option><option value="in-progress">In Progress</option><option value="resolved">Resolved</option>
             </select>
           </FieldRow>
@@ -524,9 +524,9 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (data: any) 
             <FieldRow label="Timeframe"><Input value={d.timeframe || ""} onChange={(v) => set("timeframe", v)} /></FieldRow>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Breakdown</span>
+            <span className="text-[10px] text-muted-foreground uppercase tracking-widest">Breakdown</span>
             <button type="button" onClick={() => set("breakdown", [...(d.breakdown || []), { label: "Item", value: "$0" }])}
-              className="text-primary text-[10px] font-mono hover:underline">+ Add</button>
+              className="text-primary text-[10px] hover:underline">+ Add</button>
           </div>
           {(d.breakdown || []).map((item: any, i: number) => (
             <div key={i} className="grid grid-cols-3 gap-2 items-center">
@@ -545,7 +545,7 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (data: any) 
           <FieldRow label="Title"><Input value={d.title || ""} onChange={(v) => set("title", v)} /></FieldRow>
           <FieldRow label="Chart Type">
             <select value={d.chart_type || "area"} onChange={(e) => set("chart_type", e.target.value)}
-              className="bg-background border border-border rounded px-3 py-2 text-sm text-foreground font-mono focus:border-primary focus:outline-none w-full">
+              className="bg-background border border-border rounded px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none w-full">
               <option value="area">Area</option><option value="line">Line</option><option value="bar">Bar</option>
             </select>
           </FieldRow>
@@ -566,19 +566,19 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (data: any) 
 function FieldRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-1">
-      <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">{label}</label>
+      <label className="text-[10px] text-muted-foreground uppercase tracking-widest">{label}</label>
       {children}
     </div>
   )
 }
 function Input({ value, onChange, ...props }: Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> & { value: string; onChange: (v: string) => void }) {
   return <input type="text" value={value} onChange={(e) => onChange(e.target.value)}
-    className="bg-background border border-border rounded px-3 py-2 text-sm text-foreground font-mono focus:border-primary focus:outline-none transition-colors w-full"
+    className="bg-background border border-border rounded px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none transition-colors w-full"
     {...props} />
 }
 function TextArea({ value, onChange, rows = 2 }: { value: string; onChange: (v: string) => void; rows?: number }) {
   return <textarea value={value} onChange={(e) => onChange(e.target.value)} rows={rows}
-    className="bg-background border border-border rounded px-3 py-2 text-sm text-foreground font-mono focus:border-primary focus:outline-none transition-colors resize-none w-full" />
+    className="bg-background border border-border rounded px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none transition-colors resize-none w-full" />
 }
 
 /* ========== MAIN ADMIN PAGE ========== */
@@ -715,7 +715,7 @@ export default function AdminCaseStudies() {
                 <h3 className="text-xs font-bold text-foreground truncate">{cs.title}</h3>
                 {cs.is_visible ? <Eye className="size-3 text-primary shrink-0" /> : <EyeOff className="size-3 text-muted-foreground shrink-0" />}
               </div>
-              <p className="text-[10px] text-muted-foreground font-mono truncate mt-0.5">{cs.category} -- {(cs.content_blocks || []).length} blocks</p>
+              <p className="text-[10px] text-muted-foreground truncate mt-0.5">{cs.category} -- {(cs.content_blocks || []).length} blocks</p>
             </button>
           ))}
         </div>
@@ -726,7 +726,7 @@ export default function AdminCaseStudies() {
         {!selected ? (
           <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
             <BookOpen className="size-12 mb-4 opacity-20" />
-            <p className="text-sm font-mono">Select a mission to edit or create a new one</p>
+            <p className="text-sm">Select a mission to edit or create a new one</p>
           </div>
         ) : (
           <div className="max-w-4xl space-y-6 pb-20">
@@ -736,12 +736,12 @@ export default function AdminCaseStudies() {
               <div className="flex gap-2">
                 {selected.id && (
                   <button type="button" onClick={() => handleDelete(selected.id)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs font-mono border border-red-500/30 rounded transition-colors">
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs border border-red-500/30 rounded transition-colors">
                     <Trash2 className="size-3" /> Delete
                   </button>
                 )}
                 <button type="button" onClick={handleSave} disabled={saving}
-                  className="flex items-center gap-1.5 px-4 py-1.5 bg-primary hover:bg-primary/90 text-background text-xs font-mono font-bold uppercase tracking-wider rounded transition-colors disabled:opacity-50">
+                  className="flex items-center gap-1.5 px-4 py-1.5 bg-primary hover:bg-primary/90 text-background text-xs font-bold uppercase tracking-wider rounded transition-colors disabled:opacity-50">
                   {saving ? <Loader2 className="size-3 animate-spin" /> : <Save className="size-3" />}
                   {saving ? "Saving..." : "Deploy Changes"}
                 </button>
@@ -749,7 +749,7 @@ export default function AdminCaseStudies() {
             </div>
 
             {message && (
-              <div className={`px-4 py-2 rounded text-xs font-mono border ${message.includes("Error") ? "bg-red-500/10 border-red-500/30 text-red-400" : "bg-primary/10 border-primary/30 text-primary"}`}>{message}</div>
+              <div className={`px-4 py-2 rounded text-xs border ${message.includes("Error") ? "bg-red-500/10 border-red-500/30 text-red-400" : "bg-primary/10 border-primary/30 text-primary"}`}>{message}</div>
             )}
 
             {/* Tabs Navigation */}
@@ -760,7 +760,7 @@ export default function AdminCaseStudies() {
                 { id: "images" as const, label: "Images" }
               ].map(tab => (
                 <button key={tab.id} type="button" onClick={() => setActiveTab(tab.id)}
-                  className={`px-4 py-2 text-xs font-mono font-bold uppercase tracking-wider transition-all border-b-2 ${activeTab === tab.id ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"}`}>
+                  className={`px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all border-b-2 ${activeTab === tab.id ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"}`}>
                   {tab.label}
                 </button>
               ))}
@@ -852,13 +852,13 @@ export default function AdminCaseStudies() {
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="text-xs font-bold text-foreground truncate">{def?.label || block.type}</div>
-                            <div className="text-[10px] text-muted-foreground font-mono">{def?.category}</div>
+                            <div className="text-[10px] text-muted-foreground">{def?.category}</div>
                           </div>
                           {/* Width selector */}
                           <div className="flex gap-1 shrink-0">
                             {(def?.widths || WIDTH_OPTIONS.map(w => w.value)).map((w) => (
                               <button key={w} type="button" onClick={() => updateBlock(block.id, { width: w as BlockWidth })}
-                                className={`text-[9px] font-mono px-2 py-1 rounded border transition-colors ${block.width === w ? "bg-primary/20 border-primary/40 text-primary" : "border-border text-muted-foreground hover:border-foreground/20"}`}>
+                                className={`text-[9px] px-2 py-1 rounded border transition-colors ${block.width === w ? "bg-primary/20 border-primary/40 text-primary" : "border-border text-muted-foreground hover:border-foreground/20"}`}>
                                 {w}
                               </button>
                             ))}

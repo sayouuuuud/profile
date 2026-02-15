@@ -37,7 +37,7 @@ function CornerAccents() {
 
 export function StatBarsBlock({ data }: { data: any }) {
   return (
-    <div className="glass-panel p-6 rounded-lg border border-[#1f2937] relative group overflow-hidden flex flex-col justify-between min-h-[320px] h-full">
+    <div className="glass-panel p-6 rounded-lg border border-border relative group overflow-hidden flex flex-col justify-between min-h-[320px] h-full">
       <CornerAccents />
       <div className="flex justify-between items-start mb-6">
         <div>

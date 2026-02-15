@@ -28,7 +28,7 @@ const colorMap: Record<string, string> = {
 export function ArchitectureDiagramBlock({ data }: { data: any }) {
   const nodes = data.nodes || []
   return (
-    <div className="border border-[#1f2937] bg-[#121212]/50 rounded-xl p-1 relative overflow-hidden min-h-[600px]">
+    <div className="border border-[hsl(var(--border))] bg-[#121212]/50 rounded-xl p-1 relative overflow-hidden min-h-[600px]">
       <div className="absolute top-6 left-8 z-20">
         <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-1">INFRASTRUCTURE ARCHITECTURE</h3>
         <p className="text-[10px] text-[#6b7280] font-mono">Hybrid Storage Engine & Serverless Edge</p>
@@ -48,7 +48,7 @@ export function ArchitectureDiagramBlock({ data }: { data: any }) {
             { x2: "20%", y2: "75%", delay: "1s" }, { x2: "80%", y2: "75%", delay: "1.5s" },
           ].map((line, i) => (
             <g key={i}>
-              <line stroke="#1f2937" strokeWidth="1" x1="50%" y1="50%" x2={line.x2} y2={line.y2} />
+              <line stroke="hsl(var(--border))" strokeWidth="1" x1="50%" y1="50%" x2={line.x2} y2={line.y2} />
               <line className="opacity-60" stroke="url(#gradLine)" strokeWidth="1" strokeDasharray="10" x1="50%" y1="50%" x2={line.x2} y2={line.y2}>
                 <animate attributeName="stroke-dashoffset" from="100" to="0" dur="2s" begin={line.delay} repeatCount="indefinite" />
               </line>
@@ -75,7 +75,7 @@ export function ArchitectureDiagramBlock({ data }: { data: any }) {
         {/* Corner Nodes */}
         {nodes.map((node: any, i: number) => (
           <div key={i} className={`absolute ${nodePositions[i] || ""} z-10 w-64 hidden md:block`}>
-            <div className="bg-[#0a0a0a] border border-[#1f2937] p-4 rounded hover:border-[#10b981]/50 transition-colors relative group">
+            <div className="bg-[#0a0a0a] border border-[hsl(var(--border))] p-4 rounded hover:border-[#10b981]/50 transition-colors relative group">
               <div className="absolute -top-px -left-px w-2 h-2 border-t border-l border-[#10b981]" />
               <div className="absolute -bottom-px -right-px w-2 h-2 border-b border-r border-[#10b981]" />
               <div className="flex items-center gap-4 mb-4">
@@ -102,7 +102,7 @@ export function ArchitectureDiagramBlock({ data }: { data: any }) {
         {/* Mobile */}
         <div className="md:hidden absolute bottom-4 w-full px-4 flex gap-2 overflow-x-auto snap-x">
           {nodes.map((node: any, i: number) => (
-            <div key={i} className="snap-center shrink-0 w-4/5 bg-[#0a0a0a] border border-[#1f2937] p-3 rounded">
+            <div key={i} className="snap-center shrink-0 w-4/5 bg-[#0a0a0a] border border-[hsl(var(--border))] p-3 rounded">
               <h3 className="text-xs font-bold text-white">{node.title}</h3>
               <p className={`text-[9px] ${colorMap[node.color] || "text-[#10b981]"}`}>{node.sub}</p>
             </div>

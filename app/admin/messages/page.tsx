@@ -65,7 +65,7 @@ export default function AdminMessagesPage() {
               <Mail className="size-4 text-primary" /> TRANSMISSIONS
             </h2>
             {unreadCount > 0 && (
-              <span className="px-2 py-0.5 bg-primary/20 text-primary text-[10px] font-mono rounded border border-primary/30">{unreadCount} new</span>
+              <span className="px-2 py-0.5 bg-primary/20 text-primary text-[10px] rounded border border-primary/30">{unreadCount} new</span>
             )}
           </div>
           <div className="flex gap-1">
@@ -74,7 +74,7 @@ export default function AdminMessagesPage() {
                 key={f}
                 type="button"
                 onClick={() => setFilter(f)}
-                className={`px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider rounded transition-colors ${filter === f ? "bg-primary/10 text-primary border border-primary/30" : "text-muted-foreground hover:text-foreground hover:bg-foreground/5 border border-transparent"}`}
+                className={`px-3 py-1.5 text-[10px] uppercase tracking-wider rounded transition-colors ${filter === f ? "bg-primary/10 text-primary border border-primary/30" : "text-muted-foreground hover:text-foreground hover:bg-foreground/5 border border-transparent"}`}
               >
                 {f}
               </button>
@@ -83,7 +83,7 @@ export default function AdminMessagesPage() {
         </div>
         <div className="flex-1 overflow-y-auto">
           {filtered.length === 0 ? (
-            <div className="p-8 text-center text-muted-foreground text-xs font-mono">No messages found</div>
+            <div className="p-8 text-center text-muted-foreground text-xs">No messages found</div>
           ) : (
             filtered.map(msg => (
               <button
@@ -98,11 +98,11 @@ export default function AdminMessagesPage() {
                       {msg.status === "unread" && <span className="size-1.5 bg-primary rounded-full shrink-0" />}
                       <h3 className={`text-xs truncate ${msg.status === "unread" ? "font-bold text-foreground" : "text-muted-foreground"}`}>{msg.name}</h3>
                     </div>
-                    <p className="text-[10px] text-muted-foreground font-mono truncate mt-0.5">{msg.subject || "No subject"}</p>
+                    <p className="text-[10px] text-muted-foreground truncate mt-0.5">{msg.subject || "No subject"}</p>
                     <p className="text-[10px] text-muted-foreground/60 truncate mt-0.5">{msg.message?.substring(0, 60)}...</p>
                   </div>
                   <div className="flex flex-col items-end gap-1 shrink-0">
-                    <span className="text-[9px] text-muted-foreground font-mono">{new Date(msg.created_at).toLocaleDateString()}</span>
+                    <span className="text-[9px] text-muted-foreground">{new Date(msg.created_at).toLocaleDateString()}</span>
                     {msg.is_starred && <Star className="size-3 text-amber-500 fill-amber-500" />}
                   </div>
                 </div>
@@ -117,14 +117,14 @@ export default function AdminMessagesPage() {
         {!selected ? (
           <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
             <Mail className="size-12 mb-4 opacity-20" />
-            <p className="text-sm font-mono">Select a transmission to view</p>
+            <p className="text-sm">Select a transmission to view</p>
           </div>
         ) : (
           <div className="p-6 max-w-3xl space-y-6">
             <div className="flex items-start justify-between">
               <div>
                 <h2 className="text-xl font-bold text-foreground">{selected.subject || "No Subject"}</h2>
-                <div className="flex items-center gap-3 mt-2 text-xs font-mono text-muted-foreground">
+                <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
                   <span>{selected.name}</span>
                   <span className="text-primary">{selected.email}</span>
                   <span className="flex items-center gap-1"><Clock className="size-3" /> {new Date(selected.created_at).toLocaleString()}</span>

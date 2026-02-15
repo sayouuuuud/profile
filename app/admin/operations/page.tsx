@@ -58,19 +58,19 @@ export default function AdminOperationsPage() {
             <Briefcase className="size-6 text-primary" /> OPERATIONS TIMELINE
           </h1>
           <div className="flex gap-2">
-            <button type="button" onClick={addOperation} className="flex items-center gap-1.5 px-3 py-1.5 bg-surface-dark hover:bg-foreground/5 text-foreground text-xs font-mono border border-border rounded transition-colors"><Plus className="size-3" /> Add</button>
-            <button type="button" onClick={handleSave} disabled={saving} className="flex items-center gap-1.5 px-4 py-1.5 bg-primary hover:bg-primary/90 text-background text-xs font-mono font-bold uppercase rounded transition-colors disabled:opacity-50">
+            <button type="button" onClick={addOperation} className="flex items-center gap-1.5 px-3 py-1.5 bg-surface-dark hover:bg-foreground/5 text-foreground text-xs border border-border rounded transition-colors"><Plus className="size-3" /> Add</button>
+            <button type="button" onClick={handleSave} disabled={saving} className="flex items-center gap-1.5 px-4 py-1.5 bg-primary hover:bg-primary/90 text-background text-xs font-bold uppercase rounded transition-colors disabled:opacity-50">
               {saving ? <Loader2 className="size-3 animate-spin" /> : <Save className="size-3" />} Save
             </button>
           </div>
         </div>
 
-        {message && <div className={`px-4 py-2 rounded text-xs font-mono border ${message.includes("Error") ? "bg-red-500/10 border-red-500/30 text-red-400" : "bg-primary/10 border-primary/30 text-primary"}`}>{message}</div>}
+        {message && <div className={`px-4 py-2 rounded text-xs border ${message.includes("Error") ? "bg-red-500/10 border-red-500/30 text-red-400" : "bg-primary/10 border-primary/30 text-primary"}`}>{message}</div>}
 
         {operations.map((op, i) => (
           <section key={op.id} className="p-6 rounded border border-border bg-surface-dark/50 space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono text-primary uppercase tracking-widest">OPERATION_{String(i + 1).padStart(2, "0")}</span>
+              <span className="text-[10px] text-primary uppercase tracking-widest">OPERATION_{String(i + 1).padStart(2, "0")}</span>
               <button type="button" onClick={() => deleteOperation(op.id)} className="p-1 hover:bg-red-500/10 rounded text-red-400"><Trash2 className="size-3.5" /></button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -83,18 +83,18 @@ export default function AdminOperationsPage() {
                 { key: "end_date", label: "End Date" },
               ].map(({ key, label }) => (
                 <div key={key} className="flex flex-col gap-1.5">
-                  <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">{label}</label>
+                  <label className="text-[10px] text-muted-foreground uppercase tracking-widest">{label}</label>
                   <input
                     type="text"
                     value={op[key] || ""}
                     onChange={(e) => { const u = [...operations]; u[i] = { ...op, [key]: e.target.value }; setOperations(u); }}
-                    className="bg-background border border-border rounded px-3 py-2 text-sm text-foreground font-mono focus:border-primary focus:outline-none transition-colors"
+                    className="bg-background border border-border rounded px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none transition-colors"
                   />
                 </div>
               ))}
             </div>
             <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Description</label>
+              <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">System Logs</span>
               <textarea
                 value={op.description || ""}
                 onChange={(e) => { const u = [...operations]; u[i] = { ...op, description: e.target.value }; setOperations(u); }}
@@ -103,7 +103,7 @@ export default function AdminOperationsPage() {
               />
             </div>
             <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">{"Tags (comma-separated)"}</label>
+              <label className="text-[10px] text-muted-foreground uppercase tracking-widest">{"Tags (comma-separated)"}</label>
               <input
                 type="text"
                 value={(op.tags || []).join(", ")}

@@ -9,7 +9,7 @@ export const metadata = {
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col relative overflow-hidden">
+    <div className="min-h-screen bg-background text-foreground flex flex-col relative overflow-hidden font-inter">
       {/* Grid background */}
       <div className="fixed inset-0 z-0 pointer-events-none opacity-10 bg-grid-pattern" style={{ backgroundSize: "40px 40px", maskImage: "linear-gradient(to bottom, black 40%, transparent 100%)", WebkitMaskImage: "linear-gradient(to bottom, black 40%, transparent 100%)" }} />
       {/* Scanline */}

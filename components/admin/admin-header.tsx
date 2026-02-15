@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
-import { Bell, Shield, AlertTriangle } from "lucide-react";
+import { Shield, AlertTriangle } from "lucide-react";
 import { AdminLogoutButton } from "./admin-logout-button";
+import { NotificationBadge } from "@/components/admin/notification-badge";
 
 export async function AdminHeader() {
   const supabase = await createClient();
@@ -14,20 +15,17 @@ export async function AdminHeader() {
         </div>
         <div>
           <h2 className="text-foreground text-sm font-bold leading-tight tracking-[0.1em]">MISSION CONTROL</h2>
-          <div className="text-[10px] text-muted-foreground font-mono tracking-widest">{"ADMIN :: SAYED ELSHAZLY"}</div>
+          <div className="text-[10px] text-muted-foreground tracking-widest">{"ADMIN :: SAYED ELSHAZLY"}</div>
         </div>
       </div>
       <div className="flex items-center gap-6">
         <div className="hidden md:flex items-center gap-2 px-3 py-1 rounded bg-surface-light border border-foreground/5">
           <AlertTriangle className="size-3 text-amber-500 animate-pulse" />
-          <span className="text-[10px] font-mono text-amber-500 tracking-wider">{"SYS_LOAD: 42%"}</span>
+          <span className="text-[10px] text-amber-500 tracking-wider">{"SYS_LOAD: 42%"}</span>
         </div>
         <div className="h-8 w-px bg-border" />
         <div className="flex items-center gap-3">
-          <button type="button" className="relative group">
-            <Bell className="size-5 text-muted-foreground hover:text-foreground transition-colors" />
-            <span className="absolute top-0 right-0 size-2 bg-primary rounded-full" />
-          </button>
+          <NotificationBadge />
           <AdminLogoutButton />
           <div className="size-8 rounded-full bg-gradient-to-br from-primary to-amber-500 p-px">
             <div className="w-full h-full rounded-full bg-black flex items-center justify-center text-xs font-bold text-foreground">

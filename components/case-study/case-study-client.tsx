@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, type ReactNode } from "react"
 import Link from "next/link"
-import { ArrowLeft, Play } from "lucide-react"
+import { ArrowLeft, Play, ExternalLink } from "lucide-react"
 import { Header } from "@/components/landing/header"
+import { Footer } from "@/components/landing/contact-footer"
 import { BlockGrid } from "./blocks/block-renderer"
 import { VideoModal } from "@/components/ui/video-modal"
 
@@ -29,113 +30,175 @@ function Reveal({ children, className = "", delay = 0 }: { children: ReactNode; 
 
 /* ========== MAIN COMPONENT ========== */
 export function CaseStudyClient({ cs }: { cs: any }) {
-  const heroTag = cs.hero_tag || "Product Strategy & Technical Architecture"
+  const heroTag = cs.hero_tag || cs.category || "Product Strategy"
   const contentBlocks = cs.content_blocks || []
-  const footerText = cs.footer_text || `\u00A9 2024 SAYED ELSHAZLY // ${cs.title}`
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white relative font-sans">
-      {/* Grid Background */}
-      <div
-        className="fixed inset-0 z-0 pointer-events-none opacity-20"
-        style={{
-          backgroundSize: "40px 40px",
-          backgroundImage: "linear-gradient(to right, #1f2937 1px, transparent 1px), linear-gradient(to bottom, #1f2937 1px, transparent 1px)",
-          maskImage: "radial-gradient(circle at center, black 30%, transparent 80%)",
-          WebkitMaskImage: "radial-gradient(circle at center, black 30%, transparent 80%)",
-        }}
-      />
-      {/* Scanline */}
-      <div
-        className="fixed inset-0 z-50 pointer-events-none"
-        style={{
-          background: "linear-gradient(to bottom, transparent 50%, rgba(16,185,129,0.03) 51%)",
-          backgroundSize: "100% 4px",
-        }}
-      />
+    <div className="relative min-h-screen bg-background text-foreground">
+      {/* Vertical lines */}
+      <div className="vertical-lines" aria-hidden="true">
+        <div className="vertical-lines-inner">
+          <div />
+          <div />
+          <div />
+        </div>
+      </div>
 
       <Header />
 
-      {/* ======== MAIN ======== */}
-      <main className="flex-1 relative flex flex-col w-full max-w-7xl mx-auto z-10 pb-20">
+      <main className="relative z-10">
+        {/* Hero Section */}
+        <section className="px-4 md:px-8 lg:px-12 pt-16 pb-16 max-w-[1600px] mx-auto">
+          {/* Back link */}
+          <Reveal>
+            <Link
+              href="/case-studies"
+              className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary text-sm transition-colors mb-10"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back to Case Studies
+            </Link>
+          </Reveal>
 
-        {/* === HERO SECTION === */}
-        <section id="overview" className="px-6 md:px-10 pt-16 pb-12 w-full">
-          <div className="flex flex-col gap-2 mb-8">
-            <Reveal>
-              <div className="flex items-center gap-2 text-[#10b981] text-xs font-mono tracking-widest uppercase mb-2">
-                <span className="w-2 h-2 bg-[#10b981] rounded-full animate-pulse" />
-                {heroTag}
+          {/* Tag */}
+          <Reveal delay={50}>
+            <div className="flex items-center gap-3 mb-5">
+              <div className="h-px w-10 bg-primary/40" />
+              <span className="text-xs text-primary tracking-widest uppercase">{heroTag}</span>
+            </div>
+          </Reveal>
+
+          {/* Title */}
+          <Reveal delay={100}>
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground text-balance mb-3">
+              {cs.title}
+            </h1>
+          </Reveal>
+
+          {/* Subtitle */}
+          {cs.subtitle && (
+            <Reveal delay={150}>
+              <p className="text-lg md:text-xl text-muted-foreground font-light mb-4">
+                {cs.subtitle}
+              </p>
+            </Reveal>
+          )}
+
+          {/* Summary */}
+          {cs.summary && (
+            <Reveal delay={200}>
+              <p className="text-muted-foreground leading-relaxed max-w-2xl mb-8">
+                {cs.summary}
+              </p>
+            </Reveal>
+          )}
+
+          {/* Metadata row */}
+          <Reveal delay={250}>
+            <div className="flex flex-wrap items-center gap-6 mb-8">
+              {cs.category && (
+                <span className="text-[11px] text-primary bg-primary/10 border border-primary/20 px-3 py-1 rounded-md">
+                  {cs.category}
+                </span>
+              )}
+              {cs.duration && (
+                <span className="text-[11px] text-muted-foreground bg-secondary border border-border px-3 py-1 rounded-md">
+                  {cs.duration}
+                </span>
+              )}
+              {cs.role && (
+                <span className="text-xs text-muted-foreground">
+                  Role: <span className="text-foreground">{cs.role}</span>
+                </span>
+              )}
+            </div>
+          </Reveal>
+
+          {/* Key metrics */}
+          {cs.metrics && cs.metrics.length > 0 && (
+            <Reveal delay={300}>
+              <div className="flex flex-wrap gap-8 py-6 border-y border-border mb-8">
+                {cs.metrics.map((m: any, i: number) => (
+                  <div key={i}>
+                    <span className="block text-2xl md:text-3xl font-bold text-foreground">{m.value}</span>
+                    <span className="text-xs text-muted-foreground uppercase tracking-wide">{m.label}</span>
+                  </div>
+                ))}
               </div>
             </Reveal>
-            <Reveal delay={100}>
-              <h1 className="text-4xl md:text-6xl font-black leading-none tracking-tight uppercase max-w-4xl text-balance" style={{ textShadow: "0 0 20px rgba(16,185,129,0.4)" }}>
-                {cs.title}{" "}
-                <span className="text-[#6b7280] block md:inline text-2xl md:text-4xl align-middle opacity-50">{"//"}</span>{" "}
-                <span className="text-white">{cs.subtitle}</span>
-              </h1>
-            </Reveal>
-            <Reveal delay={200}>
-              <p className="text-[#6b7280] text-lg mt-4 max-w-2xl font-light">{cs.summary}</p>
-            </Reveal>
+          )}
 
-            {/* CTA Buttons */}
-            {(cs.website_url || cs.video_url) && (
-              <Reveal delay={300} className="mt-8 flex flex-wrap gap-4">
+          {/* CTA Buttons */}
+          {(cs.website_url || cs.video_url) && (
+            <Reveal delay={350}>
+              <div className="flex flex-wrap gap-3">
                 {cs.website_url && (
                   <a
                     href={cs.website_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-6 py-3 bg-[#10b981] text-black hover:bg-[#059669] rounded font-bold uppercase tracking-wider text-sm transition-all hover:scale-105"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-medium text-sm transition-colors"
                   >
                     Visit Website
-                    <ArrowLeft className="rotate-[135deg] size-4" />
+                    <ExternalLink className="h-4 w-4" />
                   </a>
                 )}
-
                 {cs.video_url && (
                   <VideoModal
                     videoUrl={cs.video_url}
                     trigger={
-                      <button className="flex items-center gap-2 px-6 py-3 border border-[#374151] hover:border-[#10b981] hover:text-[#10b981] text-white rounded font-bold uppercase tracking-wider text-sm transition-all hover:scale-105 group">
-                        <Play className="size-4 fill-current" />
+                      <button className="inline-flex items-center gap-2 px-5 py-2.5 border border-border hover:border-primary/30 text-foreground rounded-lg font-medium text-sm transition-colors group">
+                        <Play className="h-4 w-4 fill-current" />
                         Watch Video
                       </button>
                     }
                   />
                 )}
-              </Reveal>
-            )}
-          </div>
+              </div>
+            </Reveal>
+          )}
+
+          {/* Tech Stack */}
+          {cs.tech_stack && cs.tech_stack.length > 0 && (
+            <Reveal delay={400}>
+              <div className="flex flex-wrap gap-2 mt-8">
+                {cs.tech_stack.map((tech: string) => (
+                  <span
+                    key={tech}
+                    className="text-[11px] text-muted-foreground bg-secondary border border-border px-2.5 py-1 rounded-md hover:text-foreground hover:border-primary/20 transition-colors"
+                  >
+                    {tech}
+                  </span>
+                ))}
+              </div>
+            </Reveal>
+          )}
         </section>
 
-        {/* === CONTENT BLOCKS (Page Builder) === */}
+        <div className="hr-divider" aria-hidden="true" />
+
+        {/* Content Blocks (Page Builder) */}
         {contentBlocks.length > 0 && (
-          <section className="px-6 md:px-10 py-6">
+          <section className="px-4 md:px-8 lg:px-12 py-16 max-w-[1600px] mx-auto">
             <BlockGrid blocks={contentBlocks} />
           </section>
         )}
 
-        {/* Back link */}
-        <section className="px-6 md:px-10 py-8">
-          <Link href="/case-studies" className="inline-flex items-center gap-2 text-[#10b981] hover:text-[#10b981]/80 text-sm font-mono uppercase tracking-wider transition-colors">
-            <ArrowLeft className="size-4" />
-            Back to Mission Archive
+        {/* Bottom nav */}
+        <div className="hr-divider" aria-hidden="true" />
+        <section className="px-4 md:px-8 lg:px-12 py-10 max-w-[1600px] mx-auto">
+          <Link
+            href="/case-studies"
+            className="inline-flex items-center gap-2 text-primary hover:text-primary/80 text-sm font-medium transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            All Case Studies
           </Link>
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="w-full border-t border-[#1f2937] bg-[#0a0a0a] py-8">
-        <div className="max-w-7xl mx-auto px-6 md:px-10 flex flex-col md:flex-row justify-between items-center text-xs text-[#6b7280] font-mono">
-          <div className="flex items-center gap-2">
-            <span className="size-2 bg-green-500 rounded-full animate-pulse" />
-            SYSTEM STATUS: OPTIMAL
-          </div>
-          <div className="mt-4 md:mt-0">{footerText}</div>
-        </div>
-      </footer>
+      <div className="hr-divider" aria-hidden="true" />
+      <Footer />
     </div>
   )
 }

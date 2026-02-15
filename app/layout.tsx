@@ -1,7 +1,10 @@
 import React from "react"
 import type { Metadata, Viewport } from "next";
-import { Space_Grotesk, Cinzel } from "next/font/google";
+import { Space_Grotesk, Cinzel, Inter } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider } from "@/components/theme-provider";
+import { AnalyticsTracker } from "@/components/analytics-tracker";
+import { NotificationsProvider } from "@/components/providers/notifications-provider";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -16,10 +19,16 @@ const cinzel = Cinzel({
   weight: ["400", "500", "600", "700", "800"],
 });
 
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
-  title: "Architect Command Center: Sayed Elshazly",
+  title: "Sayed Elshazly | Technical Product Manager",
   description:
-    "Strategic technology architect specializing in scalable systems. Building systems that turn complexity into competitive advantage.",
+    "Technical Product Manager who bridges product strategy and engineering execution. Building products that drive measurable business impact.",
 };
 
 export const viewport: Viewport = {
@@ -34,11 +43,15 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`dark ${spaceGrotesk.variable} ${cinzel.variable}`}
+      className={`dark ${spaceGrotesk.variable} ${cinzel.variable} ${inter.variable}`}
     >
       <body className="font-sans antialiased">
-        {children}
-        <Toaster />
+        <ThemeProvider />
+        <NotificationsProvider>
+          <AnalyticsTracker />
+          {children}
+          <Toaster />
+        </NotificationsProvider>
       </body>
     </html>
   );

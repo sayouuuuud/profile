@@ -1,203 +1,156 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useRef, useState } from "react"
 import { ScrollReveal } from "@/components/scroll-reveal"
 
-interface PhilosophyProps {
-    brief?: any
+interface Principle {
+  num: string
+  title: string
+  description: string
 }
 
-export function ProductPhilosophy({ brief }: PhilosophyProps) {
-    const ref = useRef<HTMLDivElement>(null)
-    const [isVisible, setIsVisible] = useState(false)
+interface ProductPhilosophyProps {
+  principles?: Principle[]
+  quote?: string
+}
 
-    useEffect(() => {
-        const el = ref.current
-        if (!el) return
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                if (entry.isIntersecting) {
-                    setIsVisible(true)
-                    observer.disconnect()
-                }
-            },
-            { threshold: 0.2 }
-        )
-        observer.observe(el)
-        return () => observer.disconnect()
-    }, [])
+const DEFAULT_PRINCIPLES = [
+  {
+    num: "01",
+    title: "User-First",
+    description:
+      "Every feature starts with a real user pain. I dig into support tickets, watch session recordings, and talk to users before writing a single spec.",
+  },
+  {
+    num: "02",
+    title: "Data-Informed",
+    description:
+      "I define success metrics before building, run experiments to validate assumptions, and let data guide prioritization — not opinions.",
+  },
+  {
+    num: "03",
+    title: "Outcome-Driven",
+    description:
+      "Features are not the product. Outcomes are. I optimize for business results — retention, revenue, satisfaction — not feature count.",
+  },
+  {
+    num: "04",
+    title: "Smart Architecture",
+    description:
+      "Choose the right tool for each problem. Not the newest, not the most complex — the one that scales with the business.",
+  },
+  {
+    num: "05",
+    title: "Bias for Action",
+    description:
+      "Ship to learn. A shipped MVP teaches more than months of planning ever could. Move fast, measure, iterate.",
+  },
+]
 
-    return (
-        <section className="px-6 md:px-12 py-32 relative" ref={ref}>
-            <ScrollReveal>
-                <div className="text-center mb-16">
-                    <p className="text-[11px] font-mono text-emerald-500/80 tracking-[0.3em] uppercase mb-3">
-                        Decision Framework
-                    </p>
-                    <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
-                        How I Think
-                    </h2>
-                </div>
+const DEFAULT_QUOTE = "“I don’t believe in building features. I believe in solving problems. Every product decision passes through one filter: does this move the needle for users and the business?”"
+
+function PrincipleRow({
+  principle,
+  index,
+}: {
+  principle: Principle
+  index: number
+}) {
+  const rowRef = useRef<HTMLDivElement>(null)
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
+  const [isHovered, setIsHovered] = useState(false)
+
+  function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
+    if (!rowRef.current) return
+    const rect = rowRef.current.getBoundingClientRect()
+    setMousePos({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    })
+  }
+
+  return (
+    <div
+      ref={rowRef}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="group relative border-b border-border py-10 md:py-14 cursor-default overflow-hidden"
+    >
+      {/* Spotlight glow that follows mouse */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+        style={{
+          background: isHovered
+            ? `radial-gradient(600px circle at ${mousePos.x}px ${mousePos.y}px, rgba(16,185,129,0.06), transparent 40%)`
+            : "none",
+        }}
+      />
+
+      <div className="relative flex flex-col md:flex-row md:items-center gap-4 md:gap-0">
+        {/* Number + Title */}
+        <div className="flex items-baseline gap-6 md:w-2/5">
+          <span className="text-sm text-muted-foreground font-mono tabular-nums tracking-tight opacity-50 group-hover:opacity-100 group-hover:text-emerald-500 transition-all duration-500">
+            {principle.num}
+          </span>
+          <h3 className="text-xl md:text-2xl font-semibold text-foreground group-hover:text-emerald-400 transition-colors duration-500">
+            {principle.title}
+          </h3>
+        </div>
+
+        {/* Description */}
+        <p className="md:w-3/5 text-sm md:text-base text-muted-foreground leading-relaxed md:pl-8 group-hover:text-foreground/70 transition-colors duration-500">
+          {principle.description}
+        </p>
+      </div>
+    </div>
+  )
+}
+
+export function ProductPhilosophy({ principles = DEFAULT_PRINCIPLES, quote = DEFAULT_QUOTE }: ProductPhilosophyProps) {
+  return (
+    <section className="px-6 md:px-12 py-24 relative overflow-hidden">
+      {/* Background orb */}
+      <div className="gradient-orb w-[500px] h-[500px] bg-emerald-500 -top-40 right-0 opacity-[0.06]" />
+
+      <div className="max-w-5xl mx-auto relative">
+        {/* Section Header */}
+        <ScrollReveal>
+          <div className="flex items-center gap-3 mb-4">
+            <div className="h-px flex-1 max-w-[40px] bg-gradient-to-r from-transparent to-emerald-500/40" />
+            <span className="text-xs text-emerald-500 tracking-widest uppercase font-medium">
+              Product Thinking
+            </span>
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3 text-balance">
+            How I Think About Products
+          </h2>
+          <p className="text-muted-foreground max-w-2xl mb-16 leading-relaxed">
+            Building great products is not about code. It is about deeply
+            understanding users, making smart trade-offs, and relentlessly
+            focusing on outcomes.
+          </p>
+        </ScrollReveal>
+
+        {/* Principles list */}
+        <div className="border-t border-border">
+          {principles.map((principle, i) => (
+            <ScrollReveal key={principle.num} delay={i * 80}>
+              <PrincipleRow principle={principle} index={i} />
             </ScrollReveal>
+          ))}
+        </div>
 
-            {/* Decision Tree SVG */}
-            <div className="max-w-3xl mx-auto">
-                <svg viewBox="0 0 700 380" className="w-full h-auto" style={{ overflow: "visible" }}>
-                    {/* Problem Node */}
-                    <g
-                        className="transition-all duration-700"
-                        style={{
-                            opacity: isVisible ? 1 : 0,
-                            transform: isVisible ? "translateY(0)" : "translateY(-10px)",
-                        }}
-                    >
-                        <rect x={250} y={10} width={200} height={44} rx={22} fill="#111" stroke="rgba(255,255,255,0.15)" strokeWidth={1} />
-                        <text x={350} y={37} textAnchor="middle" fill="#f2f2f2" fontSize={13} fontFamily="var(--font-inter)" fontWeight={600}>
-                            Problem Appears
-                        </text>
-                    </g>
-
-                    {/* Branch lines from problem */}
-                    {/* Left branch — throw money */}
-                    <path
-                        d="M 300 54 Q 300 100 180 130"
-                        fill="none"
-                        stroke="rgba(239, 68, 68, 0.3)"
-                        strokeWidth={1.5}
-                        strokeDasharray={120}
-                        strokeDashoffset={isVisible ? 0 : 120}
-                        style={{ transition: "stroke-dashoffset 1s ease-out 0.5s" }}
-                    />
-                    {/* Right branch — engineer it */}
-                    <path
-                        d="M 400 54 Q 400 100 520 130"
-                        fill="none"
-                        stroke="rgba(16, 185, 129, 0.5)"
-                        strokeWidth={1.5}
-                        strokeDasharray={120}
-                        strokeDashoffset={isVisible ? 0 : 120}
-                        style={{ transition: "stroke-dashoffset 1s ease-out 0.7s" }}
-                    />
-
-                    {/* LEFT: Throw money? NO */}
-                    <g
-                        style={{
-                            opacity: isVisible ? 1 : 0,
-                            transition: "opacity 0.6s ease-out 0.8s",
-                        }}
-                    >
-                        <rect x={80} y={125} width={200} height={44} rx={8} fill="#111" stroke="rgba(239, 68, 68, 0.2)" strokeWidth={1} />
-                        <text x={180} y={148} textAnchor="middle" fill="rgba(239, 68, 68, 0.6)" fontSize={12} fontFamily="var(--font-mono)" fontWeight={500}>
-                            Throw money at it?
-                        </text>
-                        <text x={180} y={164} textAnchor="middle" fill="rgba(239, 68, 68, 0.4)" fontSize={10} fontFamily="var(--font-mono)">
-                            ✕ REJECTED
-                        </text>
-                        {/* Strike-through line */}
-                        <line x1={100} y1={147} x2={260} y2={147} stroke="rgba(239, 68, 68, 0.25)" strokeWidth={1} />
-                    </g>
-
-                    {/* RIGHT: Engineer smarter? YES */}
-                    <g
-                        style={{
-                            opacity: isVisible ? 1 : 0,
-                            transition: "opacity 0.6s ease-out 1s",
-                        }}
-                    >
-                        <rect x={420} y={125} width={220} height={44} rx={8} fill="#111" stroke="rgba(16, 185, 129, 0.3)" strokeWidth={1} />
-                        <text x={530} y={148} textAnchor="middle" fill="#10b981" fontSize={12} fontFamily="var(--font-mono)" fontWeight={500}>
-                            Engineer a smarter solution?
-                        </text>
-                        <text x={530} y={164} textAnchor="middle" fill="rgba(16, 185, 129, 0.6)" fontSize={10} fontFamily="var(--font-mono)">
-                            ✓ ACCEPTED
-                        </text>
-                    </g>
-
-                    {/* Line from YES to result */}
-                    <path
-                        d="M 530 169 L 530 210 Q 530 230 400 240 L 350 240"
-                        fill="none"
-                        stroke="rgba(16, 185, 129, 0.4)"
-                        strokeWidth={1.5}
-                        strokeDasharray={150}
-                        strokeDashoffset={isVisible ? 0 : 150}
-                        style={{ transition: "stroke-dashoffset 1.2s ease-out 1.2s" }}
-                    />
-
-                    {/* Result Node */}
-                    <g
-                        style={{
-                            opacity: isVisible ? 1 : 0,
-                            transition: "opacity 0.6s ease-out 1.4s",
-                        }}
-                    >
-                        <rect x={200} y={220} width={300} height={50} rx={25} fill="rgba(16, 185, 129, 0.08)" stroke="rgba(16, 185, 129, 0.3)" strokeWidth={1} />
-                        <text x={350} y={248} textAnchor="middle" fill="#10b981" fontSize={14} fontFamily="var(--font-inter)" fontWeight={700}>
-                            Zero-cost, enterprise-grade solution
-                        </text>
-                        {/* Glow effect */}
-                        {isVisible && (
-                            <rect x={200} y={220} width={300} height={50} rx={25} fill="none" stroke="rgba(16, 185, 129, 0.15)" strokeWidth={1}>
-                                <animate attributeName="stroke-opacity" values="0.15;0.4;0.15" dur="3s" repeatCount="indefinite" />
-                            </rect>
-                        )}
-                    </g>
-
-                    {/* Floating Principle Badges */}
-                    {[
-                        { label: "User-First", x: 90, y: 220 },
-                        { label: "Zero-Sum Engineering", x: 90, y: 255 },
-                        { label: "Outcome > Process", x: 570, y: 240 },
-                    ].map((p, i) => (
-                        <g
-                            key={p.label}
-                            style={{
-                                opacity: isVisible ? 1 : 0,
-                                transition: `opacity 0.5s ease-out ${1.6 + i * 0.2}s`,
-                            }}
-                        >
-                            <rect
-                                x={p.x - 5}
-                                y={p.y - 12}
-                                width={p.label.length * 8 + 16}
-                                height={20}
-                                rx={4}
-                                fill="rgba(16, 185, 129, 0.06)"
-                                stroke="rgba(16, 185, 129, 0.15)"
-                                strokeWidth={0.5}
-                            />
-                            <text
-                                x={p.x + 3}
-                                y={p.y + 2}
-                                fill="rgba(16, 185, 129, 0.6)"
-                                fontSize={9}
-                                fontFamily="var(--font-mono)"
-                                letterSpacing={1}
-                            >
-                                {p.label}
-                            </text>
-                        </g>
-                    ))}
-
-                    {/* Quote at bottom */}
-                    <g
-                        style={{
-                            opacity: isVisible ? 1 : 0,
-                            transition: "opacity 0.6s ease-out 2s",
-                        }}
-                    >
-                        <text x={350} y={320} textAnchor="middle" fill="rgba(255,255,255,0.2)" fontSize={20} fontStyle="italic" fontFamily="var(--font-inter)">
-                            &ldquo;
-                        </text>
-                        <text x={350} y={340} textAnchor="middle" fill="rgba(255,255,255,0.3)" fontSize={13} fontStyle="italic" fontFamily="var(--font-inter)">
-                            Ship to learn. Optimize to scale.
-                        </text>
-                        <text x={350} y={360} textAnchor="middle" fill="rgba(255,255,255,0.2)" fontSize={20} fontStyle="italic" fontFamily="var(--font-inter)">
-                            &rdquo;
-                        </text>
-                    </g>
-                </svg>
-            </div>
-        </section>
-    )
+        {/* Manifesto quote */}
+        <ScrollReveal delay={500}>
+          <div className="mt-16 flex items-start gap-5">
+            <div className="hidden md:block w-1 h-16 rounded-full bg-gradient-to-b from-emerald-500 to-emerald-500/0 flex-shrink-0 mt-1" />
+            <blockquote className="text-lg md:text-xl text-foreground/80 font-light italic leading-relaxed">
+              {quote}
+            </blockquote>
+          </div>
+        </ScrollReveal>
+      </div>
+    </section>
+  )
 }

@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 import { Shield, Key, Lock, Eye, EyeOff, Save, Loader2, CheckCircle, AlertTriangle } from "lucide-react";
+import { LoginHistory } from "@/components/admin/security/login-history";
 
 export default function AdminSecurityPage() {
   const supabase = createClient();
@@ -83,7 +84,7 @@ export default function AdminSecurityPage() {
         </div>
 
         {message && (
-          <div className={`px-4 py-2 rounded text-xs font-mono border flex items-center gap-2 ${messageType === "error" ? "bg-red-500/10 border-red-500/30 text-red-400" : "bg-primary/10 border-primary/30 text-primary"}`}>
+          <div className={`px-4 py-2 rounded text-xs border flex items-center gap-2 ${messageType === "error" ? "bg-red-500/10 border-red-500/30 text-red-400" : "bg-primary/10 border-primary/30 text-primary"}`}>
             {messageType === "error" ? <AlertTriangle className="size-3.5" /> : <CheckCircle className="size-3.5" />}
             {message}
           </div>
@@ -96,14 +97,14 @@ export default function AdminSecurityPage() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Email</label>
-              <div className="bg-background border border-border rounded px-3 py-2 text-sm text-foreground font-mono">
+              <label className="text-[10px] text-muted-foreground uppercase tracking-widest">Email</label>
+              <div className="bg-background border border-border rounded px-3 py-2 text-sm text-foreground">
                 {user?.email || "Loading..."}
               </div>
             </div>
             <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">User ID</label>
-              <div className="bg-background border border-border rounded px-3 py-2 text-sm text-muted-foreground font-mono truncate">
+              <label className="text-[10px] text-muted-foreground uppercase tracking-widest">User ID</label>
+              <div className="bg-background border border-border rounded px-3 py-2 text-sm text-muted-foreground truncate">
                 {user?.id || "Loading..."}
               </div>
             </div>
@@ -117,13 +118,13 @@ export default function AdminSecurityPage() {
           </h2>
           <div className="grid grid-cols-1 gap-4 max-w-md">
             <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">New Password</label>
+              <label className="text-[10px] text-muted-foreground uppercase tracking-widest">New Password</label>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  className="w-full bg-background border border-border rounded px-3 py-2 text-sm text-foreground font-mono focus:border-primary focus:outline-none transition-colors pr-10"
+                  className="w-full bg-background border border-border rounded px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none transition-colors pr-10"
                 />
                 <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
                   {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
@@ -131,20 +132,23 @@ export default function AdminSecurityPage() {
               </div>
             </div>
             <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Confirm Password</label>
+              <label className="text-[10px] text-muted-foreground uppercase tracking-widest">Confirm Password</label>
               <input
                 type={showPassword ? "text" : "password"}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="bg-background border border-border rounded px-3 py-2 text-sm text-foreground font-mono focus:border-primary focus:outline-none transition-colors"
+                className="bg-background border border-border rounded px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none transition-colors"
               />
             </div>
-            <button type="button" onClick={handlePasswordChange} disabled={saving} className="flex items-center justify-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-500/90 text-background text-xs font-mono font-bold uppercase tracking-wider rounded transition-colors disabled:opacity-50 w-fit">
+            <button type="button" onClick={handlePasswordChange} disabled={saving} className="flex items-center justify-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-500/90 text-background text-xs font-bold uppercase tracking-wider rounded transition-colors disabled:opacity-50 w-fit">
               {saving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
               {saving ? "Updating..." : "Update Password"}
             </button>
           </div>
         </section>
+
+        {/* Login History */}
+        <LoginHistory />
 
         {/* RLS Policies */}
         <section className="p-6 rounded border border-border bg-surface-dark/50 space-y-4">
@@ -152,7 +156,7 @@ export default function AdminSecurityPage() {
             <Shield className="size-4 text-primary" /> ROW LEVEL SECURITY POLICIES
           </h2>
           <div className="overflow-x-auto">
-            <table className="w-full text-xs font-mono">
+            <table className="w-full text-xs">
               <thead>
                 <tr className="border-b border-border">
                   <th className="text-left py-2 px-3 text-muted-foreground uppercase tracking-widest">Table</th>

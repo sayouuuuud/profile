@@ -14,18 +14,18 @@ export function DataVisual({ data }: { data: DataVisualData }) {
   const normalized = points.map(p => (p / max) * 100)
   
   return (
-    <div className="glass-panel border border-[#1f2937] p-8 rounded-sm space-y-6">
+    <div className="glass-panel border border-border p-8 rounded-lg card-glow space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-xs font-mono text-[#10b981] uppercase tracking-[0.2em]">
+        <h3 className="text-xs font-mono text-primary uppercase tracking-[0.2em]">
           {data.title || "DATA VISUALIZATION"}
         </h3>
         {data.label && (
-          <span className="text-xs text-[#6b7280] font-mono">{data.label}</span>
+          <span className="text-xs text-muted-foreground font-mono">{data.label}</span>
         )}
       </div>
 
       {/* Chart */}
-      <div className="relative h-32 bg-[#0a0a0a] border border-[#1f2937] rounded p-4">
+      <div className="relative h-32 bg-card border border-border rounded p-4">
         <svg className="w-full h-full" preserveAspectRatio="none" viewBox={`0 0 ${points.length * 10} 100`}>
           {/* Grid lines */}
           {[0, 25, 50, 75, 100].map(y => (
@@ -63,7 +63,7 @@ export function DataVisual({ data }: { data: DataVisualData }) {
 
       {/* Summary */}
       {data.summary && (
-        <p className="text-xs text-[#6b7280] font-mono">{data.summary}</p>
+        <p className="text-xs text-muted-foreground font-mono">{data.summary}</p>
       )}
     </div>
   )

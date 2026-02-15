@@ -5,6 +5,7 @@ import React from "react"
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
+import { logLoginEvent } from "@/app/actions/security";
 import { Shield, Lock, Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
@@ -27,7 +28,9 @@ export default function LoginPage() {
     if (error) {
       setError(error.message);
       setLoading(false);
+      await logLoginEvent(email, "failure", error.message);
     } else {
+      await logLoginEvent(email, "success");
       router.push("/admin");
       router.refresh();
     }

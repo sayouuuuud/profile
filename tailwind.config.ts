@@ -46,20 +46,15 @@ const config: Config = {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
-        gold: {
-          DEFAULT: '#d4af37',
-          dim: '#aa8c2c',
-        },
         emerald: {
           DEFAULT: '#10b981',
           dim: '#059669',
           light: '#34d399',
         },
         surface: {
-          dark: '#0a0a0a',
-          light: '#121212',
+          dark: '#080808',
+          light: '#111111',
         },
-        'text-dim': '#6b7280',
         chart: {
           '1': 'hsl(var(--chart-1))',
           '2': 'hsl(var(--chart-2))',
@@ -80,6 +75,7 @@ const config: Config = {
       },
       fontFamily: {
         sans: ['var(--font-space-grotesk)'],
+        inter: ['var(--font-inter)'],
         display: ['var(--font-space-grotesk)'],
         'serif-display': ['var(--font-cinzel)'],
         mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', 'monospace'],
@@ -90,8 +86,7 @@ const config: Config = {
         sm: 'calc(var(--radius) - 4px)',
       },
       backgroundImage: {
-        'grid-pattern': 'linear-gradient(to right, #1f2937 1px, transparent 1px), linear-gradient(to bottom, #1f2937 1px, transparent 1px)',
-        'parchment-pattern': 'radial-gradient(circle at center, rgba(212, 175, 55, 0.03) 0%, transparent 70%)',
+        'grid-pattern': 'linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px)',
       },
       keyframes: {
         'accordion-down': {
@@ -102,20 +97,21 @@ const config: Config = {
           from: { height: 'var(--radix-accordion-content-height)' },
           to: { height: '0' },
         },
-        'pulse-glow': {
-          '0%, 100%': { opacity: '1' },
-          '50%': { opacity: '0.5' },
+        'float': {
+          '0%, 100%': { transform: 'translate(0, 0)' },
+          '33%': { transform: 'translate(30px, -20px)' },
+          '66%': { transform: 'translate(-20px, 15px)' },
         },
-        'scan': {
-          '0%': { transform: 'translateY(-100%)' },
-          '100%': { transform: 'translateY(100%)' },
+        'glow-pulse-soft': {
+          '0%, 100%': { opacity: '0.12' },
+          '50%': { opacity: '0.22' },
         },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
-        'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
-        'scan': 'scan 8s linear infinite',
+        'float': 'float 20s ease-in-out infinite',
+        'glow-pulse': 'glow-pulse-soft 6s ease-in-out infinite',
       },
     },
   },
