@@ -30,12 +30,15 @@ export function CloudDiagnosticWidget() {
         async function fetchStats() {
             try {
                 const res = await fetch("/api/cloudinary/stats");
-                if (!res.ok) throw new Error("Failed to fetch cloud stats");
+                if (!res.ok) {
+                    const errorJson = await res.json().catch(() => ({}));
+                    throw new Error(errorJson.error || `Failed to fetch cloud stats: ${res.status}`);
+                }
                 const data = await res.json();
                 setStats(data);
-            } catch (err) {
-                console.error(err);
-                setError("Failed to load cloud metrics");
+            } catch (err: any) {
+                console.error("Cloud widget error:", err);
+                setError(err.message || "Failed to load cloud metrics");
             } finally {
                 setLoading(false);
             }

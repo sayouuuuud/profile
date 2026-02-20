@@ -43,9 +43,10 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`dark ${spaceGrotesk.variable} ${cinzel.variable} ${inter.variable}`}
     >
-      <body className="font-sans antialiased">
+      <body className="font-sans antialiased" suppressHydrationWarning>
         <ThemeProvider />
         <NotificationsProvider>
           <Suspense fallback={null}>

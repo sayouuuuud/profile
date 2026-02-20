@@ -1,4 +1,7 @@
 import { NextResponse } from "next/server";
+import { Buffer } from "buffer";
+
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
     const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
@@ -6,6 +9,7 @@ export async function GET() {
     const apiSecret = process.env.CLOUDINARY_API_SECRET;
 
     if (!cloudName || !apiKey || !apiSecret) {
+        console.error("Missing Cloudinary credentials");
         return NextResponse.json(
             { error: "Missing Cloudinary credentials" },
             { status: 500 }
@@ -22,14 +26,20 @@ export async function GET() {
                 headers: {
                     Authorization: `Basic ${auth}`,
                 },
-                next: { revalidate: 3600 } // Cache for 1 hour
+                cache: 'no-store'
             }
         );
 
         if (!response.ok) {
-            const errorData = await response.json();
-            console.error("Cloudinary API error:", errorData);
-            throw new Error(errorData.error?.message || "Failed to fetch usage data");
+            const errorText = await response.text();
+            console.error("Cloudinary API error:", response.status, errorText);
+
+            try {
+                const errorData = JSON.parse(errorText);
+                throw new Error(errorData.error?.message || `Cloudinary API returned ${response.status}`);
+            } catch (e) {
+                throw new Error(`Cloudinary API returned ${response.status}: ${errorText}`);
+            }
         }
 
         const data = await response.json();
@@ -42,7 +52,6 @@ export async function GET() {
         let usedPercent = data.bandwidth?.used_percent || 0;
 
         const creditsLimit = data.credits?.limit;
-        const creditsUsage = data.credits?.usage;
 
         if (bandwidthLimit === 0 && creditsLimit) {
             // Fallback: Use Credits Limit as proxy
@@ -73,7 +82,6 @@ export async function GET() {
 
     } catch (error: any) {
         console.error("Cloudinary stats error:", error);
-        // Return mock data if API fails (graceful degradation) or error
         return NextResponse.json(
             { error: error.message || "Failed to fetch Cloudinary stats" },
             { status: 500 }

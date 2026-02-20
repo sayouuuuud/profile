@@ -27,6 +27,7 @@ import { TeamMember } from "./team-member"
 import { ChallengeBadge } from "./challenge-badge"
 import { ROIDisplay } from "./roi-display"
 import { DataVisual } from "./data-visual"
+import { ScalabilitySimulator } from "@/components/scalability/scalability-simulator"
 
 const BLOCK_COMPONENTS: Record<string, React.ComponentType<{ data: any }>> = {
   "stat-donut": StatDonutBlock,
@@ -55,6 +56,7 @@ const BLOCK_COMPONENTS: Record<string, React.ComponentType<{ data: any }>> = {
   "challenge-badge": ChallengeBadge,
   "roi-display": ROIDisplay,
   "data-visual": DataVisual,
+  "scalability-simulator": (props: any) => <ScalabilitySimulator levels={props.data?.levels} />,
 }
 
 function Reveal({ children, className = "", delay = 0 }: { children: ReactNode; className?: string; delay?: number }) {

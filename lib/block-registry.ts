@@ -1,5 +1,6 @@
 export type BlockWidth = "1/3" | "1/2" | "2/3" | "full"
 
+import { defaultScaleLevels } from "@/components/scalability/scalability-simulator"
 export interface BlockDef {
   type: string
   label: string
@@ -461,6 +462,18 @@ export const BLOCK_REGISTRY: BlockDef[] = [
       data_points: [20, 45, 35, 60, 55, 75, 65, 85, 80, 95],
       label: "Monthly Growth",
       summary: "Consistent upward trend over the past 10 months.",
+    },
+  },
+  {
+    type: "scalability-simulator",
+    label: "Scalability Simulator",
+    icon: "Activity",
+    category: "Product",
+    description: "Interactive simulator showing architecture scaling, costs, and performance.",
+    widths: ["full"],
+    defaultWidth: "full",
+    defaultData: {
+      levels: [...defaultScaleLevels],
     },
   },
 ]

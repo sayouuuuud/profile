@@ -24,8 +24,13 @@ interface NotificationsContextType {
     loading: boolean;
 }
 
-const NotificationsContext = createContext<NotificationsContextType | undefined>(undefined);
+const NotificationsContext =
+    (globalThis as any).NotificationsContext ||
+    createContext<NotificationsContextType | undefined>(undefined);
 
+if (process.env.NODE_ENV !== "production") {
+    (globalThis as any).NotificationsContext = NotificationsContext;
+}
 export function NotificationsProvider({ children }: { children: React.ReactNode }) {
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [loading, setLoading] = useState(true);

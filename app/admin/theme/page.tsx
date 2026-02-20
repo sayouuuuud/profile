@@ -3,6 +3,8 @@
 import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 import { Save, Palette, Loader2 } from "lucide-react";
+import { saveTheme } from "@/app/actions/theme";
+import { ImageUpload } from "@/components/admin/image-upload";
 
 export default function AdminThemePage() {
   const supabase = createClient();
@@ -21,12 +23,13 @@ export default function AdminThemePage() {
   async function handleSave() {
     if (!theme) return;
     setSaving(true);
+    setMessage("");
     try {
-      const { id, ...rest } = theme;
-      const { error } = await supabase.from("theme_settings").update({ ...rest, updated_at: new Date().toISOString() }).eq("id", id);
-      if (error) throw error;
-      setMessage("Theme saved.");
-    } catch (err: any) { setMessage(err.message || "Error saving."); }
+      await saveTheme(theme);
+      setMessage("✓ Theme deployed — all pages updated.");
+    } catch (err: any) {
+      setMessage(err.message || "Error saving.");
+    }
     setSaving(false);
   }
 
@@ -50,11 +53,15 @@ export default function AdminThemePage() {
           </h1>
           <button type="button" onClick={handleSave} disabled={saving} className="flex items-center gap-1.5 px-4 py-2 bg-primary hover:bg-primary/90 text-background text-xs font-bold uppercase tracking-wider rounded transition-colors disabled:opacity-50">
             {saving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
-            {saving ? "Saving..." : "Deploy Theme"}
+            {saving ? "Deploying..." : "Deploy Theme"}
           </button>
         </div>
 
-        {message && <div className={`px-4 py-2 rounded text-xs border ${message.includes("Error") ? "bg-red-500/10 border-red-500/30 text-red-400" : "bg-primary/10 border-primary/30 text-primary"}`}>{message}</div>}
+        {message && (
+          <div className={`px-4 py-2 rounded text-xs border ${message.startsWith("✓") ? "bg-primary/10 border-primary/30 text-primary" : "bg-red-500/10 border-red-500/30 text-red-400"}`}>
+            {message}
+          </div>
+        )}
 
         {/* Color Matrix */}
         <section className="p-6 rounded border border-border bg-surface-dark/50 space-y-6">
@@ -81,6 +88,22 @@ export default function AdminThemePage() {
                 </div>
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* Identity & Branding */}
+        <section className="p-6 rounded border border-border bg-surface-dark/50 space-y-6">
+          <h2 className="text-sm font-bold text-foreground tracking-widest">IDENTITY & BRANDING</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <label className="text-[10px] text-muted-foreground uppercase tracking-widest">Admin Avatar</label>
+              <ImageUpload
+                value={theme.admin_avatar || ""}
+                onChange={(url: string) => setTheme({ ...theme, admin_avatar: url })}
+                onRemove={() => setTheme({ ...theme, admin_avatar: null })}
+              />
+              <p className="text-[10px] text-muted-foreground">Displayed in the admin control header</p>
+            </div>
           </div>
         </section>
 

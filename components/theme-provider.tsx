@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { unstable_noStore as noStore } from "next/cache";
 
 // Helper to convert Hex to HSL
 function hexToHSL(hex: string): string {
@@ -40,6 +41,7 @@ function hexToHSL(hex: string): string {
 }
 
 export async function ThemeProvider() {
+  noStore(); // Always fetch fresh theme — bypasses Next.js data cache
   const supabase = await createClient();
   const { data: theme } = await supabase.from("theme_settings").select("*").limit(1).single();
 
@@ -82,16 +84,33 @@ export async function ThemeProvider() {
     cssVars.push(`--input: ${hsl};`);
   }
 
+  if (theme.font_display) {
+    cssVars.push(`--font-display: "${theme.font_display}", sans-serif;`);
+  }
+
+  if (theme.font_serif) {
+    cssVars.push(`--font-serif: "${theme.font_serif}", serif;`);
+  }
+
   if (cssVars.length === 0) return null;
+
+  const fontsToLoad = new Set<string>();
+  if (theme.font_display) fontsToLoad.add(theme.font_display.replace(/ /g, "+"));
+  if (theme.font_serif) fontsToLoad.add(theme.font_serif.replace(/ /g, "+"));
+
+  const fontImport = fontsToLoad.size > 0
+    ? `@import url('https://fonts.googleapis.com/css2?${Array.from(fontsToLoad).map(f => `family=${f}:wght@300;400;500;600;700${f === "Cinzel" ? ";800" : ""}`).join("&")}&display=swap');\n`
+    : "";
 
   return (
     <style dangerouslySetInnerHTML={{
       __html: `
+        ${fontImport}
         :root {
-          ${cssVars.join("\n")}
+          ${cssVars.join("\n          ")}
         }
         .dark {
-          ${cssVars.join("\n")}
+          ${cssVars.join("\n          ")}
         }
       `
     }} />

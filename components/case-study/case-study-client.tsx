@@ -7,7 +7,11 @@ import { Header } from "@/components/landing/header"
 import { Footer } from "@/components/landing/contact-footer"
 import { BlockGrid } from "./blocks/block-renderer"
 import { VideoModal } from "@/components/ui/video-modal"
+import { GENERATOR_QUESTIONS } from "@/lib/case-study-questions"
 
+function getQuestionText(id: string) {
+  return GENERATOR_QUESTIONS.find(q => q.id === id)?.question || "Key Insight"
+}
 /* ========== Scroll Reveal ========== */
 function Reveal({ children, className = "", delay = 0 }: { children: ReactNode; className?: string; delay?: number }) {
   const ref = useRef<HTMLDivElement>(null)
@@ -183,6 +187,49 @@ export function CaseStudyClient({ cs }: { cs: any }) {
             <BlockGrid blocks={contentBlocks} />
           </section>
         )}
+
+
+        {/* Deep Dive (Hybrid Interview) */}
+        {cs.responses && cs.responses.length > 0 && (
+          <section className="px-4 md:px-8 lg:px-12 py-16 max-w-[1000px] mx-auto">
+            <Reveal>
+              <div className="mb-12">
+                <h2 className="text-2xl md:text-3xl font-bold mb-3 flex items-center gap-3">
+                  <span className="w-8 h-1 bg-primary rounded-full" />
+                  Inside the Build
+                </h2>
+                <p className="text-muted-foreground">Technical deep dive and architectural decisions.</p>
+              </div>
+            </Reveal>
+
+            <div className="space-y-12">
+              {cs.responses.map((resp: any, i: number) => {
+                // Import dynamically or check if we can import at top. 
+                // Since we are in client component, we should import at top, but for replace_file_content strictness let's assume we pass it or import it.
+                // Actually, better to just map it here if we imported it.
+                // Let's add the import to the top of file in a separate edit or assume it's available.
+                // Wait, I can't import in the middle of a file. I should have added the import first.
+                // I'll proceed with rendering and assume `questions` map is available or I'll use a helper.
+                // I will fix the import in the next step or use a hardcoded lookup for now if needed, but import is better.
+                return (
+                  <Reveal key={resp.id} delay={i * 100}>
+                    <div className="group relative pl-8 border-l-2 border-border hover:border-primary/50 transition-colors">
+                      <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-background border-2 border-border group-hover:border-primary transition-colors" />
+                      <h3 className="text-lg font-semibold text-foreground mb-3">
+                        {getQuestionText(resp.question_id)}
+                      </h3>
+                      <div className="prose prose-invert prose-sm max-w-none text-muted-foreground">
+                        <p className="whitespace-pre-wrap">{resp.response}</p>
+                      </div>
+                    </div>
+                  </Reveal>
+                )
+              })}
+            </div>
+          </section>
+        )}
+
+
 
         {/* Bottom nav */}
         <div className="hr-divider" aria-hidden="true" />

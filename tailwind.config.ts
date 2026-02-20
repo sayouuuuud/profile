@@ -25,7 +25,7 @@ const config: Config = {
         primary: {
           DEFAULT: 'hsl(var(--primary))',
           foreground: 'hsl(var(--primary-foreground))',
-          dim: '#059669',
+          dim: 'hsl(var(--primary) / 0.8)',
         },
         secondary: {
           DEFAULT: 'hsl(var(--secondary))',
@@ -47,9 +47,20 @@ const config: Config = {
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
         emerald: {
-          DEFAULT: '#10b981',
-          dim: '#059669',
-          light: '#34d399',
+          DEFAULT: 'hsl(var(--primary))',
+          50: 'hsl(var(--primary) / 0.1)',
+          100: 'hsl(var(--primary) / 0.2)',
+          200: 'hsl(var(--primary) / 0.3)',
+          300: 'hsl(var(--primary) / 0.4)',
+          400: 'hsl(var(--primary) / 0.8)',
+          500: 'hsl(var(--primary))',
+          600: 'hsl(var(--primary) / 0.9)',
+          700: 'hsl(var(--primary) / 0.8)',
+          800: 'hsl(var(--primary) / 0.7)',
+          900: 'hsl(var(--primary) / 0.6)',
+          950: 'hsl(var(--primary) / 0.4)',
+          dim: 'hsl(var(--primary) / 0.8)',
+          light: 'hsl(var(--primary))',
         },
         surface: {
           dark: '#080808',
@@ -74,10 +85,10 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ['var(--font-space-grotesk)'],
+        sans: ['var(--font-display)', 'var(--font-space-grotesk)', 'sans-serif'],
         inter: ['var(--font-inter)'],
-        display: ['var(--font-space-grotesk)'],
-        'serif-display': ['var(--font-cinzel)'],
+        display: ['var(--font-display)', 'var(--font-space-grotesk)', 'sans-serif'],
+        'serif-display': ['var(--font-serif)', 'var(--font-cinzel)', 'serif'],
         mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', 'monospace'],
       },
       borderRadius: {

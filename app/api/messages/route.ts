@@ -44,6 +44,30 @@ export async function POST(request: Request) {
       );
     }
 
+    // Send Telegram notification
+    try {
+      const { sendTelegramMessage } = await import("@/lib/telegram-bot");
+      const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || '').replace('localhost', '127.0.0.1');
+      await sendTelegramMessage({
+        text: `📩 <b>New Message!</b>\n\n` +
+          `<b>From:</b> ${name.trim()}\n` +
+          `<b>Email:</b> <code>${email.trim()}</code>\n` +
+          `${subject ? `<b>Subject:</b> ${subject.trim()}\n` : ''}` +
+          `\n<b>Message:</b>\n<i>${message.trim().substring(0, 500)}</i>\n\n` +
+          `<i>${new Date().toLocaleString('en-US', { timeZone: 'Africa/Cairo' })}</i>`,
+        parse_mode: "HTML",
+        reply_markup: {
+          inline_keyboard: [
+            [
+              { text: '📬 View Messages', url: `${siteUrl}/admin/messages` },
+            ],
+          ],
+        },
+      });
+    } catch (notifyErr) {
+      console.error("Failed to send message Telegram notification:", notifyErr);
+    }
+
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error("Messages API unhandled error:", err);

@@ -25,6 +25,15 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
     const supabase = await createClient()
     const { data } = await supabase.from("case_studies").select("*").eq("slug", slug).single()
     cs = data
+
+    if (cs) {
+      const { data: responses } = await supabase
+        .from("case_study_responses")
+        .select("*")
+        .eq("case_study_id", cs.id)
+
+      cs.responses = responses || []
+    }
   } catch {
     return notFound()
   }

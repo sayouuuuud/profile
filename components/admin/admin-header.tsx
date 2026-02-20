@@ -2,10 +2,12 @@ import { createClient } from "@/lib/supabase/server";
 import { Shield, AlertTriangle } from "lucide-react";
 import { AdminLogoutButton } from "./admin-logout-button";
 import { NotificationBadge } from "@/components/admin/notification-badge";
+import Image from "next/image";
 
 export async function AdminHeader() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
+  const { data: theme } = await supabase.from("theme_settings").select("admin_avatar").limit(1).single();
 
   return (
     <header className="relative z-40 flex items-center justify-between whitespace-nowrap border-b border-border px-6 py-4 sticky top-0 h-16" style={{ background: "rgba(10,10,10,0.7)", backdropFilter: "blur(12px)" }}>
@@ -28,8 +30,12 @@ export async function AdminHeader() {
           <NotificationBadge />
           <AdminLogoutButton />
           <div className="size-8 rounded-full bg-gradient-to-br from-primary to-amber-500 p-px">
-            <div className="w-full h-full rounded-full bg-black flex items-center justify-center text-xs font-bold text-foreground">
-              {user?.email?.[0]?.toUpperCase() || "A"}
+            <div className="w-full h-full rounded-full bg-black flex items-center justify-center text-xs font-bold text-foreground overflow-hidden">
+              {theme?.admin_avatar ? (
+                <Image src={theme.admin_avatar} alt="Admin" width={32} height={32} className="w-full h-full object-cover" />
+              ) : (
+                user?.email?.[0]?.toUpperCase() || "A"
+              )}
             </div>
           </div>
         </div>
