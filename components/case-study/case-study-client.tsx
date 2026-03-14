@@ -2,15 +2,29 @@
 
 import { useEffect, useRef, type ReactNode } from "react"
 import Link from "next/link"
-import { ArrowLeft, Play, ExternalLink } from "lucide-react"
+import { ArrowLeft, Play, ExternalLink, BookOpen } from "lucide-react"
 import { Header } from "@/components/landing/header"
 import { Footer } from "@/components/landing/contact-footer"
 import { BlockGrid } from "./blocks/block-renderer"
 import { VideoModal } from "@/components/ui/video-modal"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import { GENERATOR_QUESTIONS } from "@/lib/case-study-questions"
 
 function getQuestionText(id: string) {
   return GENERATOR_QUESTIONS.find(q => q.id === id)?.question || "Key Insight"
+}
+
+function ensureAbsoluteUrl(url: string) {
+  if (!url) return url
+  if (url.startsWith("http://") || url.startsWith("https://")) return url
+  return `https://${url}`
 }
 /* ========== Scroll Reveal ========== */
 function Reveal({ children, className = "", delay = 0 }: { children: ReactNode; className?: string; delay?: number }) {
@@ -138,7 +152,7 @@ export function CaseStudyClient({ cs }: { cs: any }) {
               <div className="flex flex-wrap gap-3">
                 {cs.website_url && (
                   <a
-                    href={cs.website_url}
+                    href={ensureAbsoluteUrl(cs.website_url)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-medium text-sm transition-colors"
@@ -146,6 +160,31 @@ export function CaseStudyClient({ cs }: { cs: any }) {
                     Visit Website
                     <ExternalLink className="h-4 w-4" />
                   </a>
+                )}
+                {cs.story_content && (
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <button className="inline-flex items-center gap-2 px-5 py-2.5 border border-primary/30 hover:border-primary/60 bg-primary/5 text-primary rounded-lg font-medium text-sm transition-colors group">
+                        <BookOpen className="h-4 w-4" />
+                        Story of Project
+                      </button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-[calc(100vw-2rem)] md:max-w-4xl max-h-[90vh] overflow-y-auto">
+                      <DialogHeader>
+                        <DialogTitle className="text-2xl md:text-3xl font-bold text-foreground">
+                          {cs.story_title || cs.title}
+                        </DialogTitle>
+                        {cs.story_subtitle && (
+                          <DialogDescription className="text-lg text-primary/80 font-medium">
+                            {cs.story_subtitle}
+                          </DialogDescription>
+                        )}
+                      </DialogHeader>
+                      <div className="mt-6 text-muted-foreground leading-relaxed whitespace-pre-wrap prose prose-invert max-w-none">
+                        {cs.story_content}
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 )}
                 {cs.video_url && (
                   <VideoModal

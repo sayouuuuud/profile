@@ -355,6 +355,9 @@ export default function EditCaseStudyPage({ params }: { params: Promise<{ id: st
         content_blocks: [],
         is_featured: false,
         is_visible: true,
+        story_title: "",
+        story_subtitle: "",
+        story_content: "",
     })
 
     useEffect(() => {
@@ -580,6 +583,21 @@ export default function EditCaseStudyPage({ params }: { params: Promise<{ id: st
                                 <option value="draft">Draft</option><option value="active">Active</option><option value="completed">Completed</option>
                             </select>
                         </FieldRow>
+
+                        <div className="col-span-1 md:col-span-2 space-y-4 pt-4 border-t border-border">
+                            <h3 className="text-[10px] font-bold text-primary uppercase tracking-widest">Story of Project</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <FieldRow label="Story Title">
+                                    <Input value={formData.story_title || ""} onChange={(v) => setFormData((prev: any) => ({ ...prev, story_title: v }))} placeholder="Title for the story popup" />
+                                </FieldRow>
+                                <FieldRow label="Story Subtitle">
+                                    <Input value={formData.story_subtitle || ""} onChange={(v) => setFormData((prev: any) => ({ ...prev, story_subtitle: v }))} placeholder="Secondary title or tagline" />
+                                </FieldRow>
+                            </div>
+                            <FieldRow label="Story Content">
+                                <TextArea value={formData.story_content || ""} onChange={(v) => setFormData((prev: any) => ({ ...prev, story_content: v }))} rows={8} placeholder="The full story of the project. Formatting will be preserved." />
+                            </FieldRow>
+                        </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
