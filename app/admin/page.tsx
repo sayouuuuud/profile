@@ -54,28 +54,8 @@ export default async function AdminDashboard() {
 
   return (
     <>
-      {/* Status Bar */}
-      <div className="h-14 border-b border-border flex items-center px-6 gap-8 overflow-x-auto shrink-0 bg-background/50 backdrop-blur-sm sticky top-0 z-20">
-        <div className="flex items-center gap-2 whitespace-nowrap">
-          <span className="size-2 bg-primary rounded-full animate-pulse" />
-          <span className="text-xs text-muted-foreground uppercase tracking-widest">{"Status: Operational"}</span>
-        </div>
-        <div className="h-4 w-px bg-border" />
-        <div className="flex items-center gap-2 whitespace-nowrap">
-          <span className="text-xs text-muted-foreground uppercase tracking-widest">System Load:</span>
-          <span className="text-sm text-foreground">12%</span>
-        </div>
-        <div className="h-4 w-px bg-border" />
-        <div className="flex items-center gap-2 whitespace-nowrap">
-          <span className="text-xs text-muted-foreground uppercase tracking-widest">Database:</span>
-          <span className="text-sm text-emerald-500">Connected</span>
-        </div>
-        <div className="flex-1" />
-        <div className="text-[10px] text-primary/50 whitespace-nowrap">{"LAST SYNC: JUST NOW"}</div>
-      </div>
-
       {/* Main Content */}
-      <div className="flex-1 p-6 overflow-y-auto space-y-6 pb-20">
+      <div className="flex-1 p-6 md:p-10 overflow-y-auto space-y-8 pb-20">
 
         {/* Row 1: KPI Stat Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -117,10 +97,10 @@ export default async function AdminDashboard() {
         {/* Row 3: Messages & System */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Recent Messages */}
-          <div className="rounded-xl border border-border bg-surface-dark/50 p-5 flex flex-col h-[400px]">
+          <div className="rounded-xl border border-border bg-card p-5 flex flex-col h-[400px] shadow-sm">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Intercepted Transmissions</h3>
-              <Link href="/admin/messages" className="text-[10px] text-primary hover:underline uppercase tracking-widest flex items-center gap-1">
+              <h3 className="text-base font-semibold text-foreground">Recent Messages</h3>
+              <Link href="/admin/messages" className="text-xs text-primary hover:underline font-medium flex items-center gap-1">
                 View All <Eye className="size-3" />
               </Link>
             </div>
@@ -164,49 +144,33 @@ export default async function AdminDashboard() {
         </div>
 
         {/* Row 4: Recent Activity */}
-        <div className="rounded-xl border border-border bg-black/40 backdrop-blur-md overflow-hidden flex flex-col">
-          <div className="flex items-center justify-between px-5 py-3 border-b border-border bg-white/5">
+        <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden flex flex-col">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-border bg-muted/30">
             <div className="flex items-center gap-2">
-              <Terminal className="size-4 text-muted-foreground" />
-              <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">System Audit Log</span>
-            </div>
-            <div className="flex gap-1.5">
-              <div className="size-2 rounded-full bg-red-500/20 border border-red-500/50" />
-              <div className="size-2 rounded-full bg-yellow-500/20 border border-yellow-500/50" />
-              <div className="size-2 rounded-full bg-green-500/20 border border-green-500/50" />
+              <Activity className="size-4 text-muted-foreground" />
+              <span className="text-sm font-semibold text-foreground">Activity Log</span>
             </div>
           </div>
-          <div className="p-4 font-mono text-xs space-y-1 h-40 overflow-y-auto">
-            <div className="text-muted-foreground/50 mb-2">{"Last login: " + new Date().toDateString() + " as root"}</div>
+          <div className="p-4 text-sm space-y-1 max-h-60 overflow-y-auto flex flex-col gap-2">
             {recentActivity.length === 0 ? (
-              <>
-                <div className="flex gap-2 opacity-60">
-                  <span className="text-muted-foreground">[{new Date().toLocaleTimeString()}]</span>
-                  <span className="text-primary">INFO</span>
-                  <span className="text-muted-foreground">System initialized. No recent audit events found.</span>
-                </div>
-                <div className="flex gap-2 opacity-60">
-                  <span className="text-muted-foreground">[{new Date().toLocaleTimeString()}]</span>
-                  <span className="text-emerald-500">READY</span>
-                  <span className="text-muted-foreground">Monitoring active...</span>
-                </div>
-              </>
+              <div className="flex flex-col items-center justify-center py-6 text-muted-foreground">
+                <p>No recent activity events found.</p>
+              </div>
             ) : (
               recentActivity.map((log, i) => (
-                <div key={i} className="flex gap-2 opacity-80">
-                  <span className="text-muted-foreground">[{new Date(log.created_at).toLocaleTimeString()}]</span>
-                  <span className={log.type === 'ERROR' ? "text-red-500" : log.type === 'WARN' ? "text-amber-500" : "text-emerald-500"}>
-                    {log.type || "INFO"}
+                <div key={i} className="flex gap-3 py-2 border-b border-border/50 last:border-0">
+                  <span className="text-muted-foreground/60 w-20 shrink-0 text-xs mt-0.5">
+                    {new Date(log.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </span>
-                  <span className="text-gray-300">{log.description || log.action}</span>
+                  <div className="flex flex-col gap-1">
+                    <span className={`text-xs font-semibold ${log.type === 'ERROR' ? "text-red-500" : log.type === 'WARN' ? "text-amber-500" : "text-emerald-500"}`}>
+                      {log.type || "INFO"}
+                    </span>
+                    <span className="text-muted-foreground">{log.description || log.action}</span>
+                  </div>
                 </div>
               ))
             )}
-            <div className="flex gap-2 mt-2">
-              <span className="text-emerald-500">{">"}</span>
-              <span className="text-blue-400">admin</span>
-              <span className="text-foreground animate-pulse">_</span>
-            </div>
           </div>
         </div>
 

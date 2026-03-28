@@ -8,7 +8,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params
   try {
     const supabase = await createClient()
-    const { data } = await supabase.from("case_studies").select("title, subtitle").eq("slug", slug).single()
+    const { data } = await supabase.from("case_studies").select("title, subtitle").eq("slug", slug).in("status", ["active", "completed"]).single()
     return {
       title: data ? `Case Study: ${data.title}` : "Case Study",
       description: data?.subtitle || "",
@@ -23,7 +23,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
   let cs: any = null
   try {
     const supabase = await createClient()
-    const { data } = await supabase.from("case_studies").select("*").eq("slug", slug).single()
+    const { data } = await supabase.from("case_studies").select("*").eq("slug", slug).in("status", ["active", "completed"]).single()
     cs = data
 
     if (cs) {

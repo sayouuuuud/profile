@@ -10,34 +10,26 @@ export async function AdminHeader() {
   const { data: theme } = await supabase.from("theme_settings").select("admin_avatar").limit(1).single();
 
   return (
-    <header className="relative z-40 flex items-center justify-between whitespace-nowrap border-b border-border px-6 py-4 sticky top-0 h-16" style={{ background: "rgba(10,10,10,0.7)", backdropFilter: "blur(12px)" }}>
+    <header className="relative z-40 flex items-center justify-between whitespace-nowrap border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-6 py-4 sticky top-0 h-16">
       <div className="flex items-center gap-4">
-        <div className="size-8 flex items-center justify-center border border-primary/30 bg-primary/10 rounded-sm">
-          <Shield className="text-primary size-4" />
+        <div className="size-8 flex items-center justify-center border bg-muted/30 rounded-md">
+          <Shield className="text-foreground size-4" />
         </div>
         <div>
-          <h2 className="text-foreground text-sm font-bold leading-tight tracking-[0.1em]">MISSION CONTROL</h2>
-          <div className="text-[10px] text-muted-foreground tracking-widest">{"ADMIN :: SAYED ELSHAZLY"}</div>
+          <h2 className="text-foreground text-sm font-semibold leading-tight">Admin Workspace</h2>
+          <div className="text-xs text-muted-foreground font-medium">Sayed Elshazly</div>
         </div>
       </div>
-      <div className="flex items-center gap-6">
-        <div className="hidden md:flex items-center gap-2 px-3 py-1 rounded bg-surface-light border border-foreground/5">
-          <AlertTriangle className="size-3 text-amber-500 animate-pulse" />
-          <span className="text-[10px] text-amber-500 tracking-wider">{"SYS_LOAD: 42%"}</span>
-        </div>
-        <div className="h-8 w-px bg-border" />
-        <div className="flex items-center gap-3">
-          <NotificationBadge />
-          <AdminLogoutButton />
-          <div className="size-8 rounded-full bg-gradient-to-br from-primary to-amber-500 p-px">
-            <div className="w-full h-full rounded-full bg-black flex items-center justify-center text-xs font-bold text-foreground overflow-hidden">
-              {theme?.admin_avatar ? (
-                <Image src={theme.admin_avatar} alt="Admin" width={32} height={32} className="w-full h-full object-cover" />
-              ) : (
-                user?.email?.[0]?.toUpperCase() || "A"
-              )}
-            </div>
-          </div>
+      <div className="flex items-center gap-4">
+        <NotificationBadge />
+        <div className="h-4 w-px bg-border hidden sm:block" />
+        <AdminLogoutButton />
+        <div className="size-8 rounded-full border border-border flex items-center justify-center text-xs font-bold text-foreground overflow-hidden bg-muted">
+          {theme?.admin_avatar ? (
+            <Image src={theme.admin_avatar} alt="Admin" width={32} height={32} className="w-full h-full object-cover" />
+          ) : (
+            user?.email?.[0]?.toUpperCase() || "A"
+          )}
         </div>
       </div>
     </header>

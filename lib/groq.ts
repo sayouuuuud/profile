@@ -1,4 +1,6 @@
+// AI Architecture: Gemini 2.5 Pro (case study) + Groq Llama (docs analysis)
 import { Groq } from 'groq-sdk';
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { createClient } from "@/lib/supabase/server";
 
 // Helper: Get Config from DB
@@ -231,6 +233,10 @@ Before writing your JSON, answer these internally:
 [ ] Did I invent any duration, team size, or metrics not in the story? (If yes → remove)
 [ ] Did I copy any example values from the schema below? (If yes → replace them)
 
+RULE 12 — COMPLETE DATA & AI FEEDBACK (ABSOLUTE):
+You MUST fill in all basic project fields (title, subtitle, summary, etc.).
+If you feel that a certain label/field is useless, or you have a suggestion for replacing it, or if you need to change something to make your job easier, you MUST log these thoughts in the "ai_feedback" array field. Feel completely free to express your requirements or critiques of the schema.
+
 If any answer reveals a violation → fix it before outputting.
 `;
 
@@ -275,7 +281,12 @@ Return RAW JSON only. No markdown. No explanation. No text outside the JSON obje
       }
     }
   ],
-  "confidence": 85
+  "confidence": 85,
+  "ai_feedback": [
+    "I suggest renaming 'duration' to 'timeline'",
+    "The 'subtitle' field feels redundant here, maybe we can drop it",
+    "I need more context about the architecture to build a better diagram"
+  ]
 }
 
 BLOCK CONTENT STRUCTURES (for reference — never copy the example values):
@@ -428,11 +439,19 @@ export async function parseProjectInput(
     source: "text" | "github" | "voice",
     manualContext: string = ""
 ): Promise<ParsedProjectData> {
-    const apiKey = await getSystemConfig("ai", "api_key", process.env.GROQ_API_KEY);
+    const apiKey = await getSystemConfig("ai", "gemini_api_key", process.env.GEMINI_API_KEY);
 
-    if (!apiKey) throw new Error("No API Key configured for Groq");
+    if (!apiKey) throw new Error("No API Key configured for Gemini");
 
-    const groq = new Groq({ apiKey });
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({
+        model: "gemini-2.5-pro",
+        systemInstruction: SYSTEM_PROMPT,
+        generationConfig: {
+            temperature: 0.7,
+            responseMimeType: "application/json",
+        }
+    });
 
     // ── THE SOUL comes first, always ──
     const userPrompt = `
@@ -461,28 +480,32 @@ ${OUTPUT_SCHEMA}
 `;
 
     try {
-        const chatCompletion = await groq.chat.completions.create({
-            messages: [
-                { role: 'system', content: SYSTEM_PROMPT },
-                { role: 'user', content: userPrompt }
-            ],
-            model: DEFAULT_MODEL,
-            temperature: 0.4,
-            response_format: { type: 'json_object' }
-        });
-
-        const responseContent = chatCompletion.choices[0]?.message?.content || "{}";
+        const result = await model.generateContent(userPrompt);
+        const responseContent = result.response.text();
         const data = JSON.parse(responseContent);
 
+        // Save AI Feedback if provided
+        if (data.ai_feedback && Array.isArray(data.ai_feedback) && data.ai_feedback.length > 0) {
+            try {
+                const supabase = await createClient();
+                await supabase.from("ai_feedbacks").insert({
+                    project_title: data.title || "Unknown",
+                    feedback: data.ai_feedback
+                });
+            } catch (e) {
+                console.error("Failed to insert ai_feedback to DB", e);
+            }
+        }
+
         // Log usage
-        await logUsage("tokens_used", chatCompletion.usage?.total_tokens || 0, {
+        await logUsage("tokens_used", result.response.usageMetadata?.totalTokenCount || 0, {
             source,
-            model: DEFAULT_MODEL,
+            model: "gemini-2.5-pro",
             has_context: !!manualContext
         });
 
         return {
-            title: "",
+            title: data.title || "",
             subtitle: data.subtitle || data.title || "",
             summary: data.summary || input.substring(0, 200),
             category: data.category || "General",
@@ -496,8 +519,8 @@ ${OUTPUT_SCHEMA}
         };
 
     } catch (error) {
-        console.error("Groq Parse Error:", error);
-        throw new Error("Failed to parse project data via Groq");
+        console.error("Gemini Parse Error:", error);
+        throw new Error("Failed to parse project data via Gemini");
     }
 }
 

@@ -22,7 +22,7 @@ interface GenerateResponse {
   case_study_id: string;
   content: string;
   slug: string;
-  status: 'generated' | 'published';
+  status: 'generated' | 'active' | 'draft';
 }
 
 /**

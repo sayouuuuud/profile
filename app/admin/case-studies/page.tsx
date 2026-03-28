@@ -104,11 +104,11 @@ export default function AdminCaseStudies() {
                   </div>
                 )}
                 <div className="absolute top-3 right-3 flex gap-2">
-                  <span className={`text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded backdrop-blur-md border ${study.status === 'published'
+                  <span className={`text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded backdrop-blur-md border ${study.status !== 'draft'
                       ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
                       : 'bg-amber-500/10 border-amber-500/20 text-amber-400'
                     }`}>
-                    {study.status === 'published' ? 'Active' : 'Draft'}
+                    {study.status || 'Draft'}
                   </span>
                 </div>
               </div>
@@ -171,11 +171,11 @@ export default function AdminCaseStudies() {
                   <p className="text-xs text-muted-foreground truncate">{study.category}</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded border ${study.status === 'published'
+                  <span className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded border ${study.status !== 'draft'
                       ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
                       : 'bg-amber-500/10 border-amber-500/20 text-amber-400'
                     }`}>
-                    {study.status === 'published' ? 'Active' : 'Draft'}
+                    {study.status || 'Draft'}
                   </span>
                   {study.is_visible ? <Eye className="size-3 text-emerald-400" /> : <EyeOff className="size-3 text-muted-foreground" />}
                 </div>

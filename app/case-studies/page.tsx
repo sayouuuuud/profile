@@ -12,6 +12,7 @@ async function getCaseStudies() {
       .from("case_studies")
       .select("*")
       .eq("is_visible", true)
+      .in("status", ["active", "completed"])
       .order("sort_order")
     if (error) return []
     return data || []

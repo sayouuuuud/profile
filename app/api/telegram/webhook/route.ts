@@ -334,7 +334,7 @@ ${aiData.action_items?.map((a: string) => `• ${a}`).join('\n') || 'No action i
 
         await supabase
           .from('case_studies')
-          .update({ status: 'published', is_visible: true })
+          .update({ status: 'active', is_visible: true })
           .eq('id', projectId);
 
         await sendMessage(

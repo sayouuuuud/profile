@@ -101,7 +101,7 @@ export async function GET(request: NextRequest) {
 
     // ── 4. SYSTEM HEALTH ──
     let dbStatus = '✅';
-    try { const { error } = await supabase.from('system_config').select('id').limit(1); if (error) dbStatus = '❌'; } catch { dbStatus = '❌'; }
+    try { const { error } = await supabase.from('messages').select('id').limit(1); if (error) dbStatus = '❌'; } catch { dbStatus = '❌'; }
 
     let telegramStatus = '✅';
     try {
@@ -110,23 +110,16 @@ export async function GET(request: NextRequest) {
       else { const r = await fetch(`https://api.telegram.org/bot${token}/getMe`); if (!r.ok) telegramStatus = '❌'; }
     } catch { telegramStatus = '❌'; }
 
-    const aiStatus = process.env.GEMINI_API_KEY ? '✅' : '⚠️ No key';
-
-    // ── 5. AI COST ──
-    let totalInputTokens = 0, totalOutputTokens = 0, aiRequests = 0;
-    try {
-      const { data: aiUsage } = await supabase.from('usage_stats').select('metric, value').eq('category', 'ai').gte('date', weekAgo.toISOString().split('T')[0]);
-      aiUsage?.forEach((r: any) => {
-        if (r.metric === 'tokens_input') totalInputTokens += r.value;
-        if (r.metric === 'tokens_output') totalOutputTokens += r.value;
-        if (r.metric === 'requests_success') aiRequests += r.value;
-      });
-    } catch { }
-    const estimatedCost = (totalInputTokens * 0.000075 / 1000) + (totalOutputTokens * 0.0003 / 1000);
-
     // ── 6. MESSAGES ──
     let newMessages = 0;
-    try { const { count } = await supabase.from('messages').select('id', { count: 'exact', head: true }).gte('created_at', weekAgoStr); newMessages = count || 0; } catch { }
+    let recentMessagesText = '<i>No recent messages</i>';
+    try { 
+      const { data: lastMsgs, count } = await supabase.from('messages').select('name, subject', { count: 'exact' }).gte('created_at', weekAgoStr).order('created_at', { ascending: false }).limit(3); 
+      newMessages = count || 0; 
+      if (lastMsgs && lastMsgs.length > 0) {
+        recentMessagesText = lastMsgs.map((m: any) => `- <b>${m.name}</b>: ${m.subject || 'No Subject'}`).join('\n');
+      }
+    } catch { }
 
     // ── 7. LOGIN ACTIVITY ──
     let loginAttempts = 0, failedLogins = 0;
@@ -169,21 +162,13 @@ ${topProjectsText}
 
 ⚡ <b>System Health</b>
 • Database: ${dbStatus}
-• AI Service: ${aiStatus}
 • Telegram Bot: ${telegramStatus}
-
-━━━━━━━━━━━━━━━━━━━━
-
-💰 <b>AI Usage</b>
-• Tokens: <code>${(totalInputTokens + totalOutputTokens).toLocaleString()}</code>
-• Requests: <code>${aiRequests}</code>
-• Est. Cost: <code>$${estimatedCost.toFixed(4)}</code>
-
-━━━━━━━━━━━━━━━━━━━━
-
-📬 <b>Activity</b>
-• New Messages: <code>${newMessages}</code>
 • Logins: <code>${loginAttempts}</code> (${failedLogins} failed)
+
+━━━━━━━━━━━━━━━━━━━━
+
+📬 <b>Recent Inquiries (${newMessages} Total)</b>
+${recentMessagesText}
 
 <i>Generated ${now.toLocaleString('en-US', { timeZone: 'Africa/Cairo' })}</i>
     `.trim();
