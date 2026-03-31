@@ -24,6 +24,7 @@ const systemItems = [
   { href: "/admin/theme", label: "Theme Control", icon: Palette },
   { href: "/admin/datalinks", label: "Social Links", icon: Link2 },
   { href: "/admin/security", label: "Security", icon: Shield },
+  { href: "/admin/maintenance", label: "Maintenance", icon: Wrench },
 ];
 
 export function AdminSidebar() {
