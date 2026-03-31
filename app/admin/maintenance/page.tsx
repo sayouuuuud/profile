@@ -1,12 +1,11 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Wrench, Database, Download, AlertTriangle, Loader2, RefreshCw, Upload, Code } from "lucide-react";
+import { Wrench, Database, Download, AlertTriangle, Loader2, RefreshCw, Upload } from "lucide-react";
 import { toast } from "sonner";
 
 export default function MaintenancePage() {
   const [clearingCache, setClearingCache] = useState(false);
-  const [backingUpCode, setBackingUpCode] = useState(false);
   const [backingUpDb, setBackingUpDb] = useState(false);
   const [restoring, setRestoring] = useState(false);
   
@@ -26,23 +25,6 @@ export default function MaintenancePage() {
       toast.error("Network error while clearing cache");
     }
     setClearingCache(false);
-  }
-
-  async function handleBackupCode() {
-    setBackingUpCode(true);
-    try {
-      const res = await fetch("/api/admin/maintenance/backup", { method: "POST" });
-      const data = await res.json();
-      if (res.ok) {
-        toast.success("Code backup generated! Downloading...");
-        window.location.assign(`/api/admin/maintenance/backup/download?name=${encodeURIComponent(data.file)}`);
-      } else {
-        toast.error(data.error || "Failed to create code backup.");
-      }
-    } catch (e) {
-      toast.error("Network error while creating backup.");
-    }
-    setBackingUpCode(false);
   }
 
   async function handleBackupDatabase() {
@@ -124,44 +106,24 @@ export default function MaintenancePage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
           {/* Cache Management */}
-          <div className="p-6 rounded-xl border border-border bg-card shadow-sm flex flex-col gap-4 md:col-span-2">
+          <div className="p-6 rounded-xl border border-border bg-card shadow-sm flex flex-col gap-4">
             <div className="flex items-center gap-2 border-b border-border/50 pb-3">
               <RefreshCw className="size-5 text-amber-500" />
               <h2 className="text-lg font-semibold text-foreground">Cache Status</h2>
             </div>
             <p className="text-sm text-muted-foreground">
-              Clear the Next.js cache to immediately apply any manual database changes or static page regeneration across the website.
+              Clear the Next.js cache to immediately apply any manual database changes or static page regeneration.
             </p>
             <div className="mt-auto pt-4 flex">
               <button
                 onClick={handleClearCache}
                 disabled={clearingCache}
-                className="flex items-center justify-center gap-2 px-4 py-3 w-full bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 font-medium rounded-lg transition-colors disabled:opacity-50"
+                className="flex items-center justify-center gap-2 px-4 py-2 w-full bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 font-medium rounded-lg transition-colors disabled:opacity-50"
               >
-                {clearingCache ? <Loader2 className="size-5 animate-spin" /> : <RefreshCw className="size-5" />}
+                {clearingCache ? <Loader2 className="size-4 animate-spin" /> : <RefreshCw className="size-4" />}
                 Purge All Caches
-              </button>
-            </div>
-          </div>
-
-          {/* Backup Source Code */}
-          <div className="p-6 rounded-xl border border-border bg-card shadow-sm flex flex-col gap-4">
-            <div className="flex items-center gap-2 border-b border-border/50 pb-3">
-              <Code className="size-5 text-emerald-500" />
-              <h2 className="text-lg font-semibold text-foreground">Source Code Backup</h2>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              Generate and download a compressed ZIP archive containing the website codebase.
-            </p>
-            <div className="mt-auto pt-4 flex">
-              <button
-                onClick={handleBackupCode}
-                disabled={backingUpCode}
-                className="flex items-center justify-center gap-2 px-4 py-2 w-full bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 font-medium rounded-lg transition-colors disabled:opacity-50"
-              >
-                {backingUpCode ? <Loader2 className="size-4 animate-spin" /> : <Download className="size-4" />}
-                Download Code (.zip)
               </button>
             </div>
           </div>
@@ -173,7 +135,7 @@ export default function MaintenancePage() {
               <h2 className="text-lg font-semibold text-foreground">Database Backup</h2>
             </div>
             <p className="text-sm text-muted-foreground">
-              Extract all database tables and download them as a structured JSON file.
+              Extract all database tables and download them securely as a structured JSON file.
             </p>
             <div className="mt-auto pt-4 flex">
               <button
@@ -195,7 +157,7 @@ export default function MaintenancePage() {
             </div>
             <div className="bg-blue-500/5 border border-blue-500/20 rounded-md p-4 flex gap-3 text-sm text-blue-400">
               <AlertTriangle className="size-5 shrink-0" />
-              <p>Upload a previously downloaded <strong>.json database backup file</strong> to perform a database restoration. Existing source code and files will <strong>not</strong> be altered.</p>
+              <p>Upload a previously downloaded <strong>.json database backup file</strong> to perform a database restoration. Missing or changed data will be accurately retrieved based on Primary IDs.</p>
             </div>
             
             <input 
