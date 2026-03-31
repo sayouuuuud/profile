@@ -28,7 +28,7 @@ ${context.feedback?.map((f: string) => "- " + f).join("\n")}
 `;
 
         const model = genAI.getGenerativeModel({ 
-            model: "gemini-2.5-pro",
+            model: "gemini-2.5-flash",
             systemInstruction,
             generationConfig: {
                 temperature: 0.7

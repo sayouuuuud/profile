@@ -39,13 +39,15 @@ const FieldRow = ({ label, children }: { label: string, children: React.ReactNod
     </div>
 )
 
-const Input = ({ onChange, className, ...props }: Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> & { onChange?: (v: string) => void }) => (
-    <input {...props} onChange={e => onChange?.(e.target.value)} className={`w-full bg-background border border-border rounded px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none ${className || ''}`} />
+const Input = ({ value, onChange, className, ...props }: { value: string | number; onChange: (v: string) => void } & Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange">) => (
+    <input value={value} onChange={(e) => onChange(e.target.value)} className={`w-full bg-background border border-border rounded px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none ${className || ''}`} {...props} />
 )
 
-const TextArea = ({ onChange, className, ...props }: Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'onChange'> & { onChange?: (v: string) => void }) => (
-    <textarea {...props} onChange={e => onChange?.(e.target.value)} className={`w-full bg-background border border-border rounded px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none min-h-[100px] ${className || ''}`} />
-)
+function TextArea({ value, onChange, rows = 3, className, ...props }: { value: string; onChange: (v: string) => void; rows?: number } & Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, "onChange">) {
+    return <textarea value={value || ""} onChange={(e) => onChange(e.target.value)} rows={rows}
+        className={`bg-background border border-border rounded px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none transition-colors resize-none w-full ${className || ''}`}
+        {...props} />
+}
 
 // --- Block Editor Component ---
 function BlockEditor({ block, onChange }: { block: Block; onChange: (data: any) => void }) {
@@ -458,8 +460,11 @@ export default function NewCaseStudyPage() {
         setFormData((prev: any) => ({
             ...prev,
             title: repo.analysis?.title || prev.title,
-            slug: (repo.name || prev.title).toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+            slug: (repo.name || prev.title)?.toLowerCase().replace(/[^a-z0-9]+/g, '-') || "",
             subtitle: repo.description || repo.analysis?.subtitle || prev.subtitle,
+            story_title: repo.analysis?.story_title || prev.story_title,
+            story_subtitle: repo.analysis?.story_subtitle || prev.story_subtitle,
+            story_content: repo.analysis?.story_content || prev.story_content,
             summary: repo.analysis?.summary || repo.description || prev.summary,
             tech_stack: repo.tech_stack || prev.tech_stack,
             date: repo.analysis?.duration || prev.date,

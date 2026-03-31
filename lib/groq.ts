@@ -1,4 +1,4 @@
-// AI Architecture: Gemini 2.5 Pro (case study) + Groq Llama (docs analysis)
+// AI Architecture: Gemini 2.5 Flash (case study) + Groq Llama (docs analysis)
 import { Groq } from 'groq-sdk';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { createClient } from "@/lib/supabase/server";
@@ -248,6 +248,9 @@ Return RAW JSON only. No markdown. No explanation. No text outside the JSON obje
 
 {
   "title": "A compelling, outcome-focused title derived from the user's story",
+  "story_title": "A short, engaging title for the main project story. Derived from THE SOUL.",
+  "story_subtitle": "A subtitle or tagline for the story. What is the core conflict or goal?",
+  "story_content": "The full narrative story. Take the raw facts/context from the user and narrate them professionally yet engagingly. Break it into 3-4 paragraphs (Problem, Journey, Impact).",
   "subtitle": "A compelling one-line value proposition derived EXCLUSIVELY from THE SOUL. NEVER write 'No description found' or 'No description provided'. NEVER copy the GitHub repo description.",
   "summary": "Executive summary written as a Ghostwriter, not a developer. Lead with the human story, support with evidence.",
   "category": "One of: 'Product Strategy' | 'System Architecture' | 'Full Stack Development' | 'AI Engineering'",
@@ -445,7 +448,7 @@ export async function parseProjectInput(
 
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({
-        model: "gemini-2.5-pro",
+        model: "gemini-2.5-flash",
         systemInstruction: SYSTEM_PROMPT,
         generationConfig: {
             temperature: 0.7,

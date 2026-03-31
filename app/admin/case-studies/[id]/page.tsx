@@ -47,7 +47,7 @@ function Input({ value, onChange, className, ...props }: Omit<React.InputHTMLAtt
         {...props} />
 }
 
-function TextArea({ value, onChange, rows = 3, className, ...props }: { value: string; onChange: (v: string) => void; rows?: number } & React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
+function TextArea({ value, onChange, rows = 3, className, ...props }: { value: string; onChange: (v: string) => void; rows?: number } & Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, "onChange">) {
     return <textarea value={value || ""} onChange={(e) => onChange(e.target.value)} rows={rows}
         className={`bg-background border border-border rounded px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none transition-colors resize-none w-full ${className || ''}`}
         {...props} />
@@ -384,8 +384,11 @@ export default function EditCaseStudyPage({ params }: { params: Promise<{ id: st
         setFormData((prev: any) => ({
             ...prev,
             title: repo.analysis?.title || prev.title,
-            slug: (repo.analysis?.title || repo.name || prev.title).toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+            slug: (repo.analysis?.title || repo.name || prev.title)?.toLowerCase().replace(/[^a-z0-9]+/g, '-') || prev.slug,
             subtitle: repo.description || repo.analysis?.subtitle || prev.subtitle,
+            story_title: repo.analysis?.story_title || prev.story_title,
+            story_subtitle: repo.analysis?.story_subtitle || prev.story_subtitle,
+            story_content: repo.analysis?.story_content || prev.story_content,
             summary: repo.analysis?.summary || repo.description || prev.summary,
             tech_stack: repo.tech_stack || prev.tech_stack,
             date: repo.analysis?.duration || prev.date,
