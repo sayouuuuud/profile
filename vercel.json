@@ -3,6 +3,10 @@
         {
             "path": "/api/cron/morning-brief",
             "schedule": "0 5 * * 0"
+        },
+        {
+            "path": "/api/cron/ai-weekly",
+            "schedule": "0 7 * * 0"
         }
     ]
 }

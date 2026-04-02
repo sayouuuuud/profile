@@ -4,6 +4,7 @@ import { Space_Grotesk, Cinzel, Inter } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AnalyticsTracker } from "@/components/analytics-tracker";
+import { VisitorTracker } from "@/components/analytics/visitor-tracker";
 import { NotificationsProvider } from "@/components/providers/notifications-provider";
 import "./globals.css";
 
@@ -51,6 +52,7 @@ export default function RootLayout({
         <NotificationsProvider>
           <Suspense fallback={null}>
             <AnalyticsTracker />
+            <VisitorTracker />
           </Suspense>
           {children}
           <Toaster />

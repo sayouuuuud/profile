@@ -109,11 +109,13 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
           await sendMessage(
             chatId,
             '📚 <b>الأوامر المتاحة:</b>\n\n' +
-            '/add_project - إضافة مشروع جديد\n' +
-            '/list_projects - عرض مشاريعك\n' +
-            '/analyze_scalability - تحليل التوسع\n' +
-            '/morning_brief - ملخص الصباح\n' +
-            '/help - عرض هذا التعليمات'
+            '/status — ايه الدنيا في الموقع دلوقتي؟\n' +
+            '/weekly — التقرير الأسبوعي الكامل\n' +
+            '/memory — آخر ملاحظات الذكاء الاصطناعي\n' +
+            '/add_project — إضافة مشروع جديد\n' +
+            '/morning_brief — ملخص الصباح\n' +
+            '/help — عرض هذه التعليمات\n\n' +
+            '<i>أو اسألني أي سؤال بالعربي عن الموقع! 🧠</i>'
           );
         }
         // Handle /list_projects command
@@ -125,6 +127,92 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
             '<i>لا توجد مشاريع مضافة حالياً.</i>\n\n' +
             'استخدم /add_project لإضافة مشروع جديد'
           );
+        }
+
+        // ══════════════════════════════════════════════
+        // AI BRAIN COMMANDS
+        // ══════════════════════════════════════════════
+
+        // /status — الحالة الآنية للموقع
+        else if (text === '/status' || text?.startsWith('/status')) {
+          await sendMessage(chatId, '⏳ <b>جاري فحص حالة الموقع...</b>');
+          try {
+            const { createClient: createServiceClient } = await import('@/lib/supabase/service');
+            const supabase = createServiceClient();
+
+            const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+            const today = new Date(); today.setHours(0, 0, 0, 0);
+            const todayISO = today.toISOString();
+
+            const { data: recentRaw } = await supabase.from('analytics_events').select('visitor_id').gte('created_at', fiveMinAgo);
+            const activeNow = new Set(recentRaw?.map((v: any) => v.visitor_id)).size;
+
+            const { count: todayVisits } = await supabase.from('analytics_events').select('id', { count: 'exact', head: true }).gte('created_at', todayISO);
+
+            const { data: pagesRaw } = await supabase.from('analytics_events').select('page_path').gte('created_at', todayISO);
+            const pageCounts: Record<string, number> = {};
+            pagesRaw?.forEach((e: any) => { pageCounts[e.page_path] = (pageCounts[e.page_path] || 0) + 1; });
+            const topPage = Object.entries(pageCounts).sort((a, b) => b[1] - a[1])[0];
+
+            const { count: newMessages } = await supabase.from('messages').select('id', { count: 'exact', head: true }).gte('created_at', todayISO);
+
+            await sendMessage(chatId,
+              `🧠 <b>حالة الموقع — ${new Date().toLocaleString('ar-EG', { timeZone: 'Africa/Cairo' })}</b>\n\n` +
+              `👁️ <b>نشط الآن (آخر 5 دق):</b> ${activeNow} زائر\n` +
+              `📊 <b>زيارات اليوم:</b> ${todayVisits || 0}\n` +
+              `🏆 <b>أكثر صفحة:</b> <code>${topPage?.[0] || '/'}</code> (${topPage?.[1] || 0})\n` +
+              `✉️ <b>رسائل اليوم:</b> ${newMessages || 0}\n\n` +
+              `${activeNow > 0 ? '🟢 يوجد زوار نشطون الآن!' : '⚪️ لا يوجد نشاط في الوقت الحالي'}`
+            );
+          } catch (e: any) {
+            await sendMessage(chatId, `❌ <b>خطأ:</b> <code>${e.message}</code>`);
+          }
+        }
+
+        // /weekly — التقرير الأسبوعي
+        else if (text === '/weekly' || text?.startsWith('/weekly')) {
+          await sendMessage(chatId, '⏳ <b>جاري تشغيل التحليل الأسبوعي...</b>\n\nيرجى الانتظار دقيقة لأن الأمر يستدعي الذكاء الاصطناعي 🔄');
+          try {
+            const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sayed.bio';
+            const res = await fetch(`${baseUrl}/api/ai/analyze-site`, { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+            if (!res.ok) throw new Error('Analysis API failed');
+            const { report, analyticsSnapshot } = await res.json();
+
+            const topPage = analyticsSnapshot?.topPages?.[0];
+            const msg = `🧠 <b>التقرير الأسبوعي — AI Brain</b>\n\n` +
+              `📅 <b>${analyticsSnapshot?.period?.from} → ${analyticsSnapshot?.period?.to}</b>\n\n` +
+              `📊 <b>نظرة عامة:</b>\n• الزيارات: <code>${analyticsSnapshot?.overview?.totalVisits}</code>\n• زوار فريدون: <code>${analyticsSnapshot?.overview?.uniqueVisitors}</code>\n• رسائل: <code>${analyticsSnapshot?.overview?.newMessages}</code>\n\n` +
+              `🏆 <b>أكثر صفحة:</b> <code>${topPage?.path || '/'}</code> (${topPage?.visits || 0} زيارة)\n\n` +
+              `📝 <b>ملاحظة الأسبوع:</b>\n${report?.executive_summary || 'لا توجد ملاحظات'}\n\n` +
+              `🎯 <b>اهتمامات الزوار:</b>\n${report?.interests_detected?.map((i: string) => `• ${i}`).join('\n') || 'غير محدد'}\n\n` +
+              `❤️ <b>صحة الموقع:</b> ${report?.health_score || '??'}/100`;
+            await sendMessage(chatId, msg);
+          } catch (e: any) {
+            await sendMessage(chatId, `❌ <b>خطأ في التحليل:</b> <code>${e.message}</code>`);
+          }
+        }
+
+        // /memory — آخر ملاحظات الذكاء الاصطناعي
+        else if (text === '/memory' || text?.startsWith('/memory')) {
+          try {
+            const { createClient: createServiceClient } = await import('@/lib/supabase/service');
+            const supabase = createServiceClient();
+            const { data: memories } = await supabase.from('ai_memory').select('type, title, content, created_at').order('created_at', { ascending: false }).limit(5);
+
+            if (!memories?.length) {
+              await sendMessage(chatId, '🧠 <b>الذاكرة فارغة</b>\n\nاستخدم /weekly لإنشاء أول تقرير.');
+              return NextResponse.json({ ok: true });
+            }
+
+            let msg = '🧠 <b>آخر ذكريات الذكاء الاصطناعي:</b>\n\n';
+            memories.forEach((m: any, i: number) => {
+              const typeEmoji = m.type === 'weekly_report' ? '📊' : m.type === 'observation' ? '👁️' : '💡';
+              msg += `${typeEmoji} <b>${m.title || 'ملاحظة'}</b>\n<i>${m.content?.substring(0, 150)}${m.content?.length > 150 ? '...' : ''}</i>\n\n`;
+            });
+            await sendMessage(chatId, msg);
+          } catch (e: any) {
+            await sendMessage(chatId, `❌ <b>خطأ:</b> <code>${e.message}</code>`);
+          }
         }
 
         // Handle /morning_brief command
@@ -204,15 +292,58 @@ ${aiData.action_items?.map((a: string) => `• ${a}`).join('\n') || 'No action i
           }
         }
 
-        // ... inside POST function ...
-        // Handle regular text input (project description)
-        else if (text && text.length > 10) {
-          console.log("[Webhook] Text is > 10 chars, attempting to parse...");
-          await sendMessage(
-            chatId,
-            '⏳ <b>جاري معالجة مشروعك...</b>\n\n' +
-            'يرجى الانتظار قليلاً... 🔄'
-          );
+        // معالجة الأسئلة العربية أو النصوص العامة
+        else if (text && text.length > 5) {
+          // الكلمات الدالة على أسئلة عن الموقع
+          const siteKeywords = ['الموقع', 'زوار', 'زيارة', 'صفحة', 'مشاهدة', 'نشاط', 'إحصاء', 'إحصائيات', 'دنيا', 'ايه', 'ماذا', 'كيف', 'مين', 'تقرير', 'أكثر', 'اكثر', 'اليوم', 'الأسبوع', 'الأسبوع', 'زائر', 'رسائل', 'سؤال', 'حال', 'وضع'];
+          const isSiteQuestion = siteKeywords.some(kw => text.includes(kw));
+
+          if (isSiteQuestion) {
+            // سؤال عن الموقع — نرد بذكاء بالعربي
+            await sendMessage(chatId, '🧠 <b>جاري التفكير...</b>');
+            try {
+              const { createClient: createServiceClient } = await import('@/lib/supabase/service');
+              const supabase = createServiceClient();
+
+              const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+              const today = new Date(); today.setHours(0, 0, 0, 0);
+
+              const { count: weekVisits } = await supabase.from('analytics_events').select('id', { count: 'exact', head: true }).gte('created_at', weekAgo);
+              const { count: todayVisits } = await supabase.from('analytics_events').select('id', { count: 'exact', head: true }).gte('created_at', today.toISOString());
+              const { data: pagesRaw } = await supabase.from('analytics_events').select('page_path').gte('created_at', weekAgo);
+              const pageCounts: Record<string, number> = {};
+              pagesRaw?.forEach((e: any) => { pageCounts[e.page_path] = (pageCounts[e.page_path] || 0) + 1; });
+              const topPages = Object.entries(pageCounts).sort((a, b) => b[1] - a[1]).slice(0, 3);
+              const { data: lastMemory } = await supabase.from('ai_memory').select('content, data').eq('type', 'weekly_report').order('created_at', { ascending: false }).limit(1).single();
+
+              const { GoogleGenerativeAI } = await import('@google/generative-ai');
+              const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+              const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+
+              const context = `
+أنت مساعد ذكي يسكن في الموقع الشخصي لـ"سيد". بيانات الأسبوع الحالي:
+- إجمالي الزيارات هذا الأسبوع: ${weekVisits}
+- زيارات اليوم: ${todayVisits}
+- أكثر الصفحات زيارة: ${topPages.map(([p, c]) => `${p} (${c})`).join(', ')}
+- آخر تقرير AI: ${lastMemory?.content || 'لا يوجد تقرير بعد'}
+
+سؤال المسؤول: ${text}
+
+اجب باختصار وبالعربي — جملتان أو ثلاثة، لا أكثر. كن ذكياً وحلل البيانات.
+`;
+              const result = await model.generateContent(context);
+              await sendMessage(chatId, `🧠 ${result.response.text()}`);
+            } catch (e: any) {
+              await sendMessage(chatId, `❌ <b>خطأ:</b> <code>${e.message}</code>`);
+            }
+          } else {
+            // نص غير متعلق بالموقع — محاولة تحليله كمشروع
+            console.log("[Webhook] Text is > 5 chars, attempting to parse as project...");
+            await sendMessage(
+              chatId,
+              '⏳ <b>جاري معالجة مشروعك...</b>\n\n' +
+              'يرجى الانتظار قليلاً... 🔄'
+            );
 
           // Call the parser API (or use library directly if environment permits, but fetch is safer for consistent env)
           try {
@@ -311,9 +442,8 @@ ${aiData.action_items?.map((a: string) => `• ${a}`).join('\n') || 'No action i
               'جرب مرة أخرى لاحقاً 🔄'
             );
           }
-        } else {
-          console.log("[Webhook] Text too short (< 10 chars) or unhandled command");
-        }
+          } // end else (project parse)
+        } // end else if (text > 5)
       }
 
       // Handle voice messages
