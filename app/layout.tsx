@@ -1,6 +1,7 @@
 import React, { Suspense } from "react"
 import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Cinzel, Inter } from "next/font/google";
+import localFont from "next/font/local";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AnalyticsTracker } from "@/components/analytics-tracker";
@@ -26,6 +27,11 @@ const inter = Inter({
   display: "swap",
 });
 
+const johnston = localFont({
+  src: "../public/johnston.ttf",
+  variable: "--font-johnston",
+});
+
 export const metadata: Metadata = {
   title: "Sayed Elshazly | Technical Product Manager",
   description:
@@ -45,7 +51,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`dark ${spaceGrotesk.variable} ${cinzel.variable} ${inter.variable}`}
+      className={`dark ${spaceGrotesk.variable} ${cinzel.variable} ${inter.variable} ${johnston.variable}`}
     >
       <body className="font-sans antialiased" suppressHydrationWarning>
         <ThemeProvider />

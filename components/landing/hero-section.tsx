@@ -55,9 +55,16 @@ export function HeroSection({ settings }: HeroProps) {
 
           <ScrollReveal delay={100}>
             <h1 className="text-foreground font-bold leading-[1.05]">
-              <span className="block text-4xl sm:text-5xl md:text-6xl lg:text-7xl glow-text">
-                {s.hero_name}
-              </span>
+              <div 
+                className="flex flex-wrap items-baseline gap-x-8 font-johnston glow-text"
+                suppressHydrationWarning
+              >
+                {s.hero_name.split(" ").map((word, i) => (
+                  <span key={i} className="text-5xl sm:text-6xl md:text-7xl lg:text-7xl">
+                    {word}
+                  </span>
+                ))}
+              </div>
               <span className="block text-lg sm:text-xl md:text-2xl font-light text-muted-foreground mt-3">
                 {s.hero_subtitle}
               </span>

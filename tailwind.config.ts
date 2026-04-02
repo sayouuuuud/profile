@@ -87,6 +87,7 @@ const config: Config = {
       fontFamily: {
         sans: ['var(--font-display)', 'var(--font-space-grotesk)', 'sans-serif'],
         inter: ['var(--font-inter)'],
+        johnston: ['var(--font-johnston)', 'sans-serif'],
         display: ['var(--font-display)', 'var(--font-space-grotesk)', 'sans-serif'],
         'serif-display': ['var(--font-serif)', 'var(--font-cinzel)', 'serif'],
         mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', 'monospace'],
