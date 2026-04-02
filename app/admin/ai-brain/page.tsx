@@ -9,7 +9,7 @@ import {
     Lightbulb, Search, BarChart2, Send, Sparkles, User, Bot
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { ar } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 
 type AiMemory = {
     id: string;
@@ -47,10 +47,10 @@ function HealthBar({ score }: { score: number }) {
 
 function MemoryCard({ item, isExpanded, onToggle }: { item: AiMemory; isExpanded: boolean; onToggle: () => void }) {
     const typeConfig = {
-        weekly_report: { label: "تقرير أسبوعي", color: "text-emerald-400 border-emerald-500/30 bg-emerald-500/5", icon: BarChart2 },
-        observation: { label: "ملاحظة", color: "text-blue-400 border-blue-500/30 bg-blue-500/5", icon: Eye },
-        pattern: { label: "نمط", color: "text-purple-400 border-purple-500/30 bg-purple-500/5", icon: Activity },
-        insight: { label: "رؤية", color: "text-amber-400 border-amber-500/30 bg-amber-500/5", icon: Lightbulb },
+        weekly_report: { label: "Weekly Report", color: "text-emerald-400 border-emerald-500/30 bg-emerald-500/5", icon: BarChart2 },
+        observation: { label: "Observation", color: "text-blue-400 border-blue-500/30 bg-blue-500/5", icon: Eye },
+        pattern: { label: "Pattern", color: "text-purple-400 border-purple-500/30 bg-purple-500/5", icon: Activity },
+        insight: { label: "Insight", color: "text-amber-400 border-amber-500/30 bg-amber-500/5", icon: Lightbulb },
     };
     const cfg = typeConfig[item.type] || typeConfig.observation;
     const Icon = cfg.icon;
@@ -58,19 +58,19 @@ function MemoryCard({ item, isExpanded, onToggle }: { item: AiMemory; isExpanded
 
     return (
         <div className={`border rounded-xl transition-all ${cfg.color} ${isExpanded ? "shadow-lg" : ""}`}>
-            <button onClick={onToggle} className="w-full flex items-start gap-4 p-5 text-right">
+            <button onClick={onToggle} className="w-full flex items-start gap-4 p-5 text-left">
                 <div className={`p-2 rounded-lg border mt-0.5 ${cfg.color}`}><Icon className="size-4" /></div>
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                         <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full border ${cfg.color}`}>{cfg.label}</span>
                         {item.week_start && (
                             <span className="text-[10px] text-muted-foreground">
-                                {new Date(item.week_start).toLocaleDateString("ar-EG")} → {new Date(item.week_end).toLocaleDateString("ar-EG")}
+                                {new Date(item.week_start).toLocaleDateString("en-US")} → {new Date(item.week_end).toLocaleDateString("en-US")}
                             </span>
                         )}
                     </div>
-                    <h3 className="text-sm font-bold text-foreground mt-2 leading-snug text-right">{item.title || "بدون عنوان"}</h3>
-                    <p className="text-xs text-muted-foreground mt-1 line-clamp-2 text-right leading-relaxed">{item.content}</p>
+                    <h3 className="text-sm font-bold text-foreground mt-2 leading-snug text-left">{item.title || "Untitled"}</h3>
+                    <p className="text-xs text-muted-foreground mt-1 line-clamp-2 text-left leading-relaxed">{item.content}</p>
                 </div>
                 <div className="shrink-0 text-muted-foreground mt-1">
                     {isExpanded ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
@@ -79,32 +79,32 @@ function MemoryCard({ item, isExpanded, onToggle }: { item: AiMemory; isExpanded
 
             {isExpanded && (
                 <div className="px-5 pb-5 space-y-4 border-t border-current/10 pt-4">
-                    <p className="text-sm text-foreground/80 leading-relaxed text-right">{item.content}</p>
+                    <p className="text-sm text-foreground/80 leading-relaxed text-left">{item.content}</p>
                     {report && (
                         <>
                             {report.health_score !== undefined && (
                                 <div className="space-y-2">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-xs text-muted-foreground">صحة الموقع</span>
+                                        <span className="text-xs text-muted-foreground">Site Health</span>
                                         <span className="text-sm font-bold text-foreground">{report.health_score}/100</span>
                                     </div>
                                     <HealthBar score={report.health_score} />
-                                    {report.health_note && <p className="text-xs text-muted-foreground text-right">{report.health_note}</p>}
+                                    {report.health_note && <p className="text-xs text-muted-foreground text-left">{report.health_note}</p>}
                                 </div>
                             )}
                             {report.observations?.length > 0 && (
                                 <div className="space-y-2">
-                                    <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1.5"><Eye className="size-3" /> الملاحظات</h4>
+                                    <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1.5"><Eye className="size-3" /> Observations</h4>
                                     <ul className="space-y-2">
                                         {report.observations.map((obs: string, i: number) => (
-                                            <li key={i} className="text-xs text-foreground/80 bg-background/50 rounded-md p-2.5 border border-border/50 text-right leading-relaxed">{obs}</li>
+                                            <li key={i} className="text-xs text-foreground/80 bg-background/50 rounded-md p-2.5 border border-border/50 text-left leading-relaxed">{obs}</li>
                                         ))}
                                     </ul>
                                 </div>
                             )}
                             {report.interests_detected?.length > 0 && (
                                 <div className="space-y-2">
-                                    <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1.5"><Search className="size-3" /> ما اهتم به الزوار</h4>
+                                    <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1.5"><Search className="size-3" /> What Visitors Cared About</h4>
                                     <div className="flex flex-wrap gap-2">
                                         {report.interests_detected.map((interest: string, i: number) => (
                                             <span key={i} className="text-xs px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20">{interest}</span>
@@ -114,25 +114,25 @@ function MemoryCard({ item, isExpanded, onToggle }: { item: AiMemory; isExpanded
                             )}
                             {report.recommended_actions?.length > 0 && (
                                 <div className="space-y-2">
-                                    <h4 className="text-[10px] font-bold text-amber-500 uppercase tracking-widest flex items-center gap-1.5"><AlertCircle className="size-3" /> توصيات للمراجعة فقط</h4>
+                                    <h4 className="text-[10px] font-bold text-amber-500 uppercase tracking-widest flex items-center gap-1.5"><AlertCircle className="size-3" /> Recommendations (Review Only)</h4>
                                     <ul className="space-y-1.5">
                                         {report.recommended_actions.map((action: string, i: number) => (
-                                            <li key={i} className="text-xs text-foreground/70 flex gap-2 items-start text-right">
+                                            <li key={i} className="text-xs text-foreground/70 flex gap-2 items-start text-left">
                                                 <span className="text-amber-500 shrink-0 mt-0.5">•</span>{action}
                                             </li>
                                         ))}
                                     </ul>
-                                    <p className="text-[10px] text-muted-foreground/60 italic text-right">⚠️ هذه اقتراحات للمراجعة فقط — الذكاء الاصطناعي لا يتخذ أي قرار</p>
+                                    <p className="text-[10px] text-muted-foreground/60 italic text-left">⚠️ These are suggestions for review only — AI does not make any decisions</p>
                                 </div>
                             )}
                             {report.raw_analytics && (
                                 <div className="space-y-2">
-                                    <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1.5"><BarChart2 className="size-3" /> الإحصائيات الخام</h4>
+                                    <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1.5"><BarChart2 className="size-3" /> Raw Stats</h4>
                                     <div className="grid grid-cols-3 gap-2">
                                         {[
-                                            { label: "زيارة", val: report.raw_analytics.overview?.totalVisits ?? 0 },
-                                            { label: "زائر فريد", val: report.raw_analytics.overview?.uniqueVisitors ?? 0 },
-                                            { label: "رسالة", val: report.raw_analytics.overview?.newMessages ?? 0 },
+                                            { label: "Visits", val: report.raw_analytics.overview?.totalVisits ?? 0 },
+                                            { label: "Unique Visitors", val: report.raw_analytics.overview?.uniqueVisitors ?? 0 },
+                                            { label: "Messages", val: report.raw_analytics.overview?.newMessages ?? 0 },
                                         ].map((s, i) => (
                                             <div key={i} className="text-center p-2 bg-background/50 rounded border border-border/50">
                                                 <p className="text-lg font-bold text-foreground">{s.val}</p>
@@ -142,7 +142,7 @@ function MemoryCard({ item, isExpanded, onToggle }: { item: AiMemory; isExpanded
                                     </div>
                                     {report.raw_analytics.topPages?.length > 0 && (
                                         <div className="space-y-1">
-                                            <p className="text-[10px] text-muted-foreground">أكثر الصفحات زيارة:</p>
+                                            <p className="text-[10px] text-muted-foreground">Top pages visited:</p>
                                             {report.raw_analytics.topPages.slice(0, 5).map((p: any, i: number) => (
                                                 <div key={i} className="flex items-center justify-between text-xs py-1">
                                                     <span className="text-muted-foreground font-mono truncate max-w-[70%]">{p.path}</span>
@@ -155,8 +155,8 @@ function MemoryCard({ item, isExpanded, onToggle }: { item: AiMemory; isExpanded
                             )}
                         </>
                     )}
-                    <p className="text-[10px] text-muted-foreground text-right pt-2 border-t border-current/10">
-                        {formatDistanceToNow(new Date(item.created_at), { addSuffix: true, locale: ar })}
+                    <p className="text-[10px] text-muted-foreground text-left pt-2 border-t border-current/10">
+                        {formatDistanceToNow(new Date(item.created_at), { addSuffix: true, locale: enUS })}
                     </p>
                 </div>
             )}
@@ -165,12 +165,12 @@ function MemoryCard({ item, isExpanded, onToggle }: { item: AiMemory; isExpanded
 }
 
 const SUGGESTED_QUESTIONS = [
-    "ما الصفحة الأكثر زيارة هذا الأسبوع؟",
-    "من أين يأتي معظم الزوار؟",
-    "كيف صحة الموقع الآن؟",
-    "ما الذي يهتم به الزوار أكثر؟",
-    "هل هناك نشاط غير عادي؟",
-    "ما أوقات الذروة في الزيارات؟",
+    "What is the most visited page this week?",
+    "Where do most visitors come from?",
+    "How is the site health now?",
+    "What are visitors most interested in?",
+    "Is there any unusual activity?",
+    "What are peak visiting hours?",
 ];
 
 function ChatPanel() {
@@ -178,7 +178,7 @@ function ChatPanel() {
         {
             id: "welcome",
             role: "assistant",
-            content: "أهلاً بك! أنا AI Brain، أسكن في موقعك وأرى كل ما يحدث. اسألني أي شيء عن الموقع والزوار والإحصائيات. 🧠",
+            content: "Welcome! I am AI Brain, living in your site and seeing everything. Ask me anything about the site, visitors, and stats. 🧠",
             timestamp: new Date(),
         }
     ]);
@@ -208,7 +208,7 @@ function ChatPanel() {
             if (!res.ok) throw new Error(data.error || "Failed");
             setMessages((prev) => [...prev, { id: (Date.now() + 1).toString(), role: "assistant", content: data.reply, timestamp: new Date() }]);
         } catch (e: any) {
-            setMessages((prev) => [...prev, { id: (Date.now() + 1).toString(), role: "assistant", content: `❌ حدث خطأ: ${e.message}`, timestamp: new Date() }]);
+            setMessages((prev) => [...prev, { id: (Date.now() + 1).toString(), role: "assistant", content: `❌ Error: ${e.message}`, timestamp: new Date() }]);
         } finally {
             setLoading(false);
             inputRef.current?.focus();
@@ -230,12 +230,12 @@ function ChatPanel() {
                         <div className={`max-w-[80%] space-y-1 ${msg.role === "user" ? "items-end" : "items-start"} flex flex-col`}>
                             <div
                                 className={`px-4 py-3 rounded-2xl text-sm leading-relaxed ${msg.role === "user" ? "bg-primary text-background rounded-tr-sm" : "bg-muted/50 border border-border/50 text-foreground rounded-tl-sm"}`}
-                                style={{ direction: "rtl", textAlign: "right" }}
+                                style={{ direction: "ltr", textAlign: "left" }}
                             >
                                 {msg.content}
                             </div>
                             <span className="text-[10px] text-muted-foreground/60 px-1">
-                                {msg.timestamp.toLocaleTimeString("ar-EG", { hour: "2-digit", minute: "2-digit" })}
+                                {msg.timestamp.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
                             </span>
                         </div>
                     </div>
@@ -259,7 +259,7 @@ function ChatPanel() {
             </div>
 
             {messages.length <= 1 && (
-                <div className="px-4 pb-3 flex gap-2 flex-wrap justify-end" dir="rtl">
+                <div className="px-4 pb-3 flex gap-2 flex-wrap justify-start" dir="ltr">
                     {SUGGESTED_QUESTIONS.map((q, i) => (
                         <button key={i} onClick={() => sendMessage(q)} className="text-[11px] px-3 py-1.5 rounded-full border border-primary/20 bg-primary/5 text-primary hover:bg-primary/10 transition-colors">
                             {q}
@@ -268,17 +268,17 @@ function ChatPanel() {
                 </div>
             )}
 
-            <div className="shrink-0 border-t border-border p-4" dir="rtl">
+            <div className="shrink-0 border-t border-border p-4" dir="ltr">
                 <div className="flex gap-3 items-end">
                     <textarea
                         ref={inputRef}
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={handleKeyDown}
-                        placeholder="اسأل عن الزوار، الصفحات، الإحصائيات..."
+                        placeholder="Ask about visitors, pages, stats..."
                         rows={1}
                         className="flex-1 resize-none bg-muted/30 border border-border rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all"
-                        style={{ direction: "rtl", maxHeight: "120px" }}
+                        style={{ direction: "ltr", maxHeight: "120px" }}
                         onInput={(e) => {
                             const el = e.currentTarget;
                             el.style.height = "auto";
@@ -294,7 +294,7 @@ function ChatPanel() {
                         {loading ? <RefreshCw className="size-4 animate-spin" /> : <Send className="size-4" />}
                     </button>
                 </div>
-                <p className="text-[10px] text-muted-foreground mt-2 text-right">Enter للإرسال • Shift+Enter لسطر جديد</p>
+                <p className="text-[10px] text-muted-foreground mt-2 text-left">Enter to send • Shift+Enter for new line</p>
             </div>
         </div>
     );
@@ -361,7 +361,7 @@ export default function AIBrainPage() {
     });
 
     return (
-        <div className="p-6 md:p-10 max-w-5xl mx-auto space-y-8" dir="rtl">
+        <div className="p-6 md:p-10 max-w-5xl mx-auto space-y-8" dir="ltr">
             {/* Header */}
             <div className="flex items-start justify-between gap-4 flex-wrap">
                 <div className="space-y-1">
@@ -369,23 +369,22 @@ export default function AIBrainPage() {
                         <div className="p-2 rounded-xl bg-primary/10 border border-primary/20"><Brain className="size-6 text-primary" /></div>
                         <div>
                             <h1 className="text-2xl font-bold tracking-tight text-foreground">AI Brain</h1>
-                            <p className="text-sm text-muted-foreground">دماغ الموقع — يراقب، يحلل، ويبلغ</p>
+                            <p className="text-sm text-muted-foreground">The site&apos;s brain — observes, analyzes, and reports</p>
                         </div>
                     </div>
-                    {lastAnalyzed && <p className="text-xs text-muted-foreground pr-1">آخر تحليل: {formatDistanceToNow(new Date(lastAnalyzed), { addSuffix: true, locale: ar })}</p>}
+                    {lastAnalyzed && <p className="text-xs text-muted-foreground pl-1">Last analysis: {formatDistanceToNow(new Date(lastAnalyzed), { addSuffix: true, locale: enUS })}</p>}
                 </div>
                 <button onClick={triggerAnalysis} disabled={analyzing} className="flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary/90 text-background font-bold text-sm rounded-lg transition-colors disabled:opacity-60">
-                    {analyzing ? <><RefreshCw className="size-4 animate-spin" /> جاري التحليل...</> : <><Zap className="size-4" /> ابدأ تحليل الآن</>}
+                    {analyzing ? <><RefreshCw className="size-4 animate-spin" /> Analyzing...</> : <><Zap className="size-4" /> Start Analysis Now</>}
                 </button>
             </div>
 
-            {/* إحصائيات حية */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {[
-                    { label: "زيارات اليوم", value: liveStats?.today_visits ?? "…", icon: TrendingUp, color: "text-emerald-400" },
-                    { label: "زوار فريدون", value: liveStats?.today_visitors ?? "…", icon: Globe, color: "text-blue-400" },
-                    { label: "نشط الآن", value: liveStats?.active_now ?? "…", icon: Activity, color: "text-green-400", pulse: (liveStats?.active_now ?? 0) > 0 },
-                    { label: "تقارير محفوظة", value: reportsCount, icon: Calendar, color: "text-purple-400" },
+                    { label: "Today's Visits", value: liveStats?.today_visits ?? "…", icon: TrendingUp, color: "text-emerald-400" },
+                    { label: "Unique Visitors", value: liveStats?.today_visitors ?? "…", icon: Globe, color: "text-blue-400" },
+                    { label: "Active Now", value: liveStats?.active_now ?? "…", icon: Activity, color: "text-green-400", pulse: (liveStats?.active_now ?? 0) > 0 },
+                    { label: "Saved Reports", value: reportsCount, icon: Calendar, color: "text-purple-400" },
                 ].map((stat, i) => {
                     const Icon = stat.icon;
                     return (
@@ -401,26 +400,26 @@ export default function AIBrainPage() {
                 })}
             </div>
 
-            {/* الصفحة النشطة */}
+            {/* Active Page Tracking */}
             {liveStats?.top_page_today && (
                 <div className="p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 flex items-center gap-3">
                     <Eye className="size-4 text-emerald-400 shrink-0" />
                     <div>
-                        <p className="text-xs text-muted-foreground">أكثر صفحة زيارة اليوم</p>
+                        <p className="text-xs text-muted-foreground">Most visited page today</p>
                         <p className="text-sm font-bold text-foreground font-mono">{liveStats.top_page_today}</p>
                     </div>
-                    <div className="mr-auto text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">صفحة نشطة</div>
+                    <div className="ml-auto text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Active Page</div>
                 </div>
             )}
 
-            {/* التبويبات */}
+            {/* Navigation Tabs */}
             <div>
                 <div className="flex gap-1 border-b border-border mb-6">
                     {[
-                        { id: "chat", label: "💬 شات مباشر" },
-                        { id: "all", label: `الكل (${memories.length})` },
-                        { id: "reports", label: `التقارير (${reportsCount})` },
-                        { id: "observations", label: `الملاحظات (${memories.filter(m => m.type === "observation").length})` },
+                        { id: "chat", label: "💬 Live Chat" },
+                        { id: "all", label: `All (${memories.length})` },
+                        { id: "reports", label: `Reports (${reportsCount})` },
+                        { id: "observations", label: `Observations (${memories.filter(m => m.type === "observation").length})` },
                     ].map((tab) => (
                         <button key={tab.id} onClick={() => setActiveTab(tab.id as any)}
                             className={`px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all border-b-2 ${activeTab === tab.id ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"}`}>
@@ -433,12 +432,12 @@ export default function AIBrainPage() {
                     <div className="space-y-4">
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <Sparkles className="size-4 text-primary" />
-                            <span>الذكاء الاصطناعي يعرف بيانات موقعك الحالية ويرد بالعربي</span>
+                            <span>AI knows your current site analytics and data.</span>
                         </div>
                         <ChatPanel />
                         <div className="p-3 rounded-lg border border-amber-500/20 bg-amber-500/5 flex gap-2 items-start">
                             <AlertCircle className="size-3.5 text-amber-400 shrink-0 mt-0.5" />
-                            <p className="text-[11px] text-muted-foreground">الذكاء الاصطناعي يراقب ويحلل فقط — لا يتخذ أي قرار ولا يعدل أي بيانات</p>
+                            <p className="text-[11px] text-muted-foreground">AI only observes and analyzes — it doesn&apos;t make decisions or modify any data.</p>
                         </div>
                     </div>
                 )}
@@ -449,8 +448,8 @@ export default function AIBrainPage() {
                         {!loading && filteredMemories.length === 0 && (
                             <div className="text-center py-16 space-y-3">
                                 <Brain className="size-12 text-muted-foreground/20 mx-auto" />
-                                <p className="text-muted-foreground text-sm">الذاكرة فارغة</p>
-                                <p className="text-xs text-muted-foreground/60">اضغط "ابدأ تحليل الآن" لإنشاء أول تقرير</p>
+                                <p className="text-muted-foreground text-sm">Memory is empty</p>
+                                <p className="text-xs text-muted-foreground/60">Click &quot;Start Analysis Now&quot; to generate the first report</p>
                             </div>
                         )}
                         <div className="space-y-3">

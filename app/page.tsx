@@ -41,14 +41,14 @@ export default async function Page() {
 
   if (supabase) {
     const results = await Promise.all([
-      safeQuery(async () => await supabase!.from("site_settings").select("*").limit(1).single()),
+      safeQuery(async () => await supabase!.from("site_settings").select("*").maybeSingle()),
       safeQuery(async () => await supabase!.from("metrics").select("*").order("sort_order")),
       safeQuery(async () => await supabase!.from("executive_brief").select("*").limit(1).single()),
       safeQuery(async () => await supabase!.from("operations").select("*").order("sort_order").eq("is_visible", true)),
       safeQuery(async () => await supabase!.from("certificates").select("*").order("sort_order").eq("is_visible", true)),
       safeQuery(async () => await supabase!.from("education").select("*").order("sort_order").eq("is_visible", true)),
       safeQuery(async () => await supabase!.from("social_links").select("*").order("sort_order").eq("is_visible", true)),
-      safeQuery(async () => await supabase!.from("case_studies").select("*").eq("is_visible", true).in("status", ["active", "completed"]).order("date", { ascending: false }).order("sort_order").limit(3)),
+      safeQuery(async () => await supabase!.from("case_studies").select("*").eq("is_visible", true).in("status", ["active", "completed"]).order("sort_date", { ascending: false }).limit(3)),
       safeQuery(async () => await supabase!.from("landing_sections").select("*").in("section_key", ["product_philosophy", "process"])),
     ]);
 

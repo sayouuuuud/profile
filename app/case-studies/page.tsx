@@ -14,8 +14,7 @@ async function getCaseStudies() {
       .select("*")
       .eq("is_visible", true)
       .in("status", ["active", "completed"])
-      .order("date", { ascending: false })
-      .order("sort_order")
+      .order("sort_date", { ascending: false })
     if (error) return []
     return data || []
   } catch {

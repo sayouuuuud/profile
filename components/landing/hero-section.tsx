@@ -106,9 +106,9 @@ export function HeroSection({ settings }: HeroProps) {
         </div>
 
         {/* Right: Profile image */}
-        <div className="lg:col-span-5 relative w-full flex justify-center lg:justify-end order-first lg:order-last">
-          <ScrollReveal delay={200}>
-            <div className="relative w-full max-w-sm aspect-[3/4] group">
+        <div className="lg:col-span-5 relative w-full flex justify-center lg:justify-end order-first lg:order-last min-h-[350px] sm:min-h-[450px]">
+          <ScrollReveal delay={200} className="w-full h-full">
+            <div className="relative w-full max-w-sm aspect-[3/4] group mx-auto lg:ml-auto">
               {/* Glow behind image */}
               <div className="absolute -inset-8 bg-emerald/8 rounded-3xl blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
 
