@@ -77,6 +77,10 @@ Priority 3: The GitHub/technical data — this is EVIDENCE only, never the main 
 If the GitHub data contradicts or adds nothing to the user's story, IGNORE the GitHub data.
 If the user's story says "I used AI agents", you MUST reflect that — even if the README says nothing about it.
 
+RULE 2.5 — LANGUAGE & TRANSLATION (ABSOLUTE):
+The user may provide "THE SOUL", descriptions, or project context in Arabic. 
+You MUST fully understand the Arabic input, but ALL of your generated JSON output (including titles, story content, summaries, labels, and text) MUST BE in professional ENGLISH ONLY. Under no circumstance should you output Arabic text in the JSON values.
+
 RULE 3 — CONTENT BLOCKS SELECTION (ABSOLUTE):
 You have access to 26 block types. You MUST select the blocks that best TELL THE STORY, not the first ones that come to mind.
 THE FULL BLOCK MENU (choose wisely):

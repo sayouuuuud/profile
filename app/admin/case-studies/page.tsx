@@ -24,7 +24,7 @@ export default function AdminCaseStudies() {
   }, [])
 
   async function loadStudies() {
-    const { data } = await supabase.from("case_studies").select("*").order("sort_order", { ascending: true })
+    const { data } = await supabase.from("case_studies").select("*").order("date", { ascending: false }).order("sort_order", { ascending: true })
     setStudies(data || [])
     setLoading(false)
   }
@@ -93,10 +93,12 @@ export default function AdminCaseStudies() {
               {/* Image / Placeholder */}
               <div className="h-48 bg-surface-dark relative overflow-hidden">
                 {study.thumbnail_url || study.cover_image_url ? (
-                  <img
+                  <Image
                     src={study.thumbnail_url || study.cover_image_url}
-                    alt={study.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    alt={study.title || "Case study thumbnail"}
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-muted-foreground/20">
@@ -158,9 +160,9 @@ export default function AdminCaseStudies() {
               href={`/admin/case-studies/${study.id}`}
               className="group flex items-center gap-4 p-4 bg-surface-dark/30 border border-border rounded-xl hover:border-primary/50 hover:bg-surface-dark/50 transition-all"
             >
-              <div className="size-12 rounded bg-surface-dark overflow-hidden shrink-0">
+              <div className="relative size-12 rounded bg-surface-dark overflow-hidden shrink-0">
                 {study.thumbnail_url || study.cover_image_url ? (
-                  <img src={study.thumbnail_url || study.cover_image_url} className="w-full h-full object-cover" />
+                  <Image src={study.thumbnail_url || study.cover_image_url} alt={study.title || "Thumbnail"} className="object-cover" fill sizes="48px" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-muted-foreground/20"><Briefcase className="size-5" /></div>
                 )}

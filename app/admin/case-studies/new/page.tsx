@@ -14,6 +14,7 @@ import {
 import Link from "next/link"
 import { GitHubImporter, ImportedRepo } from "@/components/admin/case-study/github-importer"
 import { ImageUpload } from "@/components/admin/image-upload"
+import { DatePicker } from "@/components/ui/date-picker"
 import { BLOCK_REGISTRY, getBlocksByCategory, type BlockWidth } from "@/lib/block-registry"
 
 // --- Types & Constants ---
@@ -612,7 +613,7 @@ export default function NewCaseStudyPage() {
                         ))}
 
                         <FieldRow label="Date">
-                            <Input value={formData.date || ""} onChange={(v) => setFormData((prev: any) => ({ ...prev, date: v }))} />
+                            <DatePicker value={formData.date || ""} onChange={(v) => setFormData((prev: any) => ({ ...prev, date: v }))} />
                         </FieldRow>
 
                         <FieldRow label="Category">

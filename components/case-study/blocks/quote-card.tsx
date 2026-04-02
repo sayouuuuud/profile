@@ -1,4 +1,5 @@
 "use client"
+import Image from "next/image"
 
 interface QuoteCardData {
   quote?: string
@@ -20,7 +21,7 @@ export function QuoteCard({ data }: { data: QuoteCardData }) {
         </p>
         <div className="flex items-center gap-4 pt-4 border-t border-border">
           {data.avatar_url && (
-            <img src={data.avatar_url} alt={data.author} className="w-12 h-12 rounded-full border-2 border-primary" />
+            <Image src={data.avatar_url} alt={data.author || "Quote Author"} width={48} height={48} className="w-12 h-12 rounded-full border-2 border-primary object-cover" />
           )}
           <div>
             <div className="text-sm font-bold text-foreground">{data.author || "Client Name"}</div>

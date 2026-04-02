@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server"
 import { Header } from "@/components/landing/header"
 import { Footer } from "@/components/landing/contact-footer"
 import { ScrollReveal } from "@/components/scroll-reveal"
+import Image from "next/image"
 import Link from "next/link"
 import { ArrowRight, Briefcase } from "lucide-react"
 
@@ -13,6 +14,7 @@ async function getCaseStudies() {
       .select("*")
       .eq("is_visible", true)
       .in("status", ["active", "completed"])
+      .order("date", { ascending: false })
       .order("sort_order")
     if (error) return []
     return data || []
@@ -84,10 +86,12 @@ export default async function CaseStudiesPage() {
                     {/* Thumbnail */}
                     {cs.thumbnail_url && (
                       <div className="relative h-48 overflow-hidden">
-                        <img
+                        <Image
                           src={cs.thumbnail_url}
                           alt={cs.title}
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-60 group-hover:opacity-40"
+                          className="object-cover transition-transform duration-700 group-hover:scale-105 opacity-60 group-hover:opacity-40"
+                          fill
+                          sizes="(max-width: 768px) 100vw, 50vw"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-card via-card/60 to-transparent" />
                       </div>

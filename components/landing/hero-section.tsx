@@ -2,6 +2,7 @@
 
 import { MapPin, Clock, ArrowDown } from "lucide-react"
 import { ScrollReveal } from "@/components/scroll-reveal"
+import Image from "next/image"
 
 interface HeroProps {
   settings: {
@@ -114,10 +115,13 @@ export function HeroSection({ settings }: HeroProps) {
               {/* Image container */}
               <div className="relative h-full w-full rounded-2xl border border-border overflow-hidden card-glow">
                 {s.hero_image_url ? (
-                  <img
+                  <Image
                     alt={s.hero_name}
-                    className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.03]"
+                    className="object-cover object-top transition-transform duration-700 group-hover:scale-[1.03]"
                     src={s.hero_image_url}
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 33vw"
+                    priority
                   />
                 ) : (
                   <div className="w-full h-full bg-gradient-to-br from-surface-dark to-surface-light flex items-center justify-center">
