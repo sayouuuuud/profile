@@ -133,10 +133,23 @@ export function CaseStudyClient({ cs }: { cs: any }) {
           </Reveal>
 
           {/* Key metrics */}
-          {cs.metrics && cs.metrics.length > 0 && (
+          {cs.metrics && cs.metrics.length > 0 && (() => {
+            // Filter out garbage metrics (zeros, usernames, empty values)
+            const cleanMetrics = cs.metrics.filter((m: any) => {
+              if (!m.value || !m.label) return false
+              if (m.value === "0" || m.value === "0+" || m.value === "None") return false
+              if (m.label.toUpperCase() === "TOP CONTRIBUTOR") return false
+              if (m.label.toUpperCase() === "STARS" && (m.value === "0" || parseInt(m.value) <= 0)) return false
+              if (m.label.toUpperCase() === "FORKS" && (m.value === "0" || parseInt(m.value) <= 0)) return false
+              return true
+            }).slice(0, 4)
+
+            if (cleanMetrics.length === 0) return null
+
+            return (
             <Reveal delay={300}>
               <div className="flex flex-wrap gap-8 py-6 border-y border-border mb-8">
-                {cs.metrics.map((m: any, i: number) => (
+                {cleanMetrics.map((m: any, i: number) => (
                   <div key={i}>
                     <span className="block text-2xl md:text-3xl font-bold text-foreground">{m.value}</span>
                     <span className="text-xs text-muted-foreground uppercase tracking-wide">{m.label}</span>
@@ -144,7 +157,8 @@ export function CaseStudyClient({ cs }: { cs: any }) {
                 ))}
               </div>
             </Reveal>
-          )}
+            )
+          })()}
 
           {/* CTA Buttons */}
           {(cs.website_url || cs.video_url) && (

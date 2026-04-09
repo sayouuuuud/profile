@@ -56,13 +56,15 @@ export async function POST(req: NextRequest) {
         if (!analysis.subtitle || analysis.subtitle === "No description provided." || analysis.subtitle === "No description found") {
             analysis.subtitle = analysis.summary?.split(".")[0] || analysis.title;
         }
-        // Enrich with real stats
-        analysis.metrics = [
-            ...analysis.metrics,
-            { label: "Stars", value: String(repoData.stars) },
-            { label: "Forks", value: String(repoData.forks) },
-            { label: "Top Contributor", value: repoData.topContributors[0] || "None" }
-        ];
+        // Only add GitHub stats if they are genuinely impressive
+        if (analysis.metrics.length < 4 && repoData.stars > 10) {
+            analysis.metrics.push({ label: "GITHUB STARS", value: `${repoData.stars.toLocaleString()}+` });
+        }
+        if (analysis.metrics.length < 4 && repoData.forks > 5) {
+            analysis.metrics.push({ label: "COMMUNITY FORKS", value: `${repoData.forks.toLocaleString()}+` });
+        }
+        // Hard cap at 4 metrics — the AI constitution mandates exactly 4
+        analysis.metrics = analysis.metrics.slice(0, 4);
 
         // Ensure technologies include the real languages detected
         const detectedLangs = Object.keys(repoData.languages);

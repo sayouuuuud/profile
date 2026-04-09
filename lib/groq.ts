@@ -156,19 +156,22 @@ These 6 blocks MUST appear in EVERY case study. No exceptions. No skipping. No s
 MANDATORY BLOCK 1: kpi-card (1/3)
 → The single most important metric or achievement from the project.
 
-MANDATORY BLOCK 2: scalability-simulator (1/3) — labeled "Scalability Simulator Configuration"
-→ ALWAYS scalability-simulator, NEVER stat-bars. Show a before/after scalability or capacity comparison.
+MANDATORY BLOCK 2: scalability-simulator (full) — labeled "Scalability Simulator Configuration"
+→ ALWAYS scalability-simulator, NEVER stat-bars. This block MUST use width "full" — it gets its own row after the metrics row.
 
 MANDATORY BLOCK 3: metric-gauge (1/3)
 → A key performance indicator shown as a gauge (uptime, score, efficiency, etc.).
 
 MANDATORY BLOCK 4: system-report (1/2)
 → System integrity panel showing technical health: security, latency, version, status.
+→ ALWAYS paired side-by-side with code-terminal (both 1/2).
 
 MANDATORY BLOCK 5: code-terminal (1/2)
 → NEVER generate a config file (next.config.mjs, package.json, tsconfig.json, .env).
-→ The code MUST show actual business logic: a function, API call, DB query, or AI prompt.
-→ Minimum 8 lines of meaningful code.
+→ The code MUST list ALL the key technologies and stack used in the project.
+→ Use the filename "tech-stack.json" with lang "json".
+→ Minimum 8 lines. Each line MUST have both "key" and "value" as non-empty strings.
+→ CRITICAL: NEVER output null, undefined, or missing key/value fields. Every content item MUST have valid strings.
 
 MANDATORY BLOCK 6: architecture-diagram (full)
 → The system topology or workflow map — MUST be unique to this project (see RULE 7).
@@ -184,8 +187,20 @@ MANDATORY BLOCK 9: timeline (full) — labeled "PROJECT ROADMAP"
 → Infer phases from the story. If no dates mentioned, use "Phase 1", "Phase 2" etc.
 → Minimum 3 milestones, maximum 5.
 
-ORDER: 1+2+3 (metrics row) → 4+5 → 6 → 7+8 → 9.
-TOTAL: After the 9 mandatory blocks, you MAY add 1 additional story-driven block. Maximum total: 10.
+ORDER: 1+3 (metrics row, each 1/3) → 2 (scalability, full row) → 4+5 (each 1/2, same row) → 6 (full row) → 7+8 (each 1/2, same row) → 9 (full row).
+
+WIDTH ENFORCEMENT TABLE (NEVER deviate from these):
+- kpi-card: MUST be "1/3"
+- metric-gauge: MUST be "1/3"
+- scalability-simulator: MUST be "full"
+- system-report: MUST be "1/2"
+- code-terminal: MUST be "1/2"
+- architecture-diagram: MUST be "full"
+- challenges-list: MUST be "1/2"
+- solutions-list: MUST be "1/2"
+- timeline: MUST be "full"
+
+TOTAL: After the 9 mandatory blocks, you MAY add 1-2 additional story-driven blocks. Maximum total: 11.
 
 RULE 9 — BANNED BLOCKS (ABSOLUTE):
 The following block is PERMANENTLY BANNED and must NEVER appear in content_blocks:
@@ -409,7 +424,21 @@ system-report (MANDATORY #4 — width: 1/2):
 { "version": "vX.X.X_STABLE", "left_panel": { "label": "SECURITY LAYER", "badge": "ACTIVE", "badge_color": "primary", "value": "A+", "value_label": "Security Grade" }, "right_panel": { "label": "NETWORK LATENCY", "badge": "MONITORING", "value": "Xms", "value_label": "Avg Response" } }
 
 code-terminal (MANDATORY #5 — width: 1/2):
-{ "filename": "relevant-filename.ext", "lang": "LANGUAGE", "content": [{ "type": "bracket", "text": "{" }, { "type": "line", "key": "key", "value": "value" }, { "type": "bracket", "text": "}" }] }
+{ "filename": "tech-stack.json", "lang": "json", "content": [
+  { "type": "bracket", "text": "{" },
+  { "type": "line", "key": "framework", "value": "Next.js 15" },
+  { "type": "line", "key": "database", "value": "PostgreSQL + Supabase" },
+  { "type": "line", "key": "language", "value": "TypeScript" },
+  { "type": "line", "key": "hosting", "value": "Vercel" },
+  { "type": "line", "key": "auth", "value": "Supabase Auth + OTP" },
+  { "type": "line", "key": "storage", "value": "UploadThing" },
+  { "type": "line", "key": "ai", "value": "Gemini 2.5 Flash" },
+  { "type": "line", "key": "email", "value": "Nodemailer" },
+  { "type": "bracket", "text": "}" }
+] }
+CRITICAL FORMAT RULE: Every item with type "line" or "kv" MUST have both "key" and "value" as non-empty, non-null strings.
+If either key or value would be empty, undefined, or null — DO NOT include that line.
+The content array represents the full tech stack of the project. List ALL technologies from THE SOUL.
 
 architecture-diagram (MANDATORY #6 — width: full):
 { "nodes": [{ "title": "NODE_NAME", "sub": "Role or Tech", "color": "emerald|indigo|rose|amber|cyan", "icon_type": "database|server|globe|upload|streaming|vercel|cpu|shield", "stats": [{ "l": "Stat Label", "v": "Stat Value", "v_color": "emerald-500" }] }] }
@@ -507,9 +536,62 @@ ${OUTPUT_SCHEMA}
         // Log usage
         await logUsage("tokens_used", result.response.usageMetadata?.totalTokenCount || 0, {
             source,
-            model: "gemini-2.5-pro",
+            model: "gemini-2.5-flash",
             has_context: !!manualContext
         });
+
+        // ── POST-PROCESSING VALIDATION ──
+        // Fix content blocks: enforce widths, sanitize data
+        const FORCED_WIDTHS: Record<string, string> = {
+            "scalability-simulator": "full",
+            "architecture-diagram": "full",
+            "timeline": "full",
+            "kpi-card": "1/3",
+            "metric-gauge": "1/3",
+            "system-report": "1/2",
+            "code-terminal": "1/2",
+            "challenges-list": "1/2",
+            "solutions-list": "1/2",
+        };
+
+        if (data.content_blocks && Array.isArray(data.content_blocks)) {
+            data.content_blocks = data.content_blocks.map((block: any) => {
+                // Enforce correct widths
+                if (FORCED_WIDTHS[block.type]) {
+                    block.width = FORCED_WIDTHS[block.type];
+                }
+                // Fix code-terminal: filter out lines with undefined/null key or value
+                if (block.type === "code-terminal") {
+                    const content = block.content?.content || block.data?.content || [];
+                    if (Array.isArray(content)) {
+                        block.content = {
+                            ...block.content,
+                            content: content.filter((line: any) => {
+                                if (line.type === "bracket") return line.text != null && line.text !== "";
+                                if (line.type === "line" || line.type === "kv") {
+                                    return line.key != null && line.key !== "" && line.key !== "undefined"
+                                        && line.value != null && line.value !== "" && line.value !== "undefined";
+                                }
+                                return true;
+                            })
+                        };
+                    }
+                }
+                return block;
+            });
+        }
+
+        // Validate metrics: filter out garbage and cap at 4
+        if (Array.isArray(data.metrics)) {
+            data.metrics = data.metrics.filter((m: any) => {
+                if (!m.value || !m.label) return false;
+                if (m.value === "0" || m.value === "0+" || m.value === "None") return false;
+                if (m.label.toUpperCase() === "TOP CONTRIBUTOR") return false;
+                if (m.label.toUpperCase() === "STARS" && (m.value === "0" || parseInt(m.value) <= 0)) return false;
+                if (m.label.toUpperCase() === "FORKS" && (m.value === "0" || parseInt(m.value) <= 0)) return false;
+                return true;
+            }).slice(0, 4);
+        }
 
         return {
             title: data.title || "",

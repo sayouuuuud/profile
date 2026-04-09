@@ -96,7 +96,16 @@ export function BlockGrid({ blocks }: { blocks: ContentBlock[] }) {
       {sorted.map((block, idx) => {
         const Component = BLOCK_COMPONENTS[block.type]
         if (!Component) return null
-        const colClass = WIDTH_TO_COLS[block.width] || "col-span-12"
+
+        // Enforce correct widths as a safety net — override bad AI data
+        const FORCED_WIDTHS: Record<string, BlockWidth> = {
+          "scalability-simulator": "full",
+          "architecture-diagram": "full",
+          "kpi-card": "1/3",
+          "metric-gauge": "1/3",
+        }
+        const effectiveWidth = FORCED_WIDTHS[block.type] || block.width
+        const colClass = WIDTH_TO_COLS[effectiveWidth] || "col-span-12"
         return (
           <div key={block.id} className={`${colClass} flex`}>
             <Reveal delay={idx * 80} className="w-full h-full">

@@ -13,7 +13,8 @@ export function FlowDiagramBlock({ data }: { data: any }) {
         <span className="size-1.5 bg-[#10b981] rounded-full" />
         {data.title || "PROCESS FLOW"}
       </h3>
-      <div className="flex items-center justify-between gap-2 overflow-x-auto pb-2">
+      <div className="overflow-x-auto pb-4 -mx-2 px-2 scrollbar-thin scrollbar-thumb-[#10b981]/20 scrollbar-track-transparent">
+        <div className="flex items-center gap-2 min-w-max">
         {steps.map((step: any, i: number) => {
           const Icon = icons[step.icon] || Zap
           return (
@@ -36,6 +37,7 @@ export function FlowDiagramBlock({ data }: { data: any }) {
             </div>
           )
         })}
+        </div>
       </div>
     </div>
   )

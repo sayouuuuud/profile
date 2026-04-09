@@ -1,0 +1,580 @@
+[
+  {
+    "id": "4232a4b4-093f-4493-8717-548ead0280c9",
+    "data": {
+      "tag": "RAPID DELIVERY",
+      "delta": "+50%",
+      "title": "28 Days",
+      "subtitle": "Project Completion",
+      "sparkline": [
+        10,
+        25,
+        40,
+        60,
+        80,
+        100
+      ],
+      "delta_direction": "up"
+    },
+    "type": "kpi-card",
+    "width": "1/3",
+    "sort_order": 0
+  },
+  {
+    "id": "c97e7743-17c4-4464-a801-1e90ed03890b",
+    "data": {
+      "levels": [
+        {
+          "cost": {
+            "cdn": 0,
+            "cache": 0,
+            "total": 65,
+            "hosting": 60,
+            "database": 5
+          },
+          "color": "rgb(16, 185, 129)",
+          "label": "1K",
+          "level": "startup",
+          "nodes": [
+            {
+              "id": "app",
+              "icon": "server",
+              "type": "primary",
+              "label": "Itqaan App"
+            },
+            {
+              "id": "db",
+              "icon": "database",
+              "type": "secondary",
+              "label": "PostgreSQL DB"
+            }
+          ],
+          "users": 1000,
+          "warning": null,
+          "performance": {
+            "uptime": "99%",
+            "throughput": "100 req/s",
+            "responseTime": "200ms"
+          },
+          "architecture": {
+            "app": "Next.js Monolith",
+            "cdn": "Basic CDN",
+            "cache": "None",
+            "hosting": "Self-managed Server",
+            "database": "PostgreSQL"
+          },
+          "recommendations": [
+            "Optimize PostgreSQL queries for common data access patterns",
+            "Implement client-side caching for static assets with Next.js",
+            "Monitor server resource usage for potential bottlenecks"
+          ]
+        },
+        {
+          "cost": {
+            "cdn": 20,
+            "cache": 20,
+            "total": 120,
+            "hosting": 50,
+            "database": 30
+          },
+          "color": "rgb(234, 179, 8)",
+          "label": "10K",
+          "level": "growth",
+          "users": 10000,
+          "warning": "Database connection limits and potential I/O bottlenecks without proper scaling.",
+          "performance": {
+            "uptime": "99.5%",
+            "throughput": "500 req/s",
+            "responseTime": "100ms"
+          },
+          "architecture": {
+            "app": "Next.js App",
+            "cdn": "Cloudflare",
+            "cache": "Redis (Upstash)",
+            "hosting": "Vercel Pro",
+            "database": "PostgreSQL w/ Replicas"
+          },
+          "recommendations": [
+            "Implement connection pooling for PostgreSQL",
+            "Utilize Redis for session management and frequently accessed data caching",
+            "Leverage Vercel's Edge Network for faster content delivery"
+          ]
+        },
+        {
+          "cost": {
+            "cdn": 50,
+            "cache": 100,
+            "total": 650,
+            "hosting": 300,
+            "database": 200
+          },
+          "color": "rgb(249, 115, 22)",
+          "label": "100K",
+          "level": "scale",
+          "users": 100000,
+          "warning": "Managing distributed systems introduces complexity in deployment and debugging.",
+          "performance": {
+            "uptime": "99.9%",
+            "throughput": "5000 req/s",
+            "responseTime": "50ms"
+          },
+          "architecture": {
+            "app": "Next.js (Microservices)",
+            "cdn": "Cloudflare Enterprise",
+            "cache": "Redis Cluster",
+            "hosting": "AWS/GCP (Serverless)",
+            "database": "PostgreSQL Cluster"
+          },
+          "recommendations": [
+            "Break down monolithic application into serverless functions or microservices",
+            "Implement robust monitoring and alerting for all services",
+            "Optimize database schema and indexing for high-volume transactions"
+          ]
+        },
+        {
+          "cost": {
+            "cdn": 200,
+            "cache": 500,
+            "total": 4200,
+            "hosting": 2000,
+            "database": 1500
+          },
+          "color": "rgb(239, 68, 68)",
+          "label": "1M",
+          "level": "enterprise",
+          "users": 1000000,
+          "warning": "High operational complexity requires a dedicated DevOps team and advanced observability.",
+          "performance": {
+            "uptime": "99.99%",
+            "throughput": "50000 req/s",
+            "responseTime": "20ms"
+          },
+          "architecture": {
+            "app": "Kubernetes Microservices",
+            "cdn": "Cloudflare WAF",
+            "cache": "Global Redis",
+            "hosting": "Multi-region Cloud",
+            "database": "Distributed PostgreSQL"
+          },
+          "recommendations": [
+            "Implement a comprehensive disaster recovery plan with multi-region deployments",
+            "Utilize advanced security measures like Web Application Firewalls (WAF)",
+            "Automate infrastructure provisioning and scaling with Infrastructure as Code (IaC)"
+          ]
+        }
+      ]
+    },
+    "type": "scalability-simulator",
+    "width": "1/3",
+    "sort_order": 1
+  },
+  {
+    "id": "c64fd198-0340-4356-8c7c-44643e100e04",
+    "data": {
+      "max": 100,
+      "tag": "PERFORMANCE SCORE",
+      "color": "emerald",
+      "title": "Desktop Page Speed",
+      "value": 99,
+      "suffix": "%"
+    },
+    "type": "metric-gauge",
+    "width": "1/3",
+    "sort_order": 2
+  },
+  {
+    "id": "ee21d37e-e670-43c6-a2eb-39b630c8d7d0",
+    "data": {
+      "version": "v1.0.0_PRODUCTION",
+      "left_panel": {
+        "badge": "ACTIVE",
+        "label": "SECURITY LAYER",
+        "value": "A+",
+        "badge_color": "primary",
+        "value_label": "Access Control"
+      },
+      "right_panel": {
+        "badge": "MONITORING",
+        "label": "PLATFORM STABILITY",
+        "value": "High",
+        "value_label": "Uptime"
+      }
+    },
+    "type": "system-report",
+    "width": "1/2",
+    "sort_order": 3
+  },
+  {
+    "id": "8d367b60-de96-4f9f-8999-c25593686a28",
+    "data": {
+      "lang": "typescript",
+      "content": [
+        {
+          "text": "import { NextResponse } from 'next/server';",
+          "type": "line"
+        },
+        {
+          "text": "import type { NextRequest } from 'next/server';",
+          "type": "line"
+        },
+        {
+          "text": "import { verifyAuthToken } from '@/lib/auth';",
+          "type": "line"
+        },
+        {
+          "text": "",
+          "type": "line"
+        },
+        {
+          "text": "export async function middleware(request: NextRequest) {",
+          "type": "line"
+        },
+        {
+          "text": "  const token = request.cookies.get('auth_token')?.value;",
+          "type": "line"
+        },
+        {
+          "text": "",
+          "type": "line"
+        },
+        {
+          "text": "  if (!token) {",
+          "type": "line"
+        },
+        {
+          "text": "    return NextResponse.redirect(new URL('/login', request.url));",
+          "type": "line"
+        },
+        {
+          "text": "  }",
+          "type": "line"
+        },
+        {
+          "text": "",
+          "type": "line"
+        },
+        {
+          "text": "  try {",
+          "type": "line"
+        },
+        {
+          "text": "    const user = await verifyAuthToken(token);",
+          "type": "line"
+        },
+        {
+          "text": "    if (!user || user.role !== 'Admin') {",
+          "type": "line"
+        },
+        {
+          "text": "      return NextResponse.redirect(new URL('/unauthorized', request.url));",
+          "type": "line"
+        },
+        {
+          "text": "    }",
+          "type": "line"
+        },
+        {
+          "text": "  } catch (error) {",
+          "type": "line"
+        },
+        {
+          "text": "    console.error('Auth verification failed:', error);",
+          "type": "line"
+        },
+        {
+          "text": "    return NextResponse.redirect(new URL('/login', request.url));",
+          "type": "line"
+        },
+        {
+          "text": "  }",
+          "type": "line"
+        },
+        {
+          "text": "",
+          "type": "line"
+        },
+        {
+          "text": "  return NextResponse.next();",
+          "type": "line"
+        },
+        {
+          "text": "}",
+          "type": "line"
+        },
+        {
+          "text": "",
+          "type": "line"
+        },
+        {
+          "text": "export const config = {",
+          "type": "line"
+        },
+        {
+          "text": "  matcher: ['/dashboard/:path*', '/admin/:path*'],",
+          "type": "line"
+        },
+        {
+          "text": "};",
+          "type": "line"
+        }
+      ],
+      "filename": "middleware.ts"
+    },
+    "type": "code-terminal",
+    "width": "1/2",
+    "sort_order": 4
+  },
+  {
+    "id": "799b1dc5-b041-4b66-82a4-a114a4fc1918",
+    "data": {
+      "nodes": [
+        {
+          "sub": "Learner Account",
+          "color": "indigo",
+          "stats": [
+            {
+              "l": "Access",
+              "v": "Secured",
+              "v_color": "emerald-500"
+            }
+          ],
+          "title": "Student",
+          "icon_type": "users"
+        },
+        {
+          "sub": "Next.js Application",
+          "color": "emerald",
+          "stats": [
+            {
+              "l": "Middleware",
+              "v": "Robust",
+              "v_color": "emerald-500"
+            }
+          ],
+          "title": "Itqaan Platform",
+          "icon_type": "server"
+        },
+        {
+          "sub": "Supervisor Role",
+          "color": "indigo",
+          "stats": [
+            {
+              "l": "Evaluation",
+              "v": "Detailed",
+              "v_color": "emerald-500"
+            }
+          ],
+          "title": "Reciter",
+          "icon_type": "users"
+        },
+        {
+          "sub": "Platform Manager",
+          "color": "rose",
+          "stats": [
+            {
+              "l": "Monitoring",
+              "v": "Real-time",
+              "v_color": "emerald-500"
+            }
+          ],
+          "title": "Admin",
+          "icon_type": "shield"
+        },
+        {
+          "sub": "Data Storage",
+          "color": "cyan",
+          "stats": [
+            {
+              "l": "Data",
+              "v": "Secure",
+              "v_color": "emerald-500"
+            }
+          ],
+          "title": "PostgreSQL DB",
+          "icon_type": "database"
+        },
+        {
+          "sub": "Audio Storage",
+          "color": "amber",
+          "stats": [
+            {
+              "l": "Bandwidth",
+              "v": "Unlimited",
+              "v_color": "emerald-500"
+            }
+          ],
+          "title": "UploadThing",
+          "icon_type": "upload"
+        },
+        {
+          "sub": "Productivity Tools",
+          "color": "purple",
+          "stats": [
+            {
+              "l": "Efficiency",
+              "v": "Boosted",
+              "v_color": "emerald-500"
+            }
+          ],
+          "title": "AI Agents",
+          "icon_type": "cpu"
+        },
+        {
+          "sub": "Email Service",
+          "color": "blue",
+          "stats": [
+            {
+              "l": "Notifications",
+              "v": "Seamless",
+              "v_color": "emerald-500"
+            }
+          ],
+          "title": "Nodemailer",
+          "icon_type": "globe"
+        }
+      ]
+    },
+    "type": "architecture-diagram",
+    "width": "full",
+    "sort_order": 5
+  },
+  {
+    "id": "3cbc6d40-fa25-44c6-bb3a-4f8d9bfd8eab",
+    "data": {
+      "items": [
+        {
+          "desc": "Adapting from a simple academic project to a complex, real-world platform with entirely new user roles and reporting requirements under tight client deadlines.",
+          "title": "Navigating Massive Scope Changes"
+        },
+        {
+          "desc": "Orchestrating a complete architectural overhaul and implementing intricate features as a primary developer, managing all technical and strategic decisions.",
+          "title": "Solo Development Pressure"
+        },
+        {
+          "desc": "Resolving persistent and elusive audio recording/playback issues across different operating systems, particularly on Apple devices, requiring extensive real-time testing.",
+          "title": "Cross-Platform Audio Compatibility"
+        },
+        {
+          "desc": "Overcoming the logistical nightmare of a laptop charger failure at a crucial project phase, necessitating inter-city travel to access working equipment and maintain development momentum.",
+          "title": "Critical Hardware Failure"
+        }
+      ]
+    },
+    "type": "challenges-list",
+    "width": "1/2",
+    "sort_order": 6
+  },
+  {
+    "id": "13f39953-30dd-4a29-a5ee-11f916089b34",
+    "data": {
+      "items": [
+        {
+          "desc": "Implemented a complete system overhaul to support complex new user roles, detailed reporting, and a robust student journey workflow, ensuring scalability and security.",
+          "title": "Comprehensive Architectural Redesign"
+        },
+        {
+          "desc": "Leveraged powerful AI agents (Google Stitch, Gemini 3.1 Pro, Claude Sonnet/Opus Thinking) to significantly boost productivity and accelerate feature implementation.",
+          "title": "AI-Accelerated Development"
+        },
+        {
+          "desc": "Utilized UploadThing for unlimited audio file bandwidth and Nodemailer for efficient email notifications, optimizing costs and performance for critical services.",
+          "title": "Strategic Infrastructure Choices"
+        },
+        {
+          "desc": "Conducted hundreds of real-time browser tests to ensure stable and compatible audio recording and playback across all major operating systems, resolving a critical user experience bottleneck.",
+          "title": "Rigorous Cross-Platform Testing"
+        }
+      ]
+    },
+    "type": "solutions-list",
+    "width": "1/2",
+    "sort_order": 7
+  },
+  {
+    "id": "5819afbd-ea62-43bd-9aec-a09de5f6e692",
+    "data": {
+      "title": "PROJECT ROADMAP",
+      "milestones": [
+        {
+          "date": "Week 1",
+          "title": "Phase 1: Initial Project Scope",
+          "status": "completed",
+          "description": "Established the foundational structure of Itqaan as a simple university project with basic functionality and clear initial requirements."
+        },
+        {
+          "date": "Week 2-3",
+          "title": "Phase 2: Architectural Overhaul & Feature Integration",
+          "status": "completed",
+          "description": "Initiated massive architectural changes, integrated complex user roles (Supervisors), detailed reporting, and the complete student journey workflow."
+        },
+        {
+          "date": "Week 3-4",
+          "title": "Phase 3: Cross-Platform Compatibility & Core Logic Refinement",
+          "status": "completed",
+          "description": "Resolved critical audio recording/playback issues across devices, refined middleware for access control, and finalized certificate generation/session booking logic."
+        },
+        {
+          "date": "End of Week 4",
+          "title": "Phase 4: Deployment & User Acceptance",
+          "status": "completed",
+          "description": "Successful deployment of the production-ready platform, followed by comprehensive testing and client approval, marking the transition to a real-world application."
+        },
+        {
+          "date": "Ongoing",
+          "title": "Phase 5: Ongoing Enhancements",
+          "status": "in-progress",
+          "description": "Continuous improvements and refinements based on client feedback and evolving requirements, ensuring long-term platform stability and feature growth."
+        }
+      ]
+    },
+    "type": "timeline",
+    "width": "full",
+    "sort_order": 8
+  },
+  {
+    "id": "52bbe6a3-6808-4efa-9c6d-41e240624b71",
+    "data": {
+      "steps": [
+        {
+          "icon": "Users",
+          "label": "Student Registration",
+          "description": "Secure OTP-confirmed account creation with 24-hour validity."
+        },
+        {
+          "icon": "Upload",
+          "label": "Upload Recitation",
+          "description": "Student records audio directly or uploads a file; status set to PENDING."
+        },
+        {
+          "icon": "Cpu",
+          "label": "Admin Assignment",
+          "description": "Admin dashboard assigns pending recitations to available Reciters."
+        },
+        {
+          "icon": "Shield",
+          "label": "Reciter Evaluation",
+          "description": "Reciter reviews, grades, and marks errors in the student's submission."
+        },
+        {
+          "icon": "Zap",
+          "label": "Outcome Decision",
+          "description": "System determines if 'MASTERED' or 'NEEDS SESSION' based on evaluation."
+        },
+        {
+          "icon": "Rocket",
+          "label": "Certificate Generation (MASTERED)",
+          "description": "Interactive PNG certificate with serial number automatically generated."
+        },
+        {
+          "icon": "Users",
+          "label": "Session Booking (NEEDS SESSION)",
+          "description": "Student directed to schedule a live session with Reciter for correction."
+        }
+      ],
+      "title": "STUDENT JOURNEY & PLATFORM WORKFLOW"
+    },
+    "type": "flow-diagram",
+    "width": "full",
+    "sort_order": 9
+  }
+]
