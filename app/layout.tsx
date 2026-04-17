@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AnalyticsTracker } from "@/components/analytics-tracker";
 import { VisitorTracker } from "@/components/analytics/visitor-tracker";
+import { ScrollProgressIndicator } from "@/components/scroll-progress-indicator";
 import { NotificationsProvider } from "@/components/providers/notifications-provider";
 import "./globals.css";
 
@@ -54,6 +55,7 @@ export default function RootLayout({
       className={`dark ${spaceGrotesk.variable} ${cinzel.variable} ${inter.variable} ${johnston.variable}`}
     >
       <body className="font-sans antialiased" suppressHydrationWarning>
+        <ScrollProgressIndicator />
         <ThemeProvider />
         <NotificationsProvider>
           <Suspense fallback={null}>
