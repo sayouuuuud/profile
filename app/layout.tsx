@@ -50,7 +50,8 @@ export default function RootLayout({
     >
       <body className="font-sans antialiased" suppressHydrationWarning>
         <ScrollProgressIndicator />
-        <ThemeProvider />
+        {/* Temporarily disabled: ThemeProvider pulling old dark theme from DB */}
+        {/* <ThemeProvider /> */}
         <NotificationsProvider>
           <Suspense fallback={null}>
             <AnalyticsTracker />

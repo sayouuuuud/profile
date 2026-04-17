@@ -109,9 +109,6 @@ export async function ThemeProvider() {
         :root {
           ${cssVars.join("\n          ")}
         }
-        .dark {
-          ${cssVars.join("\n          ")}
-        }
       `
     }} />
   );
