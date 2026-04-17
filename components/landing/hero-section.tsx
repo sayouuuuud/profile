@@ -33,8 +33,6 @@ export function HeroSection({ settings }: HeroProps) {
 
   return (
     <section className="px-6 md:px-12 pt-20 md:pt-32 pb-24 w-full relative">
-      <div className="max-w-7xl mx-auto"
-
       <div className="max-w-7xl mx-auto">
         {/* 12-column asymmetric grid: 7 cols text + 5 cols image */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-start">
