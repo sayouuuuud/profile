@@ -1,6 +1,6 @@
 "use client"
 
-import { MapPin, Clock, ArrowRight } from "lucide-react"
+import { MapPin, Clock, ArrowRight, Sparkles } from "lucide-react"
 import { ScrollReveal } from "@/components/scroll-reveal"
 import Image from "next/image"
 
@@ -32,97 +32,136 @@ export function HeroSection({ settings }: HeroProps) {
   }
 
   return (
-    <section className="px-6 md:px-12 pt-20 md:pt-32 pb-24 w-full relative">
-      <div className="max-w-7xl mx-auto">
-        {/* 12-column asymmetric grid: 7 cols text + 5 cols image */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-start">
-          {/* LEFT: 7-column text (cols 1-7) */}
-          <div className="lg:col-span-7 space-y-12">
-            {/* Status label */}
+    <section className="w-full relative overflow-hidden">
+      {/* BOLD SPLIT SCREEN LAYOUT */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 min-h-screen">
+        {/* LEFT: Dark background with content - BOLD TYPOGRAPHY */}
+        <div className="bg-background px-6 md:px-12 py-16 md:py-24 flex flex-col justify-between relative">
+          {/* Accent line decoration */}
+          <div className="absolute top-0 left-0 h-1 w-32 bg-gradient-to-r from-emerald via-emerald to-emerald/0" />
+
+          <div className="space-y-16">
+            {/* Label with badge */}
             <ScrollReveal>
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 border border-emerald/20 rounded-none text-xs tracking-[0.2em] uppercase font-space-grotesk">
-                <span className="w-1.5 h-1.5 bg-emerald rounded-full" />
+              <div className="inline-flex items-center gap-2 px-4 py-2 border border-emerald/30 rounded-full text-xs font-space-grotesk tracking-widest uppercase">
+                <span className="w-2 h-2 rounded-full bg-emerald animate-pulse" />
                 {s.hero_status}
               </div>
             </ScrollReveal>
 
-            {/* Headline: large, tight, mono-number + serif name */}
+            {/* BOLD MAIN HEADLINE - MASSIVE */}
             <ScrollReveal delay={80}>
-              <div className="space-y-4">
-                <div className="flex items-baseline gap-4 font-cinzel">
-                  <span className="text-emerald/40 text-xs tracking-[0.15em] leading-none font-space-grotesk">01 / EXECUTIVE</span>
-                </div>
-                <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold leading-[0.95] tracking-tight">
-                  {s.hero_name}
+              <div>
+                <h1 className="text-7xl md:text-8xl lg:text-9xl font-bold font-cinzel leading-[0.9] mb-6">
+                  {s.hero_name.split(" ").map((word, i) => (
+                    <div key={i} className="relative inline-block mr-4">
+                      <span className="text-foreground">{word}</span>
+                      {i === 0 && <div className="absolute -bottom-3 left-0 h-1 w-full bg-emerald" />}
+                    </div>
+                  ))}
                 </h1>
-                <p className="text-lg md:text-xl text-emerald/80 font-space-grotesk tracking-wide">
+                <p className="text-2xl md:text-3xl text-emerald font-space-grotesk font-light tracking-wide">
                   {s.hero_subtitle}
                 </p>
               </div>
             </ScrollReveal>
 
-            {/* Subheading: editorial, max width */}
+            {/* Description text - punchy */}
             {s.hero_description && (
               <ScrollReveal delay={160}>
-                <p className="text-base md:text-lg text-foreground/70 max-w-lg leading-relaxed font-light">
-                  {s.hero_description}
-                </p>
+                <div className="space-y-6 max-w-md">
+                  <p className="text-lg md:text-xl text-foreground/80 leading-relaxed font-light">
+                    {s.hero_description}
+                  </p>
+
+                  {/* Meta info in grid */}
+                  <div className="grid grid-cols-2 gap-6 pt-4">
+                    <div className="flex items-start gap-3">
+                      <MapPin className="w-5 h-5 text-emerald flex-shrink-0 mt-1" />
+                      <div>
+                        <div className="text-xs text-foreground/50 font-space-grotesk uppercase tracking-wider">Location</div>
+                        <div className="text-sm text-foreground font-medium">{s.hero_location}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <Clock className="w-5 h-5 text-emerald flex-shrink-0 mt-1" />
+                      <div>
+                        <div className="text-xs text-foreground/50 font-space-grotesk uppercase tracking-wider">Timezone</div>
+                        <div className="text-sm text-foreground font-medium">{s.hero_timezone}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </ScrollReveal>
             )}
-
-            {/* Meta: location + timezone in mono */}
-            <ScrollReveal delay={240}>
-              <div className="flex flex-col sm:flex-row gap-6 text-sm font-space-grotesk font-mono text-foreground/50 uppercase tracking-[0.1em]">
-                <div className="flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-emerald/40 flex-shrink-0" />
-                  <span>{s.hero_location}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-emerald/40 flex-shrink-0" />
-                  <span>{s.hero_timezone}</span>
-                </div>
-              </div>
-            </ScrollReveal>
-
-            {/* CTA: asymmetric placement */}
-            <ScrollReveal delay={320}>
-              <div className="pt-8 border-t border-emerald/10">
-                <a
-                  href="#work"
-                  className="inline-flex items-center gap-3 text-sm font-space-grotesk tracking-wide uppercase hover:text-emerald transition-colors duration-300 group"
-                >
-                  Explore my work
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </a>
-              </div>
-            </ScrollReveal>
           </div>
 
-          {/* RIGHT: 5-column image (cols 8-12) */}
-          <div className="lg:col-span-5 relative">
-            <ScrollReveal delay={100}>
-              <div className="aspect-[3/4] relative overflow-hidden">
-                {s.hero_image_url ? (
-                  <Image
-                    alt={s.hero_name}
-                    src={s.hero_image_url}
-                    fill
-                    className="object-cover"
-                    priority
-                    sizes="(max-width: 1024px) 100vw, 25vw"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-emerald/5 to-emerald/10 flex items-center justify-center">
-                    <span className="text-emerald/10 text-9xl font-bold font-cinzel">{s.hero_name.charAt(0)}</span>
+          {/* CTA - BOLD BUTTON */}
+          <ScrollReveal delay={240}>
+            <a
+              href="#work"
+              className="group inline-flex items-center justify-center gap-3 px-8 py-4 bg-emerald hover:bg-emerald/90 text-background font-space-grotesk font-bold uppercase tracking-wider text-sm transition-all duration-300 hover:scale-105 active:scale-95 w-fit"
+            >
+              View My Work
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
+            </a>
+          </ScrollReveal>
+        </div>
+
+        {/* RIGHT: Image with overlay - DRAMATIC */}
+        <div className="hidden lg:block relative overflow-hidden bg-emerald/5">
+          <ScrollReveal delay={100}>
+            <div className="w-full h-full relative group">
+              {s.hero_image_url ? (
+                <Image
+                  alt={s.hero_name}
+                  src={s.hero_image_url}
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-700"
+                  priority
+                  sizes="50vw"
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-emerald/20 via-emerald/10 to-background flex items-center justify-center">
+                  <div className="text-center">
+                    <Sparkles className="w-24 h-24 text-emerald/20 mx-auto mb-4" />
+                    <span className="text-emerald/30 text-5xl font-bold font-cinzel">{s.hero_name.charAt(0)}</span>
                   </div>
-                )}
-                {/* Overlay gradient */}
-                <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-40" />
-              </div>
-            </ScrollReveal>
-          </div>
+                </div>
+              )}
+
+              {/* BOLD GRADIENT OVERLAY */}
+              <div className="absolute inset-0 bg-gradient-to-r from-background via-background/30 to-transparent" />
+
+              {/* ACCENT CIRCLE - BOTTOM RIGHT */}
+              <div className="absolute -bottom-20 -right-20 w-40 h-40 rounded-full border-2 border-emerald/20 group-hover:border-emerald/40 transition-colors" />
+            </div>
+          </ScrollReveal>
         </div>
       </div>
+
+      {/* Mobile image below on small screens */}
+      <ScrollReveal delay={200}>
+        <div className="lg:hidden px-6 md:px-12 py-16 bg-emerald/5">
+          <div className="aspect-[3/4] relative overflow-hidden rounded-lg">
+            {s.hero_image_url ? (
+              <Image
+                alt={s.hero_name}
+                src={s.hero_image_url}
+                fill
+                className="object-cover"
+                priority
+                sizes="100vw"
+              />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-emerald/20 to-background flex items-center justify-center">
+                <span className="text-emerald/10 text-8xl font-bold font-cinzel">{s.hero_name.charAt(0)}</span>
+              </div>
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
+          </div>
+        </div>
+      </ScrollReveal>
     </section>
   )
 }

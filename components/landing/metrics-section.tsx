@@ -74,35 +74,42 @@ export function MetricsSection({ metrics }: { metrics: Metric[] }) {
     : defaultMetrics
 
   return (
-    <section className="px-6 md:px-12 py-24" id="metrics">
+    <section className="px-6 md:px-12 py-24 bg-gradient-to-b from-emerald/5 to-background" id="metrics">
       <div className="max-w-7xl mx-auto">
         {/* Section header */}
         <ScrollReveal>
-          <div className="mb-20 flex items-baseline gap-4">
-            <span className="text-xs tracking-[0.2em] uppercase font-space-grotesk text-emerald/50">02 / METRICS</span>
-            <div className="flex-1 h-px bg-emerald/10" />
+          <div className="mb-20">
+            <h2 className="text-4xl md:text-5xl font-bold font-cinzel text-foreground mb-4">Impact by Numbers</h2>
+            <div className="h-1 w-20 bg-gradient-to-r from-emerald to-emerald/0" />
           </div>
         </ScrollReveal>
 
-        {/* 4-column grid, data-forward */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
+        {/* 4-column bold metric cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8">
           {displayMetrics.map((metric, i) => (
-            <ScrollReveal key={i} delay={(i + 1) * 60}>
-              <div className="flex flex-col gap-6 group">
-                {/* Data visualization bar */}
-                <div className="h-1 bg-emerald/10 group-hover:bg-emerald/30 transition-colors duration-300" style={{ width: `${(i + 1) * 20}%` }} />
+            <ScrollReveal key={i} delay={(i + 1) * 80}>
+              <div className="group">
+                {/* BOLD BORDER CARD */}
+                <div className="border-2 border-emerald/20 group-hover:border-emerald/60 p-6 md:p-8 transition-colors relative overflow-hidden bg-gradient-to-br from-emerald/5 to-background">
+                  {/* Corner accent */}
+                  <div className="absolute top-0 left-0 w-8 h-8 border-l border-t border-emerald/20 group-hover:border-emerald/40 transition-colors" />
 
-                {/* Number: mono font, large */}
-                <AnimatedNumber target={metric.value} suffix={metric.suffix} />
+                  {/* Content */}
+                  <div className="space-y-6 relative z-10">
+                    <AnimatedNumber target={metric.value} suffix={metric.suffix} />
 
-                {/* Label: uppercase mono */}
-                <div className="space-y-1">
-                  <h3 className="text-xs md:text-sm uppercase tracking-[0.15em] font-space-grotesk font-medium text-foreground">
-                    {metric.title}
-                  </h3>
-                  <p className="text-[11px] tracking-[0.1em] uppercase font-mono text-foreground/40">
-                    {metric.description}
-                  </p>
+                    <div>
+                      <h3 className="text-sm md:text-base font-bold font-cinzel text-foreground group-hover:text-emerald transition-colors uppercase mb-2">
+                        {metric.title}
+                      </h3>
+                      <p className="text-xs text-foreground/60 font-light">
+                        {metric.description}
+                      </p>
+                    </div>
+
+                    {/* Progress bar */}
+                    <div className="h-1 bg-emerald/10 group-hover:bg-emerald/30 transition-colors" style={{ width: `${(i + 1) * 25}%` }} />
+                  </div>
                 </div>
               </div>
             </ScrollReveal>
