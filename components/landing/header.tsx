@@ -24,12 +24,12 @@ export function Header() {
     <header
       className={`relative z-50 flex items-center justify-between px-6 md:px-12 py-6 sticky top-0 transition-all duration-500 border-b ${
         scrolled
-          ? "bg-background/95 backdrop-blur-sm border-emerald/10"
+          ? "bg-background/95 backdrop-blur-sm border-border"
           : "bg-transparent border-transparent"
       }`}
     >
       {/* Logo/Brand */}
-      <Link href="/" className="text-foreground hover:text-emerald transition-colors font-cinzel font-bold text-sm uppercase tracking-[0.15em]">
+      <Link href="/" className="text-foreground hover:text-accent transition-colors font-serif font-light text-sm uppercase tracking-label">
         SE / TPM
       </Link>
 
@@ -38,7 +38,7 @@ export function Header() {
         {links.map((link) => (
           <a
             key={link.href}
-            className="text-sm uppercase tracking-[0.1em] font-space-grotesk text-foreground/60 hover:text-emerald transition-colors"
+            className="text-sm uppercase tracking-label font-mono text-muted hover:text-accent transition-colors"
             href={link.href}
           >
             {link.label}
@@ -49,7 +49,7 @@ export function Header() {
       {/* CTA */}
       <Link
         href="/case-studies"
-        className="hidden md:inline-flex items-center gap-2 px-4 py-2 border border-foreground/20 hover:border-emerald text-foreground/60 hover:text-emerald text-xs uppercase tracking-[0.1em] font-space-grotesk transition-all duration-300"
+        className="btn-secondary"
       >
         Portfolio
         <ArrowUpRight className="h-3 w-3" />
@@ -57,7 +57,7 @@ export function Header() {
 
       {/* Mobile menu button */}
       <button
-        className="md:hidden text-foreground/60 hover:text-emerald transition-colors"
+        className="md:hidden text-muted hover:text-accent transition-colors"
         onClick={() => setMobileOpen(!mobileOpen)}
         aria-label="Toggle menu"
       >
@@ -70,11 +70,11 @@ export function Header() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="absolute top-full left-0 right-0 bg-background border-b border-emerald/10 p-6 flex flex-col gap-4 md:hidden">
+        <div className="absolute top-full left-0 right-0 bg-background border-b border-border p-6 flex flex-col gap-4 md:hidden">
           {links.map((link) => (
             <a
               key={link.href}
-              className="text-sm uppercase tracking-[0.1em] font-space-grotesk text-foreground/60 hover:text-emerald transition-colors"
+              className="text-sm uppercase tracking-label font-mono text-muted hover:text-accent transition-colors"
               href={link.href}
               onClick={() => setMobileOpen(false)}
             >
@@ -83,7 +83,7 @@ export function Header() {
           ))}
           <Link
             href="/case-studies"
-            className="inline-flex items-center gap-2 px-4 py-2 border border-foreground/20 hover:border-emerald text-foreground/60 hover:text-emerald text-xs uppercase tracking-[0.1em] font-space-grotesk transition-all"
+            className="btn-secondary"
             onClick={() => setMobileOpen(false)}
           >
             Portfolio
