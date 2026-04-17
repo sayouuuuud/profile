@@ -47,21 +47,21 @@ function AnimatedNumber({ target, suffix }: { target: string; suffix: string }) 
   }, [target, hasAnimated])
 
   return (
-    <div ref={ref} className="flex items-baseline gap-2">
-      <span className="text-5xl md:text-6xl font-mono font-bold text-emerald tracking-tight">
+    <div ref={ref} className="flex items-baseline gap-1">
+      <span className="text-5xl md:text-6xl font-mono font-bold text-accent tracking-tight">
         {display}
       </span>
-      <span className="text-lg md:text-xl font-space-grotesk font-light text-foreground/60">{suffix}</span>
+      <span className="text-lg md:text-xl font-sans font-light text-muted">{suffix}</span>
     </div>
   )
 }
 
 export function MetricsSection({ metrics }: { metrics: Metric[] }) {
   const defaultMetrics = [
-    { title: "Products Shipped", value: "12", suffix: "+", description: "End-to-end launches" },
-    { title: "Cost Reduction", value: "100", suffix: "%", description: "Infrastructure impact" },
-    { title: "Performance Gain", value: "5", suffix: "x", description: "Load time improvement" },
-    { title: "Teams Trained", value: "114", suffix: "+", description: "Capability building" },
+    { title: "Products Shipped", value: "12", suffix: "+" },
+    { title: "Cost Reduction", value: "100", suffix: "%" },
+    { title: "Performance Gain", value: "5", suffix: "x" },
+    { title: "Teams Trained", value: "114", suffix: "+" },
   ]
 
   const displayMetrics = metrics.length > 0
@@ -69,48 +69,37 @@ export function MetricsSection({ metrics }: { metrics: Metric[] }) {
         title: m.title,
         value: m.value,
         suffix: m.suffix || defaultMetrics[i]?.suffix || "+",
-        description: defaultMetrics[i]?.description || "",
       }))
     : defaultMetrics
 
   return (
-    <section className="px-6 md:px-12 py-24 bg-gradient-to-b from-emerald/5 to-background" id="metrics">
+    <section className="px-6 md:px-12 py-32 bg-background border-t border-border" id="metrics">
       <div className="max-w-7xl mx-auto">
-        {/* Section header */}
+        {/* Section header: editorial */}
         <ScrollReveal>
           <div className="mb-20">
-            <h2 className="text-4xl md:text-5xl font-bold font-cinzel text-foreground mb-4">Impact by Numbers</h2>
-            <div className="h-1 w-20 bg-gradient-to-r from-emerald to-emerald/0" />
+            <div className="label mb-4">Measurable Impact</div>
+            <h2 className="font-serif italic text-5xl md:text-6xl leading-tight tracking-title text-balance">
+              Data that speaks
+            </h2>
           </div>
         </ScrollReveal>
 
-        {/* 4-column bold metric cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8">
+        {/* 4-column metric grid: minimal, restrained */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
           {displayMetrics.map((metric, i) => (
-            <ScrollReveal key={i} delay={(i + 1) * 80}>
-              <div className="group">
-                {/* BOLD BORDER CARD */}
-                <div className="border-2 border-emerald/20 group-hover:border-emerald/60 p-6 md:p-8 transition-colors relative overflow-hidden bg-gradient-to-br from-emerald/5 to-background">
-                  {/* Corner accent */}
-                  <div className="absolute top-0 left-0 w-8 h-8 border-l border-t border-emerald/20 group-hover:border-emerald/40 transition-colors" />
+            <ScrollReveal key={i} delay={(i + 1) * 60}>
+              <div className="space-y-8 group">
+                {/* Number: mono, accent color */}
+                <AnimatedNumber target={metric.value} suffix={metric.suffix} />
 
-                  {/* Content */}
-                  <div className="space-y-6 relative z-10">
-                    <AnimatedNumber target={metric.value} suffix={metric.suffix} />
+                {/* Label: uppercase, tracked, muted */}
+                <h3 className="label group-hover:text-accent transition-colors">
+                  {metric.title}
+                </h3>
 
-                    <div>
-                      <h3 className="text-sm md:text-base font-bold font-cinzel text-foreground group-hover:text-emerald transition-colors uppercase mb-2">
-                        {metric.title}
-                      </h3>
-                      <p className="text-xs text-foreground/60 font-light">
-                        {metric.description}
-                      </p>
-                    </div>
-
-                    {/* Progress bar */}
-                    <div className="h-1 bg-emerald/10 group-hover:bg-emerald/30 transition-colors" style={{ width: `${(i + 1) * 25}%` }} />
-                  </div>
-                </div>
+                {/* Subtle underline on hover */}
+                <div className="h-px bg-border group-hover:bg-accent transition-colors" />
               </div>
             </ScrollReveal>
           ))}
