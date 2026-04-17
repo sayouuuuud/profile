@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { ArrowRight, ArrowUpRight, Zap } from "lucide-react"
+import { ArrowUpRight } from "lucide-react"
 import { ScrollReveal } from "@/components/scroll-reveal"
 
 interface CaseStudy {
@@ -20,76 +20,74 @@ export function FeaturedCaseStudies({ studies }: { studies: CaseStudy[] }) {
   return (
     <section className="px-6 md:px-12 py-24 relative" id="work">
       <div className="max-w-7xl mx-auto">
-        {/* Section header with premium styling */}
+        {/* Section header: mono label + divider */}
         <ScrollReveal>
-          <div className="flex items-center gap-4 mb-16">
-            <div className="h-1 w-12 bg-gradient-to-r from-emerald to-emerald/0 rounded-full" />
-            <span className="text-xs text-emerald tracking-widest uppercase font-space-grotesk font-medium flex items-center gap-2">
-              <Zap className="h-3 w-3" />
-              Featured Work
-            </span>
+          <div className="mb-20 flex items-baseline gap-4">
+            <span className="text-xs tracking-[0.2em] uppercase font-space-grotesk text-emerald/50">03 / WORK</span>
+            <div className="flex-1 h-px bg-emerald/10" />
           </div>
         </ScrollReveal>
 
-        <div className="grid gap-6">
+        {/* Featured case studies: tall cards with asymmetric layout */}
+        <div className="space-y-8">
           {studies.map((cs, idx) => {
             const primaryMetric = cs.metrics?.[0]
 
             return (
-              <ScrollReveal key={cs.id} delay={(idx + 1) * 100}>
+              <ScrollReveal key={cs.id} delay={(idx + 1) * 80}>
                 <Link href={`/case-studies/${cs.slug}`} className="group block">
-                  <div className="glass-panel rounded-xl p-6 md:p-8 card-glow flex flex-col md:flex-row md:items-center gap-6 relative overflow-hidden hover:scale-[1.01] transition-transform duration-300">
-                    {/* Premium border glow on hover */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-emerald/5 via-emerald/0 to-emerald/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-
-                    {/* Left: Content */}
-                    <div className="flex-1 min-w-0 relative z-10">
+                  {/* Asymmetric grid: 7 cols text + 5 cols metric */}
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start border-b border-emerald/10 pb-8 hover:border-emerald/30 transition-colors duration-300">
+                    {/* Left: 7 columns */}
+                    <div className="lg:col-span-7 space-y-4">
                       {cs.category && (
-                        <span className="text-xs text-emerald/70 tracking-widest uppercase mb-3 block font-space-grotesk font-medium">
+                        <span className="text-xs tracking-[0.15em] uppercase text-emerald/60 font-space-grotesk font-medium block">
                           {cs.category}
                         </span>
                       )}
-                      <h3 className="text-lg md:text-2xl font-semibold text-foreground group-hover:text-emerald transition-colors mb-3 font-cinzel">
+                      <h3 className="text-2xl md:text-3xl font-bold text-foreground group-hover:text-emerald transition-colors font-cinzel">
                         {cs.title}
                       </h3>
                       {cs.subtitle && (
-                        <p className="text-sm text-muted-foreground line-clamp-2 font-light leading-relaxed">{cs.subtitle}</p>
+                        <p className="text-base text-foreground/60 leading-relaxed max-w-lg font-light">
+                          {cs.subtitle}
+                        </p>
                       )}
 
-                      {/* Tech stack tags with premium styling */}
+                      {/* Tech stack: inline mono labels */}
                       {cs.tech_stack && cs.tech_stack.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mt-5">
-                          {cs.tech_stack.slice(0, 5).map((tech: string) => (
+                        <div className="flex flex-wrap gap-2 pt-2">
+                          {cs.tech_stack.slice(0, 4).map((tech: string) => (
                             <span
                               key={tech}
-                              className="px-3 py-1.5 text-[11px] text-muted-foreground bg-emerald/5 rounded-md border border-emerald/20 hover:border-emerald/40 font-space-grotesk font-medium transition-colors duration-300"
+                              className="text-[11px] tracking-[0.1em] uppercase font-mono text-foreground/40 border-b border-emerald/20 hover:border-emerald/40 pb-1 transition-colors"
                             >
                               {tech}
                             </span>
                           ))}
-                          {cs.tech_stack && cs.tech_stack.length > 5 && (
-                            <span className="px-3 py-1.5 text-[11px] text-muted-foreground font-light">
-                              +{cs.tech_stack.length - 5} more
+                          {cs.tech_stack && cs.tech_stack.length > 4 && (
+                            <span className="text-[11px] tracking-[0.1em] uppercase font-mono text-foreground/30">
+                              +{cs.tech_stack.length - 4}
                             </span>
                           )}
                         </div>
                       )}
                     </div>
 
-                    {/* Right: Metric + Arrow */}
-                    <div className="flex items-center gap-6 md:gap-8 shrink-0 relative z-10">
+                    {/* Right: 5 columns - metric + arrow */}
+                    <div className="lg:col-span-5 flex items-start justify-between lg:justify-end gap-8">
                       {primaryMetric && (
                         <div className="text-right">
-                          <span className="text-2xl md:text-3xl font-bold text-emerald glow-text block font-cinzel">
+                          <div className="text-4xl md:text-5xl font-mono font-bold text-emerald">
                             {primaryMetric.value}
-                          </span>
-                          <span className="text-xs text-muted-foreground font-light">
+                          </div>
+                          <div className="text-xs uppercase tracking-[0.15em] font-space-grotesk text-foreground/50 mt-2">
                             {primaryMetric.label}
-                          </span>
+                          </div>
                         </div>
                       )}
-                      <div className="h-11 w-11 rounded-full border border-emerald/20 flex items-center justify-center group-hover:border-emerald/60 group-hover:bg-emerald/10 transition-all duration-300 flex-shrink-0">
-                        <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover:text-emerald transition-colors group-hover:scale-125 duration-300" />
+                      <div className="h-12 w-12 rounded-full border border-emerald/20 flex items-center justify-center group-hover:border-emerald/60 group-hover:bg-emerald/5 transition-all duration-300 flex-shrink-0 mt-0.5">
+                        <ArrowUpRight className="h-5 w-5 text-foreground/40 group-hover:text-emerald transition-colors" />
                       </div>
                     </div>
                   </div>
@@ -99,15 +97,15 @@ export function FeaturedCaseStudies({ studies }: { studies: CaseStudy[] }) {
           })}
         </div>
 
-        {/* View All CTA with premium styling */}
+        {/* View All CTA */}
         <ScrollReveal delay={400}>
-          <div className="flex justify-center mt-14">
+          <div className="flex justify-center mt-16">
             <Link
               href="/case-studies"
-              className="button-premium group inline-flex items-center gap-3 px-8 py-3 rounded-lg border border-emerald/30 text-sm text-emerald hover:text-foreground hover:border-emerald/60 hover:bg-emerald/5 transition-all duration-300 font-space-grotesk font-medium"
+              className="text-sm uppercase tracking-[0.15em] font-space-grotesk text-foreground/60 hover:text-emerald transition-colors inline-flex items-center gap-3 group"
             >
-              View All Case Studies
-              <ArrowRight className="h-4 w-4 transition-all duration-300 group-hover:translate-x-1 group-hover:translate-y-0" />
+              View all case studies
+              <ArrowUpRight className="h-4 w-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
             </Link>
           </div>
         </ScrollReveal>

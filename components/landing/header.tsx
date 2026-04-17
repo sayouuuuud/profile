@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Menu, X, Sparkles } from "lucide-react";
+import { Menu, X, ArrowUpRight } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export function Header() {
@@ -15,70 +15,66 @@ export function Header() {
   }, []);
 
   const links = [
-    { href: "#about", label: "About" },
     { href: "#work", label: "Work" },
-    { href: "#process", label: "Process" },
     { href: "#experience", label: "Experience" },
     { href: "#contact", label: "Contact" },
   ];
 
   return (
     <header
-      className={`relative z-50 flex items-center justify-between whitespace-nowrap px-6 md:px-12 py-5 sticky top-0 transition-all duration-500 ${
+      className={`relative z-50 flex items-center justify-between px-6 md:px-12 py-6 sticky top-0 transition-all duration-500 border-b ${
         scrolled
-          ? "glass-panel border-b border-emerald/10 backdrop-blur-md"
-          : "bg-transparent border-b border-transparent"
+          ? "bg-background/95 backdrop-blur-sm border-emerald/10"
+          : "bg-transparent border-transparent"
       }`}
     >
-      <Link href="/" className="flex items-center gap-3 text-foreground hover:text-emerald transition-colors duration-300 group">
-        <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-emerald/20 to-emerald/5 border border-emerald/30 flex items-center justify-center group-hover:border-emerald/60 transition-colors duration-300">
-          <span className="text-emerald font-bold text-xs font-cinzel">SE</span>
-        </div>
-        <span className="text-foreground text-sm font-semibold tracking-wide font-space-grotesk hidden sm:inline">
-          Sayed Elshazly
-        </span>
+      {/* Logo/Brand */}
+      <Link href="/" className="text-foreground hover:text-emerald transition-colors font-cinzel font-bold text-sm uppercase tracking-[0.15em]">
+        SE / TPM
       </Link>
 
-      <div className="flex items-center gap-8">
-        <nav className="hidden md:flex items-center gap-8">
-          {links.map((link, i) => (
-            <a
-              key={link.href}
-              className="relative text-muted-foreground hover:text-foreground transition-colors text-sm font-space-grotesk font-medium group"
-              href={link.href}
-            >
-              {link.label}
-              <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-gradient-to-r from-emerald to-emerald/0 group-hover:w-full transition-all duration-300" />
-            </a>
-          ))}
-        </nav>
-        <Link
-          href="/case-studies"
-          className="button-premium hidden md:flex items-center justify-center rounded-lg bg-emerald hover:bg-emerald/90 text-background text-sm font-medium h-10 px-6 gap-2 shadow-lg shadow-emerald/20 hover:shadow-emerald/40 transition-all duration-300 group font-space-grotesk"
-        >
-          <span>Case Studies</span>
-          <Sparkles className="h-4 w-4 opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300" />
-        </Link>
-        <button
-          className="md:hidden text-foreground hover:text-emerald transition-colors"
-          onClick={() => setMobileOpen(!mobileOpen)}
-          aria-label="Toggle menu"
-        >
-          {mobileOpen ? (
-            <X className="h-5 w-5" />
-          ) : (
-            <Menu className="h-5 w-5" />
-          )}
-        </button>
-      </div>
+      {/* Desktop nav */}
+      <nav className="hidden md:flex items-center gap-10">
+        {links.map((link) => (
+          <a
+            key={link.href}
+            className="text-sm uppercase tracking-[0.1em] font-space-grotesk text-foreground/60 hover:text-emerald transition-colors"
+            href={link.href}
+          >
+            {link.label}
+          </a>
+        ))}
+      </nav>
 
+      {/* CTA */}
+      <Link
+        href="/case-studies"
+        className="hidden md:inline-flex items-center gap-2 px-4 py-2 border border-foreground/20 hover:border-emerald text-foreground/60 hover:text-emerald text-xs uppercase tracking-[0.1em] font-space-grotesk transition-all duration-300"
+      >
+        Portfolio
+        <ArrowUpRight className="h-3 w-3" />
+      </Link>
+
+      {/* Mobile menu button */}
+      <button
+        className="md:hidden text-foreground/60 hover:text-emerald transition-colors"
+        onClick={() => setMobileOpen(!mobileOpen)}
+        aria-label="Toggle menu"
+      >
+        {mobileOpen ? (
+          <X className="h-5 w-5" />
+        ) : (
+          <Menu className="h-5 w-5" />
+        )}
+      </button>
+
+      {/* Mobile menu */}
       {mobileOpen && (
-        <div className="absolute top-full left-0 right-0 glass-panel border-b border-emerald/10 p-6 flex flex-col gap-4 md:hidden z-50 animate-slide-up">
-          {links.map((link, i) => (
+        <div className="absolute top-full left-0 right-0 bg-background border-b border-emerald/10 p-6 flex flex-col gap-4 md:hidden">
+          {links.map((link) => (
             <a
               key={link.href}
-              className="text-muted-foreground hover:text-foreground transition-colors text-sm py-2 font-space-grotesk hover:translate-x-1 transition-transform duration-300"
-              style={{ animationDelay: `${i * 50}ms` }}
+              className="text-sm uppercase tracking-[0.1em] font-space-grotesk text-foreground/60 hover:text-emerald transition-colors"
               href={link.href}
               onClick={() => setMobileOpen(false)}
             >
@@ -87,11 +83,11 @@ export function Header() {
           ))}
           <Link
             href="/case-studies"
-            className="button-premium flex items-center justify-center rounded-lg bg-emerald text-background text-sm font-medium h-10 px-5 mt-2 gap-2 font-space-grotesk"
+            className="inline-flex items-center gap-2 px-4 py-2 border border-foreground/20 hover:border-emerald text-foreground/60 hover:text-emerald text-xs uppercase tracking-[0.1em] font-space-grotesk transition-all"
             onClick={() => setMobileOpen(false)}
           >
-            Case Studies
-            <Sparkles className="h-4 w-4" />
+            Portfolio
+            <ArrowUpRight className="h-3 w-3" />
           </Link>
         </div>
       )}

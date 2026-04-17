@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react"
 import { ScrollReveal } from "@/components/scroll-reveal"
-import { TrendingUp } from "lucide-react"
 
 interface Metric {
   id: string
@@ -49,20 +48,20 @@ function AnimatedNumber({ target, suffix }: { target: string; suffix: string }) 
 
   return (
     <div ref={ref} className="flex items-baseline gap-2">
-      <span className="text-4xl md:text-5xl font-bold text-foreground tracking-tight font-cinzel">
+      <span className="text-5xl md:text-6xl font-mono font-bold text-emerald tracking-tight">
         {display}
       </span>
-      <span className="text-xl md:text-2xl font-light text-emerald font-space-grotesk">{suffix}</span>
+      <span className="text-lg md:text-xl font-space-grotesk font-light text-foreground/60">{suffix}</span>
     </div>
   )
 }
 
 export function MetricsSection({ metrics }: { metrics: Metric[] }) {
   const defaultMetrics = [
-    { title: "Projects Delivered", value: "12", suffix: "+", description: "End-to-end product launches" },
-    { title: "Cost Reduction", value: "100", suffix: "%", description: "Infrastructure optimization" },
-    { title: "Load Time", value: "5", suffix: "x", description: "Performance improvement" },
-    { title: "Training Hours", value: "114", suffix: "+", description: "Team capability building" },
+    { title: "Products Shipped", value: "12", suffix: "+", description: "End-to-end launches" },
+    { title: "Cost Reduction", value: "100", suffix: "%", description: "Infrastructure impact" },
+    { title: "Performance Gain", value: "5", suffix: "x", description: "Load time improvement" },
+    { title: "Teams Trained", value: "114", suffix: "+", description: "Capability building" },
   ]
 
   const displayMetrics = metrics.length > 0
@@ -75,37 +74,35 @@ export function MetricsSection({ metrics }: { metrics: Metric[] }) {
     : defaultMetrics
 
   return (
-    <section className="px-6 md:px-12 py-20" id="metrics">
+    <section className="px-6 md:px-12 py-24" id="metrics">
       <div className="max-w-7xl mx-auto">
-        {/* Section header with accent line */}
-        <div className="mb-16 flex items-center gap-4">
-          <div className="h-1 w-12 bg-gradient-to-r from-emerald to-emerald/0" />
-          <h2 className="text-sm uppercase tracking-widest text-muted-foreground font-space-grotesk font-medium">Impact by the Numbers</h2>
-        </div>
+        {/* Section header */}
+        <ScrollReveal>
+          <div className="mb-20 flex items-baseline gap-4">
+            <span className="text-xs tracking-[0.2em] uppercase font-space-grotesk text-emerald/50">02 / METRICS</span>
+            <div className="flex-1 h-px bg-emerald/10" />
+          </div>
+        </ScrollReveal>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        {/* 4-column grid, data-forward */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
           {displayMetrics.map((metric, i) => (
-            <ScrollReveal key={i} delay={(i + 1) * 100}>
-              <div className="group relative glass-panel p-6 md:p-8 rounded-xl card-glow flex flex-col gap-4 overflow-hidden hover:scale-105 transition-transform duration-300">
-                {/* Background gradient on hover */}
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald/5 to-emerald/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-                
-                <div className="relative z-10">
-                  <div className="flex items-start justify-between mb-3">
-                    <AnimatedNumber
-                      target={metric.value}
-                      suffix={metric.suffix}
-                    />
-                    <TrendingUp className="h-5 w-5 text-emerald/50 group-hover:text-emerald transition-colors" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-medium text-foreground mb-2 font-space-grotesk">
-                      {metric.title}
-                    </h3>
-                    <p className="text-xs text-muted-foreground font-light leading-relaxed">
-                      {metric.description}
-                    </p>
-                  </div>
+            <ScrollReveal key={i} delay={(i + 1) * 60}>
+              <div className="flex flex-col gap-6 group">
+                {/* Data visualization bar */}
+                <div className="h-1 bg-emerald/10 group-hover:bg-emerald/30 transition-colors duration-300" style={{ width: `${(i + 1) * 20}%` }} />
+
+                {/* Number: mono font, large */}
+                <AnimatedNumber target={metric.value} suffix={metric.suffix} />
+
+                {/* Label: uppercase mono */}
+                <div className="space-y-1">
+                  <h3 className="text-xs md:text-sm uppercase tracking-[0.15em] font-space-grotesk font-medium text-foreground">
+                    {metric.title}
+                  </h3>
+                  <p className="text-[11px] tracking-[0.1em] uppercase font-mono text-foreground/40">
+                    {metric.description}
+                  </p>
                 </div>
               </div>
             </ScrollReveal>
