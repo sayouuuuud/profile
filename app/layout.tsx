@@ -1,6 +1,6 @@
 import React, { Suspense } from "react"
 import type { Metadata, Viewport } from "next";
-import { Space_Grotesk, Cinzel, Inter } from "next/font/google";
+import { Instrument_Serif, Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -10,27 +10,21 @@ import { ScrollProgressIndicator } from "@/components/scroll-progress-indicator"
 import { NotificationsProvider } from "@/components/providers/notifications-provider";
 import "./globals.css";
 
-const spaceGrotesk = Space_Grotesk({
+/* Elite editorial fonts */
+const instrumentSerif = Instrument_Serif({
   subsets: ["latin"],
-  variable: "--font-space-grotesk",
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400"],
+  variable: "--font-serif",
 });
 
-const cinzel = Cinzel({
+const geist = Geist({
   subsets: ["latin"],
-  variable: "--font-cinzel",
-  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-sans",
 });
 
-const inter = Inter({
+const geistMono = Geist_Mono({
   subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
-
-const johnston = localFont({
-  src: "../public/johnston.ttf",
-  variable: "--font-johnston",
+  variable: "--font-mono",
 });
 
 export const metadata: Metadata = {
@@ -40,7 +34,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#050505",
+  themeColor: "#F5F3EE",
 };
 
 export default function RootLayout({
@@ -52,7 +46,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`dark ${spaceGrotesk.variable} ${cinzel.variable} ${inter.variable} ${johnston.variable}`}
+      className={`${instrumentSerif.variable} ${geist.variable} ${geistMono.variable} bg-background`}
     >
       <body className="font-sans antialiased" suppressHydrationWarning>
         <ScrollProgressIndicator />
